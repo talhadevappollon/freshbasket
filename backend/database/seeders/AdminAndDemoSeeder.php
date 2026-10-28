@@ -156,3 +156,4 @@ class AdminAndDemoSeeder extends Seeder
         );
     }
 }
+

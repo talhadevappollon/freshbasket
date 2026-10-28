@@ -19,3 +19,4 @@ class CrmLead extends Model
         'agent_notes',
     ];
 }
+

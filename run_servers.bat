@@ -15,3 +15,4 @@ echo API Base:   http://localhost:8000/api/v1
 echo Database:   MySQL/MariaDB (Port 3307, freshbasket_db)
 echo.
 pause
+

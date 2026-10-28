@@ -34,3 +34,4 @@ class CrmController extends Controller
         ], 201);
     }
 }
+

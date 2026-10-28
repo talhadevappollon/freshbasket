@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 import { Plus, Minus, ShoppingBag, Sparkles } from 'lucide-react';
@@ -37,8 +38,11 @@ export default function ProductCard({ product }: { product: Product }) {
         </span>
       </div>
 
-      {/* Image */}
-      <div className="pt-4 pb-2 flex items-center justify-center relative overflow-hidden h-44">
+      {/* Image with Link */}
+      <Link
+        href={`/products/${product.slug}`}
+        className="pt-4 pb-2 flex items-center justify-center relative overflow-hidden h-44 cursor-pointer"
+      >
         <img
           src={product.primary_image || 'https://via.placeholder.com/200?text=Fresh+Basket'}
           alt={product.name}
@@ -48,7 +52,7 @@ export default function ProductCard({ product }: { product: Product }) {
             (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200?text=Fresh+Basket';
           }}
         />
-      </div>
+      </Link>
 
       {/* Information */}
       <div className="mt-2 flex-1 flex flex-col justify-between">
@@ -56,9 +60,13 @@ export default function ProductCard({ product }: { product: Product }) {
           <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider block">
             {product.brand || 'Fresh Basket'}
           </span>
-          <h3 className="font-bold text-gray-900 text-xs sm:text-sm line-clamp-2 mt-0.5 group-hover:text-fresh-700 transition" title={product.name}>
+          <Link
+            href={`/products/${product.slug}`}
+            className="font-bold text-gray-900 text-xs sm:text-sm line-clamp-2 mt-0.5 group-hover:text-fresh-700 transition"
+            title={product.name}
+          >
             {product.name}
-          </h3>
+          </Link>
         </div>
 
         {/* Price & Action Button */}

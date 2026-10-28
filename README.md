@@ -144,3 +144,4 @@ When connecting your physical store Laravel POS:
 - **URL**: `http://127.0.0.1:8000/admin`
 - **Email**: `admin@freshbasket.com.pk`
 - **Password**: `admin12345`
+

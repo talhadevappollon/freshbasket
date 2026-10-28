@@ -137,3 +137,4 @@ class PosController extends Controller
         ]);
     }
 }
+

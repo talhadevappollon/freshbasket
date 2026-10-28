@@ -54,7 +54,6 @@ export default function Header({
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Click outside search listener
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -104,7 +103,8 @@ export default function Header({
       <div className="max-w-7xl mx-auto px-4 py-3.5 flex items-center justify-between gap-4">
         {/* Brand Logo & Location */}
         <div className="flex items-center space-x-6">
-          <button
+          <Link
+            href="/"
             onClick={() => onSelectCategory('')}
             className="flex items-center space-x-2.5 text-left group"
           >
@@ -118,7 +118,7 @@ export default function Header({
               </div>
               <p className="text-[10px] text-gray-500 font-medium tracking-wide">ORGANIC & GROCERY PK</p>
             </div>
-          </button>
+          </Link>
 
           {/* City / Location Pill */}
           <div className="hidden lg:flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 border border-gray-200/80 px-3 py-1.5 rounded-xl text-xs cursor-pointer transition">
@@ -165,7 +165,7 @@ export default function Header({
                 <span className="font-semibold text-gray-600">
                   {isSearching ? 'Searching...' : `Found ${searchResults.length} items`}
                 </span>
-                <span className="text-gray-400 text-[11px]">Instant Add available</span>
+                <span className="text-gray-400 text-[11px]">Click item for full details</span>
               </div>
               <div className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
                 {searchResults.map(p => (
@@ -173,14 +173,20 @@ export default function Header({
                     key={p.id}
                     className="p-3 hover:bg-fresh-50/50 flex items-center justify-between gap-3 transition"
                   >
-                    <div className="flex items-center space-x-3 overflow-hidden">
+                    <Link
+                      href={`/products/${p.slug}`}
+                      onClick={() => setShowResults(false)}
+                      className="flex items-center space-x-3 overflow-hidden flex-1 group"
+                    >
                       <img
                         src={p.primary_image || 'https://via.placeholder.com/60'}
                         alt={p.name}
-                        className="w-11 h-11 object-cover rounded-xl border border-gray-100 shrink-0"
+                        className="w-11 h-11 object-cover rounded-xl border border-gray-100 shrink-0 group-hover:scale-105 transition"
                       />
                       <div className="overflow-hidden">
-                        <h4 className="text-xs font-bold text-gray-900 truncate">{p.name}</h4>
+                        <h4 className="text-xs font-bold text-gray-900 group-hover:text-fresh-600 transition truncate">
+                          {p.name}
+                        </h4>
                         <div className="flex items-center space-x-2 text-[11px] text-gray-500">
                           <span>{p.unit}</span>
                           <span className="font-bold text-emerald-700">PKR {p.price.toLocaleString()}</span>
@@ -191,7 +197,7 @@ export default function Header({
                           )}
                         </div>
                       </div>
-                    </div>
+                    </Link>
                     <button
                       onClick={() => addToCart(p, 1)}
                       className="shrink-0 bg-fresh-600 hover:bg-fresh-700 text-white p-2 rounded-xl text-xs font-semibold flex items-center space-x-1 shadow-sm transition"
@@ -201,18 +207,20 @@ export default function Header({
                     </button>
                   </div>
                 ))}
-                {!isSearching && searchResults.length === 0 && (
-                  <div className="p-6 text-center text-gray-400 text-xs">
-                    No matching products found. Try typing a general item like &quot;fruits&quot; or &quot;bread&quot;.
-                  </div>
-                )}
               </div>
             </div>
           )}
         </div>
 
-        {/* Cart Drawer Trigger Button */}
-        <div className="flex items-center space-x-3">
+        {/* Cart & Direct View Cart Button */}
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          <Link
+            href="/cart"
+            className="hidden sm:inline-flex items-center space-x-1.5 px-3 py-2 rounded-xl text-xs font-bold text-gray-700 hover:text-fresh-700 hover:bg-gray-100 transition"
+          >
+            <span>View Cart</span>
+          </Link>
+
           <button
             onClick={() => setIsCartOpen(true)}
             className="flex items-center space-x-3 bg-fresh-600 hover:bg-fresh-700 text-white px-4 py-2.5 rounded-2xl shadow-lg shadow-fresh-600/25 transition group"
@@ -238,7 +246,8 @@ export default function Header({
       {/* Category Navigation Pills */}
       <div className="bg-gray-50 border-t border-gray-100 overflow-x-auto">
         <div className="max-w-7xl mx-auto px-4 py-2 flex items-center space-x-2">
-          <button
+          <Link
+            href="/"
             onClick={() => onSelectCategory('')}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition ${
               selectedCategory === ''
@@ -247,7 +256,7 @@ export default function Header({
             }`}
           >
             All Products
-          </button>
+          </Link>
           {categories.slice(0, 10).map(cat => (
             <button
               key={cat.id}

@@ -185,3 +185,4 @@ class ImportFreshBasketCatalog extends Command
         return 0;
     }
 }
+

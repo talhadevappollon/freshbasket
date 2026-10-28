@@ -21,6 +21,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/products/{id}/stock', [AdminController::class, 'adjustStock'])->name('products.adjust_stock');
     Route::post('/products/save/{id?}', [AdminController::class, 'saveProduct'])->name('products.save');
 
+    // Interactive POS Terminal Cashier
+    Route::get('/pos', [AdminController::class, 'posTerminal'])->name('pos');
+
     // Customers CRM 360
     Route::get('/customers', [AdminController::class, 'customers'])->name('customers');
     Route::post('/customers/{id}', [AdminController::class, 'updateCustomer'])->name('customers.update');

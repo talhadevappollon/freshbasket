@@ -66,3 +66,4 @@ class Product extends Model
         return $this->track_stock && $this->stock_quantity <= $this->low_stock_threshold;
     }
 }
+

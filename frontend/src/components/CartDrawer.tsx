@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { X, Trash2, Plus, Minus, ShoppingBag, Truck, ArrowRight, Banknote } from 'lucide-react';
 
@@ -105,14 +106,26 @@ export default function CartDrawer() {
             ) : (
               items.map(item => (
                 <div key={item.product.id} className="py-4 flex items-center justify-between gap-3">
-                  <img
-                    src={item.product.primary_image || 'https://via.placeholder.com/60'}
-                    alt={item.product.name}
-                    className="w-14 h-14 object-contain rounded-xl border border-gray-100 p-1 shrink-0"
-                  />
+                  <Link
+                    href={`/products/${item.product.slug}`}
+                    onClick={() => setIsCartOpen(false)}
+                    className="shrink-0"
+                  >
+                    <img
+                      src={item.product.primary_image || 'https://via.placeholder.com/60'}
+                      alt={item.product.name}
+                      className="w-14 h-14 object-contain rounded-xl border border-gray-100 p-1 hover:scale-105 transition"
+                    />
+                  </Link>
 
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-xs font-bold text-gray-900 truncate">{item.product.name}</h4>
+                    <Link
+                      href={`/products/${item.product.slug}`}
+                      onClick={() => setIsCartOpen(false)}
+                      className="text-xs font-bold text-gray-900 truncate block hover:text-fresh-600 transition"
+                    >
+                      {item.product.name}
+                    </Link>
                     <p className="text-[11px] text-gray-400">{item.product.unit || '1 unit'}</p>
                     <p className="text-xs font-bold text-emerald-800 mt-0.5">
                       PKR {item.product.price.toLocaleString()}
@@ -169,19 +182,29 @@ export default function CartDrawer() {
               {/* Cash On Delivery Notification */}
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-2.5 flex items-center space-x-2 text-[11px] text-amber-900 font-medium">
                 <Banknote className="w-4 h-4 text-amber-600 shrink-0" />
-                <span>Zero prepayment needed &bull; Pay cash when rider delivers to your doorstep</span>
+                <span>Zero prepayment needed &bull; Pay cash at doorstep</span>
               </div>
 
-              <button
-                onClick={() => {
-                  setIsCartOpen(false);
-                  setIsCheckoutOpen(true);
-                }}
-                className="w-full bg-fresh-600 hover:bg-fresh-700 text-white py-3.5 px-4 rounded-2xl font-bold text-sm shadow-xl shadow-fresh-600/30 flex items-center justify-center space-x-2 transition"
-              >
-                <span>Proceed to COD Checkout</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              <div className="space-y-2">
+                <button
+                  onClick={() => {
+                    setIsCartOpen(false);
+                    setIsCheckoutOpen(true);
+                  }}
+                  className="w-full bg-fresh-600 hover:bg-fresh-700 text-white py-3.5 px-4 rounded-2xl font-bold text-sm shadow-xl shadow-fresh-600/30 flex items-center justify-center space-x-2 transition"
+                >
+                  <span>Proceed to COD Checkout</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+
+                <Link
+                  href="/cart"
+                  onClick={() => setIsCartOpen(false)}
+                  className="w-full bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 py-2.5 px-4 rounded-2xl font-bold text-xs flex items-center justify-center space-x-1.5 transition"
+                >
+                  <span>View Full Cart Page & Details</span>
+                </Link>
+              </div>
             </div>
           )}
         </div>
