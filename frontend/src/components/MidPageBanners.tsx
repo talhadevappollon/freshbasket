@@ -2,29 +2,51 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import Reveal from '@/components/Reveal';
 import { Sparkles, ArrowRight, ShieldCheck, Flame, Gift, Clock, Truck, Heart } from 'lucide-react';
 
-interface MidPageBannersProps {
-  onSelectCategory?: (slug: string) => void;
-}
+const CATEGORY_ROUTES: Record<string, string> = {
+  'fresh-produce': '/category/karachi-breakfast',
+  'dairy-cheese': '/category/dairy',
+  'bakery-breakfast': '/category/bakery-items',
+  'beverages-juices': '/category/karachi-beverages',
+  'pantry-cooking': '/category/karachi-pantry-cooking-ingredients',
+  'baby-food': '/category/karachi-baby-food',
+  '': '/#products-section',
+};
 
-export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps) {
+export default function MidPageBanners() {
+  const [copied, setCopied] = React.useState(false);
+  const router = useRouter();
   const handleClickAisle = (slug: string) => {
-    if (onSelectCategory) {
-      onSelectCategory(slug);
-    }
-    const el = document.getElementById('products-section');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+    const route = CATEGORY_ROUTES[slug] ?? `/category/${slug}`;
+    if (route.startsWith('/#') && window.location.pathname === '/') {
+      document.getElementById(route.slice(2))?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      router.push(route);
     }
   };
 
+  // Non-button elements that behave as links get proper role + keyboard support
+  const linkProps = (slug: string) => ({
+    role: 'link' as const,
+    tabIndex: 0,
+    onClick: () => handleClickAisle(slug),
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleClickAisle(slug);
+      }
+    },
+  });
+
   return (
-    <section className="max-w-7xl mx-auto px-4 py-8">
+    <Reveal as="section" className="max-w-7xl mx-auto px-4 py-8">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-fresh-600 bg-fresh-50 border border-fresh-200 px-2.5 py-0.5 rounded-full inline-block mb-1">
+          <span className="text-xs font-black tracking-wide text-fresh-600 bg-fresh-50 border border-fresh-200 px-2.5 py-0.5 rounded-full inline-block mb-1">
             Curated Collections
           </span>
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
@@ -42,7 +64,7 @@ export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
         {/* Banner 1: Organic Farm Harvest */}
         <div
-          onClick={() => handleClickAisle('fresh-produce')}
+          {...linkProps('fresh-produce')}
           className="group relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#052613] via-[#094824] to-[#041a0d] text-white p-6 sm:p-7 shadow-xl hover:shadow-2xl hover:-translate-y-2 border border-emerald-800/40 hover:border-fresh-400 transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[300px]"
         >
           {/* Subtle Background Glow & Floating Fruit Emoji */}
@@ -52,7 +74,7 @@ export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps
           </div>
 
           <div className="relative z-10 space-y-3">
-            <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-emerald-300 border border-white/15">
+            <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-xs font-black tracking-wide text-emerald-300 border border-white/15">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
               <span>100% Organic Harvest</span>
             </div>
@@ -67,7 +89,7 @@ export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps
           </div>
 
           <div className="relative z-10 pt-5 flex items-center justify-between border-t border-white/10 mt-4">
-            <div className="flex items-center gap-1 text-[11px] text-emerald-200 font-bold">
+            <div className="flex items-center gap-1 text-xs text-emerald-200 font-bold">
               <Truck className="w-3.5 h-3.5 text-fresh-400" />
               <span>2-Hr Karachi Delivery</span>
             </div>
@@ -81,7 +103,7 @@ export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps
 
         {/* Banner 2: Gourmet Imported Dairy & Cheeses */}
         <div
-          onClick={() => handleClickAisle('dairy-cheese')}
+          {...linkProps('dairy-cheese')}
           className="group relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#260a36] via-[#181147] to-[#072117] text-white p-6 sm:p-7 shadow-xl hover:shadow-2xl hover:-translate-y-2 border border-purple-800/40 hover:border-purple-400 transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[300px]"
         >
           {/* Subtle Background Glow & Floating Cheese Emoji */}
@@ -91,7 +113,7 @@ export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps
           </div>
 
           <div className="relative z-10 space-y-3">
-            <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-rose-300 border border-white/15">
+            <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-xs font-black tracking-wide text-rose-300 border border-white/15">
               <Flame className="w-3 h-3 text-rose-400" />
               <span>Gourmet Delicatessen</span>
             </div>
@@ -106,7 +128,7 @@ export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps
           </div>
 
           <div className="relative z-10 pt-5 flex items-center justify-between border-t border-white/10 mt-4">
-            <div className="flex items-center gap-1 text-[11px] text-purple-200 font-bold">
+            <div className="flex items-center gap-1 text-xs text-purple-200 font-bold">
               <ShieldCheck className="w-3.5 h-3.5 text-amber-300" />
               <span>Up to 40% OFF</span>
             </div>
@@ -120,7 +142,7 @@ export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps
 
         {/* Banner 3: Oven-Fresh Bakery & Breakfast Club */}
         <div
-          onClick={() => handleClickAisle('bakery-breakfast')}
+          {...linkProps('bakery-breakfast')}
           className="group relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#3d1805] via-[#291708] to-[#062011] text-white p-6 sm:p-7 shadow-xl hover:shadow-2xl hover:-translate-y-2 border border-amber-800/40 hover:border-amber-400 transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[300px]"
         >
           {/* Subtle Background Glow & Floating Bread Emoji */}
@@ -130,7 +152,7 @@ export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps
           </div>
 
           <div className="relative z-10 space-y-3">
-            <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-amber-300 border border-white/15">
+            <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-xs font-black tracking-wide text-amber-300 border border-white/15">
               <Gift className="w-3 h-3 text-amber-300" />
               <span>Fresh Oven Bake 8 AM</span>
             </div>
@@ -145,7 +167,7 @@ export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps
           </div>
 
           <div className="relative z-10 pt-5 flex items-center justify-between border-t border-white/10 mt-4">
-            <div className="flex items-center gap-1 text-[11px] text-amber-200 font-bold">
+            <div className="flex items-center gap-1 text-xs text-amber-200 font-bold">
               <Clock className="w-3.5 h-3.5 text-amber-400" />
               <span>Same-Day Freshness</span>
             </div>
@@ -166,11 +188,11 @@ export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black px-3 py-1 rounded-full text-[10px] uppercase tracking-wider shadow-sm">
+              <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black px-3 py-1 rounded-full text-xs tracking-wide shadow-sm">
                 <Flame className="w-3.5 h-3.5 text-rose-700 animate-bounce" />
                 <span>Karachi Weekend Mega Restock</span>
               </span>
-              <span className="bg-white/10 backdrop-blur-md text-emerald-300 font-bold px-3 py-1 rounded-full text-[10px] border border-white/15">
+              <span className="bg-white/10 backdrop-blur-md text-emerald-300 font-bold px-3 py-1 rounded-full text-xs border border-white/15">
                 Up to 35% OFF Family Essentials
               </span>
             </div>
@@ -203,7 +225,7 @@ export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps
             {/* Coupon Code Pill with Copy Action */}
             <div className="bg-black/50 backdrop-blur-md border border-white/20 p-3.5 rounded-2xl flex items-center justify-between gap-4">
               <div>
-                <span className="text-[10px] uppercase tracking-wider text-slate-400 block font-bold">
+                <span className="text-xs tracking-wide text-slate-400 block font-bold">
                   Use Coupon at Checkout
                 </span>
                 <span className="font-mono text-base font-black text-amber-300 tracking-wider">
@@ -213,11 +235,12 @@ export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps
               <button
                 onClick={() => {
                   navigator.clipboard.writeText('RESTOCK25');
-                  alert('Coupon code RESTOCK25 copied to clipboard! Enjoy 25% OFF.');
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2200);
                 }}
-                className="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer shadow-xs"
+                className="h-10 min-w-[96px] bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 active:scale-95 text-white text-sm font-bold px-4 rounded-xl transition cursor-pointer shadow-xs"
               >
-                Copy Code
+                {copied ? 'Copied' : 'Copy code'}
               </button>
             </div>
 
@@ -231,7 +254,7 @@ export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps
           </div>
         </div>
       </div>
-    </section>
+    </Reveal>
   );
 }
 

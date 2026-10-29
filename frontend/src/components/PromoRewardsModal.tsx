@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { X, Sparkles, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 
@@ -18,6 +18,11 @@ export default function PromoRewardsModal({
   const [isOpen, setIsOpen] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const { setIsCartOpen } = useCart();
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (isOpen) closeRef.current?.focus();
+  }, [isOpen]);
 
   useEffect(() => {
     // Check if user has already dismissed the popup in the current session
@@ -82,15 +87,11 @@ export default function PromoRewardsModal({
     }, 600);
   };
 
-  const handleLogin = (e: React.MouseEvent) => {
-    handleDismiss();
-  };
-
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
       onClick={handleDismiss}
       role="dialog"
       aria-modal="true"
@@ -98,15 +99,18 @@ export default function PromoRewardsModal({
     >
       {/* Modal Card */}
       <div
-        className="relative w-full max-w-[420px] bg-gradient-to-b from-[#18994e] via-[#148342] to-[#0e6331] text-white rounded-[32px] p-6 sm:p-8 shadow-2xl border border-white/20 overflow-hidden transform transition-all duration-300 scale-100 max-h-[94vh] flex flex-col justify-between"
+        className="relative w-full max-w-[420px] bg-gradient-to-b from-[#18994e] via-[#148342] to-[#0e6331] text-white rounded-[28px] sm:rounded-[32px] p-5 sm:p-8 shadow-2xl border border-white/20 overflow-x-hidden overflow-y-auto overscroll-contain animate-menu-in max-h-[calc(100dvh-2rem)] flex flex-col"
+        data-surface="dark"
         onClick={e => e.stopPropagation()}
         style={{
           boxShadow: '0 25px 50px -12px rgba(10, 60, 30, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.15)',
         }}
       >
         {/* Subtle Organic Background Patterns */}
-        <div className="absolute -top-16 -right-16 w-48 h-48 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-emerald-950/40 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+          <div className="absolute -top-16 -right-16 w-48 h-48 bg-emerald-400/20 rounded-full blur-3xl"></div>
+          <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-emerald-950/40 rounded-full blur-2xl"></div>
+        </div>
 
         {/* Top Header inside Modal */}
         <div className="flex items-center justify-between relative z-10">
@@ -135,11 +139,12 @@ export default function PromoRewardsModal({
             </svg>
 
             <button
+              ref={closeRef}
               onClick={handleDismiss}
-              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/35 active:scale-95 text-white flex items-center justify-center transition backdrop-blur-xs cursor-pointer shadow-sm"
-              aria-label="Close Rewards Modal"
+              className="w-11 h-11 -mr-1.5 rounded-full bg-white/20 hover:bg-white/35 active:scale-95 text-white flex items-center justify-center transition backdrop-blur-xs cursor-pointer shadow-sm"
+              aria-label="Close rewards popup"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
@@ -161,41 +166,41 @@ export default function PromoRewardsModal({
           </h2>
 
           {/* Explanatory Body */}
-          <p className="text-xs sm:text-[13px] text-emerald-50/95 leading-relaxed font-medium">
+          <p className="text-sm text-emerald-50/95 leading-relaxed font-medium">
             Join Fresh Basket Perq Rewards to earn points on eligible orders, get a first order bonus, and redeem your points for savings at checkout.
           </p>
 
           {/* CTA Buttons */}
-          <div className="pt-2 flex flex-col items-start gap-2.5">
+          <div className="pt-2 flex flex-col gap-2.5">
             <button
               onClick={handleJoinNow}
-              className="w-full sm:w-auto inline-flex items-center justify-center bg-white hover:bg-emerald-50 active:scale-95 text-slate-900 font-extrabold text-xs sm:text-sm px-7 py-3 rounded-full shadow-lg shadow-black/15 transition duration-200 cursor-pointer group"
+              className="w-full h-12 inline-flex items-center justify-center bg-white hover:bg-emerald-50 active:scale-[0.98] text-slate-900 font-extrabold text-sm px-6 rounded-full shadow-lg shadow-black/15 transition duration-200 cursor-pointer group"
             >
               {copiedCode ? (
                 <span className="flex items-center gap-1.5 text-fresh-700">
                   <CheckCircle2 className="w-4 h-4 text-fresh-600" />
-                  Code {rewardCoupon} Unlocked!
+                  Code {rewardCoupon} unlocked
                 </span>
               ) : (
                 <span className="flex items-center gap-1.5">
-                  Join now — it&apos;s free
-                  <ArrowRight className="w-3.5 h-3.5 text-slate-700 group-hover:translate-x-1 transition-transform" />
+                  Join now, it&apos;s free
+                  <ArrowRight className="w-4 h-4 text-slate-700 group-hover:translate-x-1 transition-transform" />
                 </span>
               )}
             </button>
 
-            <a
-              href="/admin"
-              onClick={handleLogin}
-              className="w-full sm:w-auto inline-flex items-center justify-center border border-white/70 hover:bg-white/10 active:scale-95 text-white font-semibold text-xs px-6 py-2 rounded-full transition duration-150 cursor-pointer"
+            <button
+              type="button"
+              onClick={handleDismiss}
+              className="w-full h-12 inline-flex items-center justify-center border border-white/60 hover:bg-white/15 active:bg-white/20 active:scale-[0.98] text-white font-semibold text-sm px-6 rounded-full transition duration-200 cursor-pointer"
             >
-              Already have an account? Log in
-            </a>
+              Maybe later
+            </button>
           </div>
         </div>
 
         {/* Bottom Graphic Artwork Composition */}
-        <div className="relative z-10 mt-4 pt-3 flex items-end justify-between select-none pointer-events-none">
+        <div className="relative z-10 mt-4 pt-3 flex items-end justify-between select-none pointer-events-none [@media(max-height:680px)]:hidden">
           {/* Left: Gift Box Doodle with Floating Sparkles & Coins */}
           <div className="relative w-32 h-28 shrink-0 flex items-end">
             <svg

@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import Reveal from '@/components/Reveal';
 import {
   Sparkles,
   ArrowRight,
@@ -21,11 +23,17 @@ import {
   PhoneCall
 } from 'lucide-react';
 
-interface HomePromoBannersProps {
-  onSelectCategory?: (slug: string) => void;
-}
+const CATEGORY_ROUTES: Record<string, string> = {
+  'fresh-produce': '/category/karachi-breakfast',
+  'dairy-cheese': '/category/dairy',
+  'bakery-breakfast': '/category/bakery-items',
+  'beverages-juices': '/category/karachi-beverages',
+  'pantry-cooking': '/category/karachi-pantry-cooking-ingredients',
+  'baby-food': '/category/karachi-baby-food',
+  '': '/#products-section',
+};
 
-export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersProps) {
+export default function HomePromoBanners() {
   const [copiedCoupon, setCopiedCoupon] = useState<string | null>(null);
 
   const handleCopyCode = (code: string) => {
@@ -34,23 +42,36 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
     setTimeout(() => setCopiedCoupon(null), 2500);
   };
 
+  const router = useRouter();
   const handleCategoryClick = (slug: string) => {
-    if (onSelectCategory) {
-      onSelectCategory(slug);
-    }
-    const el = document.getElementById('products-section');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
+    const route = CATEGORY_ROUTES[slug] ?? `/category/${slug}`;
+    if (route.startsWith('/#') && window.location.pathname === '/') {
+      document.getElementById(route.slice(2))?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      router.push(route);
     }
   };
+
+  // Non-button elements that behave as links get proper role + keyboard support
+  const linkProps = (slug: string) => ({
+    role: 'link' as const,
+    tabIndex: 0,
+    onClick: () => handleCategoryClick(slug),
+    onKeyDown: (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleCategoryClick(slug);
+      }
+    },
+  });
 
   return (
     <div className="space-y-12 my-12 max-w-7xl mx-auto px-4">
       {/* SECTION 1: Dual High-Impact Lifestyle & Department Banners */}
-      <section>
+      <Reveal as="section">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full inline-block mb-1">
+            <span className="text-xs font-black tracking-wide text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full inline-block mb-1">
               Department Highlights
             </span>
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
@@ -75,11 +96,11 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
 
             <div className="relative z-10 space-y-3">
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 bg-emerald-500/25 border border-emerald-400/30 text-emerald-300 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full">
+                <span className="inline-flex items-center gap-1 bg-emerald-500/25 border border-emerald-400/30 text-emerald-300 text-xs font-black tracking-wide px-3 py-1 rounded-full">
                   <Heart className="w-3 h-3 text-rose-400 fill-rose-400" />
                   <span>Baby &amp; Toddler Nutrition</span>
                 </span>
-                <span className="bg-white/10 text-slate-200 text-[10px] font-bold px-2.5 py-1 rounded-full">
+                <span className="bg-white/10 text-slate-200 text-xs font-bold px-2.5 py-1 rounded-full">
                   100% Certified Organic
                 </span>
               </div>
@@ -97,8 +118,8 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
                 {['Gerber Organic', "Ella's Kitchen", 'Baby Oatmeal', 'Teething Biscuits'].map(tag => (
                   <span
                     key={tag}
-                    onClick={() => handleCategoryClick('baby-food')}
-                    className="text-[11px] bg-white/10 hover:bg-white/20 text-emerald-200 px-2.5 py-1 rounded-lg border border-white/10 cursor-pointer transition"
+                    {...linkProps('baby-food')}
+                    className="text-xs bg-white/10 hover:bg-white/20 text-emerald-200 px-2.5 py-1 rounded-lg border border-white/10 cursor-pointer transition"
                   >
                     {tag}
                   </span>
@@ -109,12 +130,12 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
             <div className="relative z-10 pt-6 mt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <div className="bg-black/40 border border-white/15 px-3 py-1.5 rounded-xl text-xs font-mono">
-                  <span className="text-[10px] text-emerald-300 uppercase block font-sans font-bold">Use Coupon:</span>
+                  <span className="text-xs text-emerald-300 block font-sans font-bold">Use Coupon:</span>
                   <span className="font-black text-amber-300">BABY15</span>
                 </div>
                 <button
                   onClick={() => handleCopyCode('BABY15')}
-                  className="bg-white/15 hover:bg-white/25 active:scale-95 text-white p-2 rounded-xl transition cursor-pointer"
+                  className="w-10 h-10 flex items-center justify-center bg-white/15 hover:bg-white/25 active:scale-95 text-white rounded-xl transition cursor-pointer"
                   title="Copy Coupon"
                 >
                   {copiedCoupon === 'BABY15' ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
@@ -123,7 +144,7 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
 
               <button
                 onClick={() => handleCategoryClick('baby-food')}
-                className="bg-white hover:bg-emerald-50 text-slate-950 font-black text-xs py-2.5 px-5 rounded-xl shadow-lg transition-all flex items-center gap-2 group/btn cursor-pointer"
+                className="bg-white hover:bg-emerald-50 text-slate-950 font-black text-sm h-11 px-5 rounded-xl shadow-lg transition-all flex items-center gap-2 group/btn cursor-pointer"
               >
                 <span>Browse Baby Care</span>
                 <ArrowRight className="w-3.5 h-3.5 text-slate-900 group-hover/btn:translate-x-1 transition-transform" />
@@ -141,11 +162,11 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
 
             <div className="relative z-10 space-y-3">
               <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1 bg-sky-500/25 border border-sky-400/30 text-sky-300 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full">
+                <span className="inline-flex items-center gap-1 bg-sky-500/25 border border-sky-400/30 text-sky-300 text-xs font-black tracking-wide px-3 py-1 rounded-full">
                   <Flame className="w-3 h-3 text-amber-400" />
                   <span>Chilled Express Dispatch</span>
                 </span>
-                <span className="bg-white/10 text-slate-200 text-[10px] font-bold px-2.5 py-1 rounded-full">
+                <span className="bg-white/10 text-slate-200 text-xs font-bold px-2.5 py-1 rounded-full">
                   Delivered Cold in 90 Mins
                 </span>
               </div>
@@ -163,8 +184,8 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
                 {['Pure Coconut Water', 'Cold Brew Iced Coffee', 'Almarai Juices', 'Greek Yogurt Smoothies'].map(tag => (
                   <span
                     key={tag}
-                    onClick={() => handleCategoryClick('beverages-juices')}
-                    className="text-[11px] bg-white/10 hover:bg-white/20 text-sky-200 px-2.5 py-1 rounded-lg border border-white/10 cursor-pointer transition"
+                    {...linkProps('beverages-juices')}
+                    className="text-xs bg-white/10 hover:bg-white/20 text-sky-200 px-2.5 py-1 rounded-lg border border-white/10 cursor-pointer transition"
                   >
                     {tag}
                   </span>
@@ -175,12 +196,12 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
             <div className="relative z-10 pt-6 mt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-2">
                 <div className="bg-black/40 border border-white/15 px-3 py-1.5 rounded-xl text-xs font-mono">
-                  <span className="text-[10px] text-sky-300 uppercase block font-sans font-bold">Use Coupon:</span>
+                  <span className="text-xs text-sky-300 block font-sans font-bold">Use Coupon:</span>
                   <span className="font-black text-amber-300">CHILLED10</span>
                 </div>
                 <button
                   onClick={() => handleCopyCode('CHILLED10')}
-                  className="bg-white/15 hover:bg-white/25 active:scale-95 text-white p-2 rounded-xl transition cursor-pointer"
+                  className="w-10 h-10 flex items-center justify-center bg-white/15 hover:bg-white/25 active:scale-95 text-white rounded-xl transition cursor-pointer"
                   title="Copy Coupon"
                 >
                   {copiedCoupon === 'CHILLED10' ? <CheckCircle2 className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
@@ -189,7 +210,7 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
 
               <button
                 onClick={() => handleCategoryClick('beverages-juices')}
-                className="bg-white hover:bg-sky-50 text-slate-950 font-black text-xs py-2.5 px-5 rounded-xl shadow-lg transition-all flex items-center gap-2 group/btn cursor-pointer"
+                className="bg-white hover:bg-sky-50 text-slate-950 font-black text-sm h-11 px-5 rounded-xl shadow-lg transition-all flex items-center gap-2 group/btn cursor-pointer"
               >
                 <span>Browse Chilled Bar</span>
                 <ArrowRight className="w-3.5 h-3.5 text-slate-900 group-hover/btn:translate-x-1 transition-transform" />
@@ -197,12 +218,12 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
             </div>
           </div>
         </div>
-      </section>
+      </Reveal>
 
       {/* SECTION 2: 4-Item Specialty Food Pantry Banners Grid */}
-      <section>
+      <Reveal as="section">
         <div className="text-center max-w-xl mx-auto mb-8">
-          <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full inline-block mb-1.5">
+          <span className="text-xs font-black tracking-wide text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full inline-block mb-1.5">
             Curated For Every Lifestyle
           </span>
           <h3 className="text-2xl font-black text-slate-900 tracking-tight">
@@ -216,14 +237,14 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Card 1: Keto & Healthy Fats */}
           <div
-            onClick={() => handleCategoryClick('pantry-cooking')}
+            {...linkProps('pantry-cooking')}
             className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-emerald-400 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 cursor-pointer flex flex-col justify-between group shadow-xs"
           >
             <div>
               <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-800 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
                 🥑
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full inline-block mb-2">
+              <span className="text-xs font-black tracking-wide text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full inline-block mb-2">
                 Keto &amp; Healthy Fats
               </span>
               <h4 className="text-base font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
@@ -241,14 +262,14 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
 
           {/* Card 2: Gourmet Delicatessen */}
           <div
-            onClick={() => handleCategoryClick('dairy-cheese')}
+            {...linkProps('dairy-cheese')}
             className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-purple-400 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 cursor-pointer flex flex-col justify-between group shadow-xs"
           >
             <div>
               <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-800 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
                 🧀
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full inline-block mb-2">
+              <span className="text-xs font-black tracking-wide text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full inline-block mb-2">
                 Imported Cheeses
               </span>
               <h4 className="text-base font-bold text-slate-900 group-hover:text-purple-700 transition-colors">
@@ -266,14 +287,14 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
 
           {/* Card 3: Morning Bakery & Breads */}
           <div
-            onClick={() => handleCategoryClick('bakery-breakfast')}
+            {...linkProps('bakery-breakfast')}
             className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-orange-400 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 cursor-pointer flex flex-col justify-between group shadow-xs"
           >
             <div>
               <div className="w-12 h-12 rounded-2xl bg-orange-50 text-orange-800 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
                 🥖
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-orange-700 bg-orange-50 px-2 py-0.5 rounded-full inline-block mb-2">
+              <span className="text-xs font-black tracking-wide text-orange-700 bg-orange-50 px-2 py-0.5 rounded-full inline-block mb-2">
                 Daily 8 AM Bake
               </span>
               <h4 className="text-base font-bold text-slate-900 group-hover:text-orange-700 transition-colors">
@@ -291,14 +312,14 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
 
           {/* Card 4: Superfood Honeys & Dates */}
           <div
-            onClick={() => handleCategoryClick('fresh-produce')}
+            {...linkProps('fresh-produce')}
             className="p-6 rounded-3xl bg-white border border-slate-200/90 hover:border-emerald-400 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-200 cursor-pointer flex flex-col justify-between group shadow-xs"
           >
             <div>
               <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-800 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
                 🍯
               </div>
-              <span className="text-[10px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full inline-block mb-2">
+              <span className="text-xs font-black tracking-wide text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full inline-block mb-2">
                 100% Pure Superfood
               </span>
               <h4 className="text-base font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
@@ -314,13 +335,13 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
             </div>
           </div>
         </div>
-      </section>
+      </Reveal>
 
       {/* SECTION 3: Official Brand Partners Showcase Ribbon */}
-      <section className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm">
+      <Reveal as="section" className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 gap-3">
           <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            <span className="text-xs font-black tracking-wide text-slate-400">
               Verified Stockist
             </span>
             <h3 className="text-lg sm:text-xl font-black text-slate-900">
@@ -347,7 +368,7 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
           ].map(brand => (
             <div
               key={brand.name}
-              onClick={() => handleCategoryClick('')}
+              {...linkProps('')}
               className="p-3 rounded-2xl bg-slate-50 hover:bg-emerald-50 border border-slate-200/70 hover:border-emerald-300 text-center transition-all duration-200 cursor-pointer group hover:-translate-y-1 hover:shadow-xs"
             >
               <span className="text-2xl block mb-1 group-hover:scale-125 transition-transform">
@@ -356,21 +377,21 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
               <h5 className="text-xs font-black text-slate-900 group-hover:text-emerald-800 transition-colors">
                 {brand.name}
               </h5>
-              <span className="text-[10px] text-slate-400 block truncate">
+              <span className="text-xs text-slate-400 block truncate">
                 {brand.desc}
               </span>
             </div>
           ))}
         </div>
-      </section>
+      </Reveal>
 
       {/* SECTION 4: WhatsApp Personal Concierge & Instant Order Banner */}
-      <section className="rounded-3xl overflow-hidden bg-gradient-to-r from-[#032314] via-[#05381f] to-[#02180d] text-white p-7 sm:p-9 shadow-2xl border border-emerald-800/60 relative">
+      <Reveal as="section" className="rounded-3xl overflow-hidden bg-gradient-to-r from-[#032314] via-[#05381f] to-[#02180d] text-white p-7 sm:p-9 shadow-2xl border border-emerald-800/60 relative">
         <div className="absolute top-0 right-0 -mr-12 -mt-12 w-64 h-64 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
           <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-[10px] font-black uppercase tracking-wider px-3.5 py-1 rounded-full">
+            <div className="inline-flex items-center gap-2 bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-black tracking-wide px-3.5 py-1 rounded-full">
               <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
               <span>Karachi VIP WhatsApp Shopper Service</span>
             </div>
@@ -419,10 +440,10 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
             </a>
           </div>
         </div>
-      </section>
+      </Reveal>
 
       {/* SECTION 5: Verified Karachi Shopper Reviews & Social Proof */}
-      <section className="bg-slate-100/70 rounded-3xl p-6 sm:p-8 border border-slate-200/70">
+      <Reveal as="section" className="bg-slate-100/70 rounded-3xl p-6 sm:p-8 border border-slate-200/70">
         <div className="text-center max-w-xl mx-auto mb-8">
           <div className="inline-flex items-center gap-1 text-amber-500 mb-1">
             {[...Array(5)].map((_, i) => (
@@ -447,7 +468,7 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
             <p className="text-xs text-slate-600 leading-relaxed italic">
               &ldquo;The mushrooms and strawberries arrived fresher than our local supermarket in DHA Phase 5. The 2-hour delivery is genuinely accurate.&rdquo;
             </p>
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
               <span className="font-bold text-slate-900">Dr. Ayesha K.</span>
               <span className="text-slate-400">DHA Phase 5, Karachi</span>
             </div>
@@ -462,7 +483,7 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
             <p className="text-xs text-slate-600 leading-relaxed italic">
               &ldquo;Finally an organic grocery in Karachi that understands cold chain. The Yayycheese cheddar and Almarai milk were cold and neatly packed in insulated bags.&rdquo;
             </p>
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
               <span className="font-bold text-slate-900">Salman Tariq</span>
               <span className="text-slate-400">Clifton Block 2, Karachi</span>
             </div>
@@ -477,13 +498,13 @@ export default function HomePromoBanners({ onSelectCategory }: HomePromoBannersP
             <p className="text-xs text-slate-600 leading-relaxed italic">
               &ldquo;Ordered via WhatsApp with a handwritten note and everything was delivered within 90 mins with Cash on Delivery. Amazing service!&rdquo;
             </p>
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
               <span className="font-bold text-slate-900">Mrs. Farhana</span>
               <span className="text-slate-400">PECHS Block 6, Karachi</span>
             </div>
           </div>
         </div>
-      </section>
+      </Reveal>
     </div>
   );
 }

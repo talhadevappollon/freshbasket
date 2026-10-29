@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { PLACEHOLDER_IMG } from '@/lib/placeholder';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -104,11 +105,7 @@ export default function CartPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
-      <Header
-        categories={categories}
-        selectedCategory=""
-        onSelectCategory={() => {}}
-      />
+      <Header categories={categories} />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:py-8 pb-20 sm:pb-8">
         {/* Checkout Stepper Progress */}
@@ -225,7 +222,7 @@ export default function CartPage() {
                       <div className="flex items-center space-x-4">
                         <Link href={`/products/${item.product.slug}`} className="shrink-0">
                           <img
-                            src={item.product.primary_image || 'https://via.placeholder.com/80'}
+                            src={item.product.primary_image || PLACEHOLDER_IMG}
                             alt={item.product.name}
                             className="w-16 h-16 object-contain rounded-2xl bg-white border border-slate-200 p-1"
                           />

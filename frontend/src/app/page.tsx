@@ -1,10 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { PLACEHOLDER_IMG } from '@/lib/placeholder';
 import Header from '@/components/Header';
 import HeroBanner from '@/components/HeroBanner';
 import CategorySlider from '@/components/CategorySlider';
 import ProductCard from '@/components/ProductCard';
+import ProductRail from '@/components/ProductRail';
 import QuickViewModal from '@/components/QuickViewModal';
 import CartDrawer from '@/components/CartDrawer';
 import CheckoutModal from '@/components/CheckoutModal';
@@ -12,331 +15,312 @@ import OrderSuccessModal from '@/components/OrderSuccessModal';
 import PromoRewardsModal from '@/components/PromoRewardsModal';
 import MidPageBanners from '@/components/MidPageBanners';
 import HomePromoBanners from '@/components/HomePromoBanners';
+import Reveal from '@/components/Reveal';
+import ScrollUI from '@/components/ScrollUI';
+import {
+  TrustMarquee,
+  BentoAisles,
+  DealOfTheDay,
+  DualPromo,
+  StatsBand,
+  HowItWorks,
+  FaqSection,
+  NewsletterBanner,
+} from '@/components/HomeSections';
 import Footer from '@/components/Footer';
 import { fetchCategories, fetchProducts } from '@/lib/api';
 import { Category, Product } from '@/types';
-import { Sparkles, SlidersHorizontal, Loader2, MessageCircle, Flame, Clock, ShieldCheck, Truck, RefreshCw, ArrowDown } from 'lucide-react';
+import { SlidersHorizontal, MessageCircle, Flame, ShieldCheck, Truck, RefreshCw, ArrowDown } from 'lucide-react';
 
 const INITIAL_ROWS_COUNT = 8; // Exactly 2 rows of 4 columns by default on desktop
+
+function SkeletonCard() {
+  return (
+    <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-3 sm:p-4" aria-hidden="true">
+      <div className="skeleton h-32 sm:h-40 rounded-2xl" />
+      <div className="skeleton h-3 w-1/3 rounded mt-4" />
+      <div className="skeleton h-4 w-5/6 rounded mt-2" />
+      <div className="skeleton h-4 w-2/3 rounded mt-1.5" />
+      <div className="flex items-center justify-between mt-5">
+        <div className="skeleton h-5 w-20 rounded" />
+        <div className="skeleton h-10 w-16 rounded-xl" />
+      </div>
+    </div>
+  );
+}
 
 export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [bestSellers, setBestSellers] = useState<Product[]>([]);
+  const [dairyPicks, setDairyPicks] = useState<Product[]>([]);
   const [sortBy, setSortBy] = useState<string>('latest');
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [totalProducts, setTotalProducts] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
-  // Load Categories on mount
   useEffect(() => {
-    async function loadCats() {
-      const cats = await fetchCategories();
-      setCategories(cats);
-    }
-    loadCats();
+    fetchCategories().then(setCategories);
+    fetchProducts({ featured: true, per_page: 12 }).then(res => setBestSellers(res.data));
+    fetchProducts({ category: 'dairy', per_page: 12 }).then(res => setDairyPicks(res.data));
   }, []);
 
-  // Load Products whenever category or sort changes (default 2 rows = 8 products)
+  // Main grid: 2 rows by default, re-fetched when the sort changes
   useEffect(() => {
-    async function loadProds() {
-      setIsLoading(true);
-      const res = await fetchProducts({
-        category: selectedCategory || undefined,
-        sort: sortBy,
-        per_page: INITIAL_ROWS_COUNT,
-      });
+    let cancelled = false;
+    setIsLoading(true);
+    fetchProducts({ sort: sortBy, per_page: INITIAL_ROWS_COUNT }).then(res => {
+      if (cancelled) return;
       setProducts(res.data);
       setTotalProducts(res.total);
       setIsLoading(false);
       setPage(1);
-    }
-    loadProds();
-  }, [selectedCategory, sortBy]);
-
-  const handleSelectCategory = (slug: string) => {
-    setSelectedCategory(slug);
-    const el = document.getElementById('products-section');
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [sortBy]);
 
   const handleLoadMore = async () => {
     const nextPage = page + 1;
-    const res = await fetchProducts({
-      category: selectedCategory || undefined,
-      sort: sortBy,
-      per_page: INITIAL_ROWS_COUNT * nextPage,
-    });
+    const res = await fetchProducts({ sort: sortBy, per_page: INITIAL_ROWS_COUNT * nextPage });
     setProducts(res.data);
     setPage(nextPage);
   };
 
-  const currentCategoryName = selectedCategory
-    ? categories.find(c => c.slug === selectedCategory)?.name || 'Selected Category'
-    : 'All Fresh Supermarket Essentials';
-
-  // Filter flash deal items for promotion
   const flashDeals = products.filter(p => p.compare_at_price && p.compare_at_price > p.price).slice(0, 4);
+  const featuredPick = bestSellers.find(p => p.primary_image) ?? bestSellers[0];
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
-      {/* Header */}
-      <Header
-        categories={categories}
-        selectedCategory={selectedCategory}
-        onSelectCategory={handleSelectCategory}
-      />
+      <Header categories={categories} />
+      <ScrollUI />
 
-      {/* Main Content Area */}
-      <main className="flex-1 pb-16 sm:pb-8">
-        {/* Hero Section */}
+      <main id="main-content" className="flex-1 pb-16 sm:pb-8">
         <HeroBanner />
+        <TrustMarquee />
 
-        {/* Flash Sale Deal Strip */}
-        {flashDeals.length > 0 && !selectedCategory && (
-          <section className="max-w-7xl mx-auto px-4 pt-6 pb-2">
-            <div className="bg-gradient-to-r from-rose-950 via-rose-900 to-amber-950 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                <div className="flex items-center space-x-2.5">
-                  <span className="p-2 bg-rose-500 rounded-xl text-white">
-                    <Flame className="w-5 h-5 animate-bounce" />
-                  </span>
-                  <div>
-                    <h3 className="text-lg font-black tracking-tight text-white">Today&apos;s Fresh Basket Flash Deals</h3>
-                    <p className="text-xs text-rose-200">Limited-time discounted prices on fresh fruits, dairy, and farm produce</p>
-                  </div>
-                </div>
-
-                <div className="inline-flex items-center space-x-2 bg-black/40 backdrop-blur-md px-4 py-2 rounded-2xl border border-white/10 text-xs font-mono font-bold">
-                  <Clock className="w-4 h-4 text-amber-400" />
-                  <span>Offer Ends: 05h : 42m : 18s</span>
+        {/* Flash sale strip – only shown when real discounted products exist */}
+        {flashDeals.length > 0 && (
+          <Reveal as="section" className="max-w-7xl mx-auto px-4 pt-6 pb-2">
+            <div className="bg-gradient-to-r from-rose-950 via-rose-900 to-amber-950 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden" data-surface="dark">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="w-11 h-11 bg-rose-500 rounded-xl text-white flex items-center justify-center">
+                  <Flame className="w-5 h-5" />
+                </span>
+                <div>
+                  <h2 className="text-lg font-black tracking-tight text-white">Today&apos;s flash deals</h2>
+                  <p className="text-sm text-rose-100">Discounted prices on fresh produce, dairy and pantry staples</p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+              <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
                 {flashDeals.map(deal => (
-                  <div key={deal.id} className="bg-white/10 backdrop-blur-md border border-white/15 p-3 rounded-2xl flex items-center space-x-3">
-                    <img src={deal.primary_image || 'https://via.placeholder.com/60'} alt={deal.name} className="w-12 h-12 object-contain rounded-xl bg-white p-1 shrink-0" />
-                    <div className="overflow-hidden">
-                      <h4 className="text-xs font-bold text-white truncate">{deal.name}</h4>
-                      <div className="flex items-baseline space-x-1.5 mt-0.5">
-                        <span className="text-xs font-black text-amber-300">PKR {deal.price.toLocaleString()}</span>
-                        <span className="text-[10px] text-rose-300 line-through">PKR {deal.compare_at_price?.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  </div>
+                  <li key={deal.id}>
+                    <Link
+                      href={`/products/${deal.slug}`}
+                      className="bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/15 hover:border-white/35 p-3 rounded-2xl flex items-center gap-3 transition-colors duration-200"
+                    >
+                      <img
+                        src={deal.primary_image || PLACEHOLDER_IMG}
+                        alt=""
+                        width={48}
+                        height={48}
+                        className="w-12 h-12 object-contain rounded-xl bg-white p-1 shrink-0"
+                      />
+                      <span className="overflow-hidden">
+                        <span className="block text-sm font-bold text-white truncate">{deal.name}</span>
+                        <span className="flex items-baseline gap-1.5 mt-0.5">
+                          <span className="text-sm font-black text-amber-300">PKR {deal.price.toLocaleString()}</span>
+                          <span className="text-xs text-rose-200 line-through">PKR {deal.compare_at_price?.toLocaleString()}</span>
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
                 ))}
-              </div>
+              </ul>
             </div>
-          </section>
+          </Reveal>
         )}
 
-        {/* Visual Category Aisle Slider */}
-        <CategorySlider
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onSelectCategory={handleSelectCategory}
+        <CategorySlider categories={categories} />
+        <BentoAisles />
+
+        <ProductRail
+          title="Best sellers"
+          subtitle="What Karachi is adding to basket this week"
+          products={bestSellers}
+          viewAllHref="/category/karachi-best-selling"
+          onQuickView={setQuickViewProduct}
         />
 
-        {/* Animated Curated Aisle & Mid-Page Seasonal Banners */}
-        <MidPageBanners onSelectCategory={handleSelectCategory} />
+        <MidPageBanners />
 
-        {/* Products Catalog Grid */}
+        {featuredPick && <DealOfTheDay product={featuredPick} />}
+
+        <ProductRail
+          title="Dairy and cheese favourites"
+          subtitle="Cold-chain delivered milk, yogurt and imported cheeses"
+          products={dairyPicks}
+          viewAllHref="/category/dairy"
+          onQuickView={setQuickViewProduct}
+        />
+
+        {/* Products catalogue grid */}
         <section id="products-section" className="max-w-7xl mx-auto px-4 py-8">
-          {/* Section Toolbar */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-slate-200/80 gap-4 mb-8">
+          <Reveal className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-slate-200/80 gap-4 mb-8">
             <div>
-              <div className="flex items-center space-x-2">
-                <Sparkles className="w-5 h-5 text-fresh-600 animate-pulse" />
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                  {currentCategoryName}
-                </h2>
-              </div>
-              <p className="text-xs text-slate-500 mt-0.5 font-medium">
-                Showing {products.length} of {totalProducts} verified fresh products (2 rows by default)
+              <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">All fresh supermarket essentials</h2>
+              <p className="text-sm text-slate-600 mt-0.5">
+                {isLoading ? 'Loading products…' : `Showing ${products.length} of ${totalProducts} products`}
               </p>
             </div>
 
-            {/* Sorting Filter */}
-            <div className="flex items-center space-x-2">
-              <SlidersHorizontal className="w-4 h-4 text-slate-400" />
-              <span className="text-xs font-bold text-slate-500">Sort By:</span>
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="w-4 h-4 text-slate-500" />
+              <label htmlFor="home-sort" className="text-sm font-semibold text-slate-600">
+                Sort by
+              </label>
               <select
+                id="home-sort"
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
-                className="bg-white border border-slate-200 hover:border-fresh-400 text-xs font-bold text-slate-800 rounded-xl px-3.5 py-2 focus:outline-none focus:border-fresh-500 shadow-2xs cursor-pointer transition-colors"
+                className="h-10 bg-white border border-slate-200 hover:border-fresh-400 text-sm font-semibold text-slate-800 rounded-xl px-3 focus:outline-none focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 cursor-pointer transition"
               >
-                <option value="latest">Featured & Newest</option>
-                <option value="price_asc">Price: Low to High</option>
-                <option value="price_desc">Price: High to Low</option>
-                <option value="name_asc">Alphabetical (A - Z)</option>
+                <option value="latest">Featured &amp; newest</option>
+                <option value="price_asc">Price: low to high</option>
+                <option value="price_desc">Price: high to low</option>
+                <option value="name_asc">Name: A to Z</option>
               </select>
             </div>
-          </div>
+          </Reveal>
 
-          {/* Product Cards Grid with Staggered Entrance Animations */}
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-24 text-slate-400">
-              <Loader2 className="w-8 h-8 animate-spin text-fresh-600 mb-2" />
-              <p className="text-xs font-bold">Loading Fresh Basket Catalog...</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-6">
+              {Array.from({ length: INITIAL_ROWS_COUNT }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
-          ) : products.length > 0 ? (
+          ) : (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-2.5 sm:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-6">
                 {products.map((product, idx) => (
                   <div
                     key={product.id}
                     className="animate-card-entrance"
                     style={{ animationDelay: `${(idx % 8) * 50}ms` }}
                   >
-                    <ProductCard
-                      product={product}
-                      onQuickView={(p) => setQuickViewProduct(p)}
-                    />
+                    <ProductCard product={product} onQuickView={p => setQuickViewProduct(p)} />
                   </div>
                 ))}
               </div>
 
-              {/* Load More Button Options */}
               {products.length < totalProducts && (
-                <div className="text-center mt-12 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <div className="mt-12 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
                   <button
+                    type="button"
                     onClick={handleLoadMore}
-                    className="w-full sm:w-auto bg-white hover:bg-gradient-to-r hover:from-fresh-600 hover:to-emerald-700 border border-slate-200 hover:border-fresh-600 text-slate-800 hover:text-white font-extrabold px-8 py-3.5 rounded-2xl text-xs sm:text-sm shadow-sm hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 group"
+                    className="h-12 sm:min-w-[260px] px-8 bg-white hover:bg-fresh-600 border border-slate-200 hover:border-fresh-600 text-slate-800 hover:text-white font-bold rounded-2xl text-sm shadow-sm hover:shadow-lg active:scale-95 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 group"
                   >
-                    <span>Load Next 2 Rows ({totalProducts - products.length} remaining)</span>
-                    <ArrowDown className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
+                    <span>Show more ({totalProducts - products.length} left)</span>
+                    <ArrowDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
                   </button>
 
                   <button
+                    type="button"
                     onClick={async () => {
                       setIsLoading(true);
-                      const res = await fetchProducts({
-                        category: selectedCategory || undefined,
-                        sort: sortBy,
-                        per_page: 120,
-                      });
+                      const res = await fetchProducts({ sort: sortBy, per_page: 120 });
                       setProducts(res.data);
                       setPage(15);
                       setIsLoading(false);
                     }}
-                    className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold px-6 py-3.5 rounded-2xl text-xs transition-all duration-200 cursor-pointer hover:shadow-xs active:scale-95"
+                    className="h-12 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-semibold rounded-2xl text-sm transition-colors duration-200 cursor-pointer active:scale-95"
                   >
-                    Show All {totalProducts} Products
+                    Show all {totalProducts}
                   </button>
                 </div>
               )}
             </>
-          ) : (
-            <div className="text-center py-20 bg-white rounded-3xl border border-slate-100 p-8 shadow-xs">
-              <h3 className="text-base font-bold text-slate-900">No products found in this aisle</h3>
-              <p className="text-xs text-slate-400 mt-1 mb-6">
-                Try selecting another category or clear your search filters.
-              </p>
-              <button
-                onClick={() => setSelectedCategory('')}
-                className="bg-fresh-600 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-md shadow-fresh-600/20"
-              >
-                Browse All Products
-              </button>
-            </div>
           )}
         </section>
 
-        {/* Rich Multi-Tiered Promotional Banners Suite */}
-        <HomePromoBanners onSelectCategory={handleSelectCategory} />
+        <DualPromo />
+        <HomePromoBanners />
+        <StatsBand />
+        <HowItWorks />
 
-        {/* Why Choose Fresh Basket Section */}
+        {/* Why choose Fresh Basket */}
         <section className="bg-white border-y border-slate-200/80 py-12 px-4 mt-8">
           <div className="max-w-7xl mx-auto">
-            <div className="text-center max-w-xl mx-auto mb-10">
-              <span className="text-xs font-black text-fresh-600 uppercase tracking-widest block mb-1">
-                The Fresh Basket Difference
-              </span>
-              <h3 className="text-2xl font-black text-slate-900 tracking-tight">
-                Why Thousands in Karachi Trust Us Daily
-              </h3>
-            </div>
+            <Reveal className="text-center max-w-xl mx-auto mb-10">
+              <h2 className="text-2xl font-black text-slate-900 tracking-tight">Why thousands in Karachi trust us daily</h2>
+              <p className="text-sm text-slate-600 mt-2">Fresh produce, honest prices and a rider you can actually reach.</p>
+            </Reveal>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 text-left space-y-2">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl font-bold">
-                  <Truck className="w-6 h-6" />
-                </div>
-                <h4 className="text-sm font-black text-slate-900">90-Minute Fast Delivery</h4>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Temperature-controlled dispatch across DHA, Clifton, Gulshan, PECHS, and all Karachi neighborhoods.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 text-left space-y-2">
-                <div className="w-12 h-12 rounded-2xl bg-fresh-100 text-fresh-800 flex items-center justify-center text-xl font-bold">
-                  <ShieldCheck className="w-6 h-6" />
-                </div>
-                <h4 className="text-sm font-black text-slate-900">Farm-Picked Quality</h4>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Inspected every morning at dawn. If any fruit or vegetable isn&apos;t 100% fresh, we replace it instantly.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 text-left space-y-2">
-                <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center text-xl font-bold">
-                  <RefreshCw className="w-6 h-6" />
-                </div>
-                <h4 className="text-sm font-black text-slate-900">Cash on Delivery (COD)</h4>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Zero advance payment required. Inspect your grocery basket at your doorstep before paying our rider.
-                </p>
-              </div>
-
-              <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 text-left space-y-2">
-                <div className="w-12 h-12 rounded-2xl bg-purple-100 text-purple-800 flex items-center justify-center text-xl font-bold">
-                  <MessageCircle className="w-6 h-6" />
-                </div>
-                <h4 className="text-sm font-black text-slate-900">WhatsApp Rider Tracking</h4>
-                <p className="text-xs text-slate-500 leading-relaxed">
-                  Direct WhatsApp link to our Karachi dispatch counter for special grocery requests and address assistance.
-                </p>
-              </div>
-            </div>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                {
+                  Icon: Truck,
+                  tone: 'bg-emerald-100 text-emerald-800 group-hover:bg-emerald-600 group-hover:text-white',
+                  title: '90-minute fast delivery',
+                  body: 'Temperature-controlled dispatch across DHA, Clifton, Gulshan, PECHS and all Karachi neighbourhoods.',
+                },
+                {
+                  Icon: ShieldCheck,
+                  tone: 'bg-fresh-100 text-fresh-800 group-hover:bg-fresh-600 group-hover:text-white',
+                  title: 'Farm-picked quality',
+                  body: "Inspected every morning at dawn. If any fruit or vegetable isn't 100% fresh, we replace it instantly.",
+                },
+                {
+                  Icon: RefreshCw,
+                  tone: 'bg-amber-100 text-amber-800 group-hover:bg-amber-500 group-hover:text-white',
+                  title: 'Cash on delivery',
+                  body: 'Zero advance payment. Inspect your grocery basket at your doorstep before paying our rider.',
+                },
+                {
+                  Icon: MessageCircle,
+                  tone: 'bg-purple-100 text-purple-800 group-hover:bg-purple-600 group-hover:text-white',
+                  title: 'WhatsApp rider tracking',
+                  body: 'A direct WhatsApp line to our Karachi dispatch counter for special requests and address help.',
+                },
+              ].map((item, i) => (
+                <Reveal as="li" key={item.title} delay={i * 90}>
+                  <div className="group h-full p-6 rounded-3xl bg-slate-50 hover:bg-white border border-slate-100 hover:border-slate-300 hover:shadow-card transition-all duration-300 space-y-3">
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors duration-300 ${item.tone}`}>
+                      <item.Icon className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-base font-black text-slate-900">{item.title}</h3>
+                    <p className="text-sm text-slate-600 leading-relaxed">{item.body}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </ul>
           </div>
         </section>
+
+        <FaqSection />
+        <NewsletterBanner />
       </main>
 
-      {/* Floating WhatsApp Quick Order Support Button */}
+      {/* Floating WhatsApp quick-order button (sits above the mobile bottom nav) */}
       <a
         href="https://wa.me/923001234567?text=Assalam-o-Alaikum!%20I%20want%20to%20order%20groceries%20from%20Fresh%20Basket%20Pakistan."
         target="_blank"
         rel="noreferrer"
-        className="fixed bottom-6 right-6 bg-emerald-500 hover:bg-emerald-600 text-white p-3.5 sm:px-4 sm:py-3 rounded-full shadow-2xl flex items-center space-x-2 z-40 transition transform hover:scale-105"
-        title="Chat with Fresh Basket Support on WhatsApp"
+        className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 h-12 w-12 sm:w-auto sm:px-5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-full shadow-2xl flex items-center justify-center gap-2 z-40 transition-all duration-200"
+        aria-label="Chat with Fresh Basket support on WhatsApp"
       >
         <MessageCircle className="w-6 h-6" />
-        <span className="hidden sm:inline font-bold text-xs">WhatsApp Order Support</span>
+        <span className="hidden sm:inline font-bold text-sm">WhatsApp order support</span>
       </a>
 
-      {/* Quick View Modal */}
-      <QuickViewModal
-        product={quickViewProduct}
-        onClose={() => setQuickViewProduct(null)}
-      />
-
-      {/* Fresh Basket Perq Rewards Welcome Pop-up Modal */}
+      <QuickViewModal product={quickViewProduct} onClose={() => setQuickViewProduct(null)} />
       <PromoRewardsModal linkUrl="#products-section" rewardCoupon="FRESH10" />
-
-      {/* Cart Drawer */}
       <CartDrawer />
-
-      {/* Checkout Modal (Cash on Delivery) */}
       <CheckoutModal />
-
-      {/* Order Success Modal */}
       <OrderSuccessModal />
-
-      {/* Footer */}
       <Footer />
     </div>
   );

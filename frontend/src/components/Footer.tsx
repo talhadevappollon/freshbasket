@@ -2,17 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { FEATURED_AISLES } from '@/data/aisles';
 import { ShoppingBag, Phone, Mail, MapPin, ShieldCheck, Heart, ArrowRight, MessageCircle, Sparkles } from 'lucide-react';
 
 export default function Footer() {
-  const aisles = [
-    { name: 'Fresh Fruits & Organic Produce', slug: 'fresh-fruits' },
-    { name: 'Farm Fresh Vegetables & Greens', slug: 'fresh-vegetables' },
-    { name: 'Artisan Breads, Buns & Cakes', slug: 'bakery' },
-    { name: 'Pure Milk, Cheese & Dairy', slug: 'dairy-eggs' },
-    { name: 'Beverages, Juices & Cold Drinks', slug: 'beverages' },
-    { name: 'Pantry Staples & Cooking Essentials', slug: 'cooking-essentials' },
-  ];
+  const aisles = FEATURED_AISLES.map(a => ({ name: a.name, slug: a.slug }));
 
   const deliveryHubs = [
     'DHA Phase 1 - 8',
@@ -65,15 +59,15 @@ export default function Footer() {
             <ul className="space-y-2.5 text-xs text-emerald-200/80">
               {aisles.map(aisle => (
                 <li key={aisle.name}>
-                  <a
-                    href="#products-section"
-                    className="group flex items-center space-x-2.5 py-0.5 text-emerald-200/80 hover:text-white hover:translate-x-1.5 transition-all duration-200 cursor-pointer"
+                  <Link
+                    href={`/category/${aisle.slug}`}
+                    className="group flex items-center space-x-2.5 py-1 text-emerald-200/80 hover:text-white hover:translate-x-1.5 transition-all duration-200 cursor-pointer"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 group-hover:bg-amber-300 group-hover:scale-150 transition-all duration-200"></span>
                     <span className="group-hover:text-fresh-300 group-hover:font-semibold transition-colors">
                       {aisle.name}
                     </span>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

@@ -1,709 +1,888 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
 import { Product, Category } from '@/types';
 import { fetchProducts } from '@/lib/api';
+import { PLACEHOLDER_IMG } from '@/lib/placeholder';
+import { FEATURED_AISLES } from '@/data/aisles';
 import {
   ShoppingBag,
   Search,
-  MapPin,
   Phone,
   Clock,
-  Sparkles,
-  ChevronDown,
   X,
   Plus,
-  ShieldCheck,
+  Menu,
   MessageCircle,
   Home,
-  Layers,
-  ArrowRight,
   LayoutGrid,
+  ChevronDown,
   ChevronRight,
-  Flame,
-  Tag,
+  ArrowRight,
+  Milk,
+  Croissant,
+  CupSoda,
+  Baby,
+  ShoppingBasket,
+  Truck,
   Gift,
-  CheckCircle2,
+  ShieldCheck,
+  Loader2,
 } from 'lucide-react';
 
 interface HeaderProps {
   categories: Category[];
-  selectedCategory: string;
-  onSelectCategory: (slug: string) => void;
 }
 
-interface MegaAisleInfo {
-  id: string;
+/* ------------------------------------------------------------------ */
+/* Data helpers                                                         */
+/* ------------------------------------------------------------------ */
+
+interface AisleGroup {
+  key: string;
   name: string;
-  icon: string;
-  badge: string;
-  description: string;
-  popularSearches: string[];
-  promoTitle: string;
-  promoSubtitle: string;
-  promoCode: string;
-  accentGradient: string;
-  imageIcon: string;
+  parent?: Category;
+  children: Category[];
+  Icon: React.ComponentType<{ className?: string }>;
 }
 
-const MEGA_AISLES: MegaAisleInfo[] = [
-  {
-    id: 'fresh-produce',
-    name: 'Fresh Fruits & Vegetables',
-    icon: '🥦',
-    badge: 'Daily Harvest',
-    description: 'Farm-fresh organic vegetables, crisp greens, seasonal malta, mushrooms & dates.',
-    popularSearches: ['Brown Button Mushrooms', 'White Button Mushrooms', 'Shakri Malta', 'Ajwa Saudi Dates', 'Fresh Salad Greens', 'Yellow Bell Pepper'],
-    promoTitle: 'Orchard Fresh Harvest',
-    promoSubtitle: '100% naturally grown produce from certified local farms',
-    promoCode: 'FRESH10',
-    accentGradient: 'from-emerald-950 via-emerald-900 to-fresh-950',
-    imageIcon: '🥑',
-  },
-  {
-    id: 'dairy-cheese',
-    name: 'Dairy, Milk & Artisan Cheeses',
-    icon: '🧀',
-    badge: 'Imported Selection',
-    description: 'Pure Almarai milk, aged Yayycheese cheddar, authentic Greek feta, and rich butter.',
-    popularSearches: ['Yayycheese White Cheddar', 'Greek Feta Cheese', 'Almarai Full Cream Milk', 'Garlic & Herb Cream Cheese', 'Mozzarella Blocks'],
-    promoTitle: 'Gourmet Dairy & Cheese',
-    promoSubtitle: 'Temperature-controlled cold chain delivery in Karachi',
-    promoCode: 'FRESH10',
-    accentGradient: 'from-amber-950 via-amber-900 to-emerald-950',
-    imageIcon: '🥛',
-  },
-  {
-    id: 'bakery-breakfast',
-    name: 'Artisan Bakery & Morning Breads',
-    icon: '🥖',
-    badge: 'Daily 8 AM Bake',
-    description: 'Oven-fresh crusty baguettes, wholemeal flour tortillas, breakfast waffles & rolls.',
-    popularSearches: ['Wrapster Flour Tortillas', 'Wholemeal Small 12pc', 'Waffles Kitchen Mozzarella Sticks', 'White Castle Digestives', 'Breakfast Croissants'],
-    promoTitle: 'Warm Bakery Counter',
-    promoSubtitle: 'Freshly baked daily batches delivered to your door',
-    promoCode: 'FRESH10',
-    accentGradient: 'from-orange-950 via-amber-950 to-emerald-950',
-    imageIcon: '🥐',
-  },
-  {
-    id: 'beverages-juices',
-    name: 'Beverages, Juices & Chilled Drinks',
-    icon: '🧃',
-    badge: 'Chilled Express',
-    description: 'Natural coconut water, pure fruit juices, iced coffees, kombucha & energy drinks.',
-    popularSearches: ['Pure Coconut Water', 'Almarai Orange Juice', 'Barista Cold Coffee', 'Kombucha Wellness', 'Green Tea Brews'],
-    promoTitle: 'Refreshment Bar',
-    promoSubtitle: 'Chilled beverages ready to quench your thirst in 2 hours',
-    promoCode: 'FRESH10',
-    accentGradient: 'from-sky-950 via-blue-900 to-emerald-950',
-    imageIcon: '🥥',
-  },
-  {
-    id: 'pantry-cooking',
-    name: 'Pantry Staples, Oils & Superfoods',
-    icon: '🍯',
-    badge: 'Organic Pantry',
-    description: 'Cold pressed mustard oil, pure cooking tallow, acacia honey & artisanal nut butters.',
-    popularSearches: ['Bone Broth Cooking Tallow', 'Cold Pressed Mustard Oil', 'Al-Shifa Acacia Honey', 'Thoughtful Kitchen Almond Butter', 'Wadi Food Sundried Tomatoes'],
-    promoTitle: 'Pure Pantry Staples',
-    promoSubtitle: 'Chemical-free unrefined oils, raw honeys, and keto fats',
-    promoCode: 'FRESH10',
-    accentGradient: 'from-emerald-950 via-teal-950 to-fresh-950',
-    imageIcon: '🫒',
-  },
+const ANNOUNCEMENTS = [
+  'Same-day 2-hour delivery across Karachi',
+  'Free delivery on orders over PKR 2,500',
+  'Cash on delivery – pay when it arrives',
 ];
 
-export default function Header({
-  categories,
-  selectedCategory,
-  onSelectCategory,
-}: HeaderProps) {
-  const { totalItems, subtotal, setIsCartOpen, addToCart } = useCart();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<Product[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
-  const [selectedMegaAisle, setSelectedMegaAisle] = useState<MegaAisleInfo>(MEGA_AISLES[0]);
+const POPULAR_SEARCHES = ['Mushrooms', 'Cheese', 'Milk', 'Honey', 'Coffee', 'Almond'];
 
-  const searchRef = useRef<HTMLDivElement>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const megaMenuRef = useRef<HTMLDivElement>(null);
+function iconFor(name: string): AisleGroup['Icon'] {
+  const n = name.toLowerCase();
+  if (n.includes('dairy')) return Milk;
+  if (n.includes('bakery')) return Croissant;
+  if (n.includes('bever')) return CupSoda;
+  if (n.includes('baby')) return Baby;
+  return ShoppingBasket;
+}
 
-  // Debounced live product search
+/**
+ * Category names look like "Bakery/Bread & Loafs". Group them by the first segment so the
+ * menu stays tidy whatever the API returns; standalone categories collect under "More aisles".
+ */
+function buildGroups(categories: Category[]): AisleGroup[] {
+  const map = new Map<string, { parent?: Category; children: Category[] }>();
+  categories.forEach(cat => {
+    const [head, ...rest] = cat.name.split('/');
+    const key = head.trim();
+    const entry = map.get(key) ?? { children: [] };
+    if (rest.length === 0) entry.parent = cat;
+    else entry.children.push(cat);
+    map.set(key, entry);
+  });
+
+  const groups: AisleGroup[] = [];
+  const singles: Category[] = [];
+  map.forEach((entry, key) => {
+    if (entry.children.length > 0) {
+      groups.push({ key, name: key, parent: entry.parent, children: entry.children, Icon: iconFor(key) });
+    } else if (entry.parent) {
+      singles.push(entry.parent);
+    }
+  });
+  if (singles.length > 0) {
+    groups.push({ key: '__more', name: 'More aisles', children: singles, Icon: ShoppingBasket });
+  }
+  return groups;
+}
+
+const childLabel = (cat: Category) => cat.name.split('/').slice(1).join(' / ').trim() || cat.name;
+
+/* ------------------------------------------------------------------ */
+/* Search                                                               */
+/* ------------------------------------------------------------------ */
+
+interface SearchBoxProps {
+  inputRef: React.RefObject<HTMLInputElement>;
+}
+
+function SearchBox({ inputRef }: SearchBoxProps) {
+  const { addToCart } = useCart();
+  const router = useRouter();
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(-1);
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const requestId = useRef(0);
+
+  // Debounced live search; ignore out-of-order responses
   useEffect(() => {
-    if (!searchQuery.trim()) {
-      setSearchResults([]);
-      setShowResults(false);
+    const q = query.trim();
+    if (!q) {
+      setResults([]);
+      setLoading(false);
+      setActive(-1);
       return;
     }
-
+    setLoading(true);
+    const id = ++requestId.current;
     const timer = setTimeout(async () => {
-      setIsSearching(true);
-      const res = await fetchProducts({ search: searchQuery.trim(), per_page: 6 });
-      setSearchResults(res.data);
-      setIsSearching(false);
-      setShowResults(true);
+      const res = await fetchProducts({ search: q, per_page: 6 });
+      if (id !== requestId.current) return;
+      setResults(res.data);
+      setActive(-1);
+      setLoading(false);
+      setOpen(true);
     }, 250);
-
     return () => clearTimeout(timer);
-  }, [searchQuery]);
+  }, [query]);
 
-  // Click outside to dismiss search results & mega menu
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setShowResults(false);
-      }
-      if (megaMenuRef.current && !megaMenuRef.current.contains(e.target as Node)) {
-        setIsMegaMenuOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    const onDown = (e: MouseEvent) => {
+      if (wrapRef.current && !wrapRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
   }, []);
 
-  const focusSearch = () => {
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  // "/" jumps to search from anywhere (except while typing in another field)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement;
+      const typing = el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable;
+      if (e.key === '/' && !typing && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [inputRef]);
+
+  // Lets the mega menu push a popular search into the box
+  useEffect(() => {
+    const onFill = (e: Event) => {
+      setQuery((e as CustomEvent<string>).detail);
+      inputRef.current?.focus();
+    };
+    window.addEventListener('fb:search', onFill);
+    return () => window.removeEventListener('fb:search', onFill);
+  }, [inputRef]);
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setOpen(false);
+      inputRef.current?.blur();
+    } else if (e.key === 'ArrowDown' && results.length) {
+      e.preventDefault();
+      setOpen(true);
+      setActive(a => (a + 1) % results.length);
+    } else if (e.key === 'ArrowUp' && results.length) {
+      e.preventDefault();
+      setActive(a => (a <= 0 ? results.length - 1 : a - 1));
+    } else if (e.key === 'Enter' && active >= 0 && results[active]) {
+      e.preventDefault();
+      router.push(`/products/${results[active].slug}`);
+      setOpen(false);
     }
   };
 
-  const handleSelectQuickSearch = (term: string) => {
-    setSearchQuery(term);
-    setIsMegaMenuOpen(false);
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
+  const showPanel = open && query.trim().length > 0;
+  const showSuggestions = open && query.trim().length === 0;
+
+  return (
+    <div ref={wrapRef} className="relative w-full">
+      <label htmlFor="site-search" className="sr-only">
+        Search products
+      </label>
+      <div className="relative group">
+        <Search className="w-4.5 h-4.5 text-slate-400 group-focus-within:text-fresh-600 transition-colors absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <input
+          id="site-search"
+          name="q"
+          ref={inputRef}
+          type="search"
+          role="combobox"
+          aria-expanded={showPanel}
+          aria-controls="site-search-results"
+          aria-autocomplete="list"
+          aria-activedescendant={active >= 0 ? `search-opt-${active}` : undefined}
+          autoComplete="off"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          onFocus={() => setOpen(true)}
+          onKeyDown={onKeyDown}
+          placeholder="Search mushrooms, milk, cheese, honey…"
+          className="w-full h-11 bg-slate-100/80 hover:bg-slate-100 focus:bg-white border border-transparent focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 pl-11 pr-20 rounded-xl text-sm text-slate-900 placeholder-slate-500 outline-none transition-all duration-200 [&::-webkit-search-cancel-button]:hidden"
+        />
+        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+          {loading && <Loader2 className="w-4 h-4 text-fresh-600 animate-spin" aria-hidden="true" />}
+          {query ? (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('');
+                inputRef.current?.focus();
+              }}
+              aria-label="Clear search"
+              className="w-6 h-6 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          ) : (
+            <kbd className="hidden md:inline-flex items-center justify-center w-6 h-6 rounded-md bg-white border border-slate-200 text-[12px] font-semibold text-slate-500 shadow-2xs">
+              /
+            </kbd>
+          )}
+        </div>
+      </div>
+
+      {(showPanel || showSuggestions) && (
+        <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-50 animate-menu-in">
+          {showSuggestions && (
+            <div className="p-4">
+              <p className="text-xs font-semibold text-slate-500 mb-2.5">Popular right now</p>
+              <div className="flex flex-wrap gap-2">
+                {POPULAR_SEARCHES.map(term => (
+                  <button
+                    key={term}
+                    type="button"
+                    onClick={() => setQuery(term)}
+                    className="px-3.5 h-9 rounded-full bg-slate-100 hover:bg-fresh-600 hover:text-white text-slate-800 text-sm font-medium transition-colors cursor-pointer"
+                  >
+                    {term}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {showPanel && (
+            <>
+              <div className="px-4 py-2.5 bg-slate-50 border-b border-slate-100 text-xs font-semibold text-slate-600" aria-live="polite">
+                {loading ? 'Searching…' : results.length ? `${results.length} matching products` : `No products match “${query.trim()}”`}
+              </div>
+              <ul id="site-search-results" role="listbox" className="divide-y divide-slate-100 max-h-[22rem] overflow-y-auto">
+                {results.map((p, i) => (
+                  <li
+                    key={p.id}
+                    id={`search-opt-${i}`}
+                    role="option"
+                    aria-selected={i === active}
+                    className={`flex items-center gap-3 px-3 py-2.5 transition-colors ${i === active ? 'bg-fresh-50' : 'hover:bg-slate-50'}`}
+                  >
+                    <Link href={`/products/${p.slug}`} onClick={() => setOpen(false)} className="flex items-center gap-3 flex-1 min-w-0">
+                      <img
+                        src={p.primary_image || PLACEHOLDER_IMG}
+                        alt=""
+                        width={44}
+                        height={44}
+                        className="w-11 h-11 object-contain rounded-lg border border-slate-200 bg-white p-0.5 shrink-0"
+                        loading="lazy"
+                        onError={e => {
+                          (e.target as HTMLImageElement).src = PLACEHOLDER_IMG;
+                        }}
+                      />
+                      <span className="min-w-0">
+                        <span className="block text-sm font-semibold text-slate-900 truncate">{p.name}</span>
+                        <span className="flex items-center gap-2 text-xs text-slate-500">
+                          <span>{p.unit}</span>
+                          <span className="font-bold text-fresh-700">PKR {p.price.toLocaleString()}</span>
+                        </span>
+                      </span>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => addToCart(p, 1)}
+                      aria-label={`Add ${p.name} to basket`}
+                      className="shrink-0 h-9 px-3 rounded-lg bg-fresh-600 hover:bg-fresh-700 active:scale-95 text-white text-xs font-bold flex items-center gap-1 transition cursor-pointer"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Add
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Header                                                               */
+/* ------------------------------------------------------------------ */
+
+export default function Header({ categories }: HeaderProps) {
+  const { totalItems, subtotal, setIsCartOpen } = useCart();
+  const pathname = usePathname() || '/';
+  const router = useRouter();
+
+  const [scrolled, setScrolled] = useState(false);
+  const [megaOpen, setMegaOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [activeGroupKey, setActiveGroupKey] = useState<string>('');
+  const [openAccordion, setOpenAccordion] = useState<string>('');
+  const [announceIdx, setAnnounceIdx] = useState(0);
+  const [bumpKey, setBumpKey] = useState(0);
+
+  const headerRef = useRef<HTMLElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const megaTriggerRef = useRef<HTMLButtonElement>(null);
+  const drawerCloseRef = useRef<HTMLButtonElement>(null);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevCount = useRef(totalItems);
+
+  const groups = useMemo(() => buildGroups(categories), [categories]);
+  const activeGroup = groups.find(g => g.key === activeGroupKey) ?? groups[0];
+
+  // The category page currently shown, so its nav link can be highlighted
+  const activeSlug = pathname.startsWith('/category/') ? decodeURIComponent(pathname.split('/')[2] || '') : '';
+
+  /** Every category opens its own page. */
+  const go = useCallback(
+    (slug: string) => {
+      setMegaOpen(false);
+      setDrawerOpen(false);
+      router.push(`/category/${slug}`);
+    },
+    [router]
+  );
+
+  const goAllProducts = useCallback(() => {
+    setMegaOpen(false);
+    setDrawerOpen(false);
+    if (pathname === '/') {
+      document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      router.push('/#products-section');
     }
+  }, [pathname, router]);
+
+  // Condense on scroll
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Keep anchor scrolling in sync with the real header height
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const apply = () => document.documentElement.style.setProperty('--header-offset', `${el.offsetHeight + 8}px`);
+    apply();
+    const ro = new ResizeObserver(apply);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  // Rotating announcement
+  useEffect(() => {
+    const t = setInterval(() => setAnnounceIdx(i => (i + 1) % ANNOUNCEMENTS.length), 4200);
+    return () => clearInterval(t);
+  }, []);
+
+  // Cart badge bump when quantity rises
+  useEffect(() => {
+    if (totalItems > prevCount.current) setBumpKey(k => k + 1);
+    prevCount.current = totalItems;
+  }, [totalItems]);
+
+  // Escape closes whichever layer is open
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      if (megaOpen) {
+        setMegaOpen(false);
+        megaTriggerRef.current?.focus();
+      }
+      if (drawerOpen) setDrawerOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [megaOpen, drawerOpen]);
+
+  // Drawer locks page scroll and takes focus
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    drawerCloseRef.current?.focus();
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [drawerOpen]);
+
+  useEffect(() => {
+    setMegaOpen(false);
+    setDrawerOpen(false);
+  }, [pathname]);
+
+  const openMega = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setMegaOpen(true), 90);
+  };
+  const closeMega = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setMegaOpen(false), 180);
+  };
+
+  const fillSearch = (term: string) => {
+    setMegaOpen(false);
+    setDrawerOpen(false);
+    window.dispatchEvent(new CustomEvent('fb:search', { detail: term }));
+  };
+
+  const focusSearch = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    searchInputRef.current?.focus();
+  };
+
+  const goHome = () => {
+    if (pathname === '/') window.scrollTo({ top: 0, behavior: 'smooth' });
+    else router.push('/');
   };
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white shadow-xs border-b border-slate-100">
-        {/* Top Highlight Utility Bar */}
-        <div className="bg-gradient-to-r from-[#041d0e] via-[#062d16] to-[#041d0e] text-white text-[11px] py-2 px-3 sm:px-6 border-b border-emerald-950">
-          <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
-            {/* Left promo */}
-            <div className="flex items-center space-x-2 font-medium overflow-hidden">
-              <span className="bg-gradient-to-r from-emerald-500 to-fresh-500 hover:from-emerald-400 hover:to-fresh-400 text-white px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider flex items-center gap-1 shadow-xs shrink-0 cursor-default transition">
-                <Sparkles className="w-2.5 h-2.5" /> Express
-              </span>
-              <span className="truncate text-slate-200">
-                Same-Day 2-Hour Delivery in Karachi <span className="hidden sm:inline">| Free Over PKR 2,500</span>
-              </span>
+      <header
+        ref={headerRef}
+        className={`sticky top-0 z-40 border-b transition-[background-color,box-shadow,border-color] duration-300 ${
+          scrolled ? 'bg-white/90 backdrop-blur-xl border-slate-200 shadow-card' : 'bg-white border-slate-100'
+        }`}
+        onMouseLeave={closeMega}
+        onMouseEnter={() => hoverTimer.current && clearTimeout(hoverTimer.current)}
+      >
+        {/* Announcement bar – collapses once the page is scrolled */}
+        <div
+          data-surface="dark"
+          className={`bg-fresh-950 text-white overflow-hidden transition-[max-height,opacity] duration-300 ease-out-expo ${
+            scrolled ? 'max-h-0 opacity-0' : 'max-h-10 opacity-100'
+          }`}
+          aria-hidden={scrolled}
+        >
+          <div className="max-w-7xl mx-auto px-4 h-9 flex items-center justify-between gap-4 text-xs">
+            <div className="relative h-5 flex-1 min-w-0 overflow-hidden" role="status" aria-live="off">
+              {ANNOUNCEMENTS.map((text, i) => (
+                <p
+                  key={text}
+                  className={`absolute inset-0 flex items-center gap-2 font-medium text-emerald-50 transition-all duration-500 ease-out-expo ${
+                    i === announceIdx ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3 pointer-events-none'
+                  }`}
+                >
+                  <Truck className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
+                  <span className="truncate">{text}</span>
+                </p>
+              ))}
             </div>
 
-            {/* Right utility items */}
-            <div className="flex items-center space-x-3 sm:space-x-5 text-emerald-200/90 shrink-0">
-              <span className="hidden md:flex items-center gap-1.5 text-slate-300 hover:text-white transition-colors cursor-default">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                <Clock className="w-3 h-3 text-emerald-400" /> 8:00 AM - 11:00 PM
+            <div className="hidden md:flex items-center gap-5 text-emerald-100/90 shrink-0">
+              <span className="flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-emerald-300" />
+                8 AM – 11 PM daily
               </span>
-
-              <a
-                href="https://wa.me/923001234567"
-                target="_blank"
-                rel="noreferrer"
-                className="hidden sm:flex items-center gap-1 text-emerald-200/90 hover:text-white hover:underline underline-offset-4 hover:scale-105 transition-all"
-              >
-                <Phone className="w-3 h-3 text-emerald-400" />
-                <span>+92 21 111-373-742</span>
+              <a href="tel:+9221111373742" className="flex items-center gap-1.5 h-9 hover:text-white transition-colors">
+                <Phone className="w-3.5 h-3.5 text-emerald-300" />
+                +92 21 111-373-742
               </a>
-
-              {/* Glassmorphic Admin CRM Button */}
-              <a
-                href="/admin"
-                className="inline-flex items-center gap-1.5 bg-white/10 hover:bg-emerald-500/25 text-emerald-100 hover:text-white px-3.5 py-1 rounded-full text-[10px] font-bold border border-emerald-400/30 hover:border-emerald-300 backdrop-blur-md hover:scale-105 hover:shadow-xs transition-all duration-200 group"
-                title="Open Enterprise Admin CRM & POS"
-              >
-                <ShieldCheck className="w-3 h-3 text-emerald-400 group-hover:rotate-12 transition-transform" />
-                <span>Admin CRM</span>
-                <ArrowRight className="w-2.5 h-2.5 opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
+              <a href="/admin" className="flex items-center gap-1.5 h-9 text-emerald-200/70 hover:text-white transition-colors">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                Staff login
               </a>
             </div>
           </div>
         </div>
 
-        {/* Main Navbar */}
-        <div className="max-w-7xl mx-auto px-4 py-3 sm:py-3.5">
-          <div className="flex items-center justify-between gap-3 sm:gap-6">
-            {/* Brand Logo & Location */}
-            <div className="flex items-center space-x-3 sm:space-x-6 shrink-0">
-              <Link
-                href="/"
-                onClick={() => onSelectCategory('')}
-                className="flex items-center space-x-2.5 text-left group hover:scale-[1.02] transition-transform duration-200 cursor-pointer"
-              >
-                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-br from-fresh-500 to-fresh-700 flex items-center justify-center text-white shadow-md shadow-fresh-600/25 group-hover:scale-105 group-hover:shadow-fresh-600/40 transition transform duration-200">
-                  <ShoppingBag className="w-5 h-5 sm:w-5.5 sm:h-5.5" />
-                </div>
-                <div>
-                  <div className="flex items-center space-x-1 leading-none">
-                    <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 group-hover:text-fresh-800 transition-colors">FRESH</span>
-                    <span className="text-xl sm:text-2xl font-black tracking-tight text-fresh-600 group-hover:text-fresh-500 transition-colors">BASKET</span>
-                  </div>
-                  <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold tracking-wider mt-0.5 uppercase">
-                    ORGANIC & GROCERY PK
-                  </p>
-                </div>
-              </Link>
+        {/* Main bar */}
+        <div className={`max-w-7xl mx-auto px-4 transition-[padding] duration-300 ${scrolled ? 'py-2' : 'py-3'}`}>
+          <div className="flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2.5 md:gap-6">
+            <button
+              type="button"
+              onClick={() => setDrawerOpen(true)}
+              aria-label="Open aisle menu"
+              aria-expanded={drawerOpen}
+              className="lg:hidden order-1 w-11 h-11 -ml-2 rounded-xl text-slate-800 hover:bg-slate-100 flex items-center justify-center cursor-pointer transition-colors"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
 
-              {/* Delivering to Karachi Pill with Hover */}
-              <div className="hidden xl:flex items-center space-x-2 bg-slate-50 hover:bg-emerald-50/70 border border-slate-200/70 hover:border-emerald-300 hover:shadow-xs px-3.5 py-1.5 rounded-2xl text-xs cursor-pointer hover:-translate-y-0.5 transition-all duration-200">
-                <MapPin className="w-3.5 h-3.5 text-fresh-600 animate-bounce" />
-                <div className="text-left">
-                  <span className="block text-[9px] text-slate-400 font-bold leading-tight">DELIVERING TO</span>
-                  <span className="font-bold text-slate-800 leading-tight">Karachi (All Zones)</span>
-                </div>
-                <ChevronDown className="w-3 h-3 text-slate-400 ml-1" />
-              </div>
+            <Link
+              href="/"
+              onClick={e => {
+                if (pathname === '/') {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+              className="order-2 flex items-center gap-2.5 group shrink-0 mr-auto md:mr-0"
+              aria-label="Fresh Basket – home"
+            >
+              <span
+                className={`rounded-xl bg-gradient-to-br from-fresh-500 to-fresh-700 flex items-center justify-center text-white shadow-md shadow-fresh-600/25 group-hover:rotate-[-6deg] transition-all duration-300 ease-spring ${
+                  scrolled ? 'w-9 h-9' : 'w-10 h-10'
+                }`}
+              >
+                <ShoppingBag className="w-5 h-5" />
+              </span>
+              <span className="leading-none">
+                <span className="flex items-baseline gap-1 text-xl font-black tracking-tight">
+                  <span className="text-slate-900">FRESH</span>
+                  <span className="text-fresh-600">BASKET</span>
+                </span>
+                <span
+                  className={`block text-[11px] text-slate-500 font-medium mt-0.5 transition-all duration-300 overflow-hidden ${
+                    scrolled ? 'max-h-0 opacity-0' : 'max-h-5 opacity-100'
+                  }`}
+                >
+                  Organic &amp; grocery, Karachi
+                </span>
+              </span>
+            </Link>
+
+            <div className="order-4 md:order-3 w-full md:w-auto md:flex-1 md:max-w-2xl md:mx-auto">
+              <SearchBox inputRef={searchInputRef} />
             </div>
 
-            {/* Desktop Live Search Bar */}
-            <div ref={searchRef} className="hidden md:block relative flex-1 max-w-xl mx-2">
-              <div className="relative">
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  onFocus={() => {
-                    if (searchResults.length > 0) setShowResults(true);
-                  }}
-                  placeholder="Search 750+ fresh items (e.g. mushrooms, milk, malta, butter)..."
-                  className="w-full bg-slate-50 hover:bg-slate-100/70 focus:bg-white border border-slate-200 hover:border-fresh-300 focus:border-fresh-500 pl-10 pr-10 py-2.5 rounded-2xl text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none transition-all duration-200 shadow-2xs"
-                />
-                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
-                {searchQuery && (
-                  <button
-                    onClick={() => {
-                      setSearchQuery('');
-                      setSearchResults([]);
-                    }}
-                    className="absolute right-3.5 top-3 text-slate-400 hover:text-slate-600 cursor-pointer"
+            <button
+              type="button"
+              onClick={() => setIsCartOpen(true)}
+              aria-label={`Open basket, ${totalItems} item${totalItems === 1 ? '' : 's'}, PKR ${subtotal.toLocaleString()}`}
+              className="order-3 md:order-4 flex items-center gap-3 h-11 px-3 sm:px-4 rounded-xl bg-fresh-700 hover:bg-fresh-800 active:scale-[0.97] text-white shadow-lg shadow-fresh-700/20 transition-all duration-200 cursor-pointer sheen"
+            >
+              <span className="relative">
+                <ShoppingBag className="w-5 h-5" />
+                {totalItems > 0 && (
+                  <span
+                    key={bumpKey}
+                    className="absolute -top-2 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-amber-400 text-slate-900 text-[11px] font-black flex items-center justify-center animate-bump"
                   >
-                    <X className="w-4 h-4" />
-                  </button>
+                    {totalItems}
+                  </span>
                 )}
-              </div>
+              </span>
+              <span className="hidden sm:block text-left leading-tight">
+                <span className="block text-[11px] text-emerald-200 font-medium">My basket</span>
+                <span className="block text-sm font-bold tabular-nums">PKR {subtotal.toLocaleString()}</span>
+              </span>
+            </button>
+          </div>
+        </div>
 
-              {/* Instant Search Results Dropdown */}
-              {showResults && (
-                <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-200/80 overflow-hidden z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                  <div className="p-3 bg-slate-50 border-b border-slate-100 flex justify-between items-center text-xs">
-                    <span className="font-semibold text-slate-600">
-                      {isSearching ? 'Searching database...' : `Found ${searchResults.length} matching products`}
-                    </span>
-                    <span className="text-slate-400 text-[11px]">Click item to view</span>
-                  </div>
-                  <div className="divide-y divide-slate-100 max-h-80 overflow-y-auto">
-                    {searchResults.map(p => (
-                      <div
-                        key={p.id}
-                        className="p-3 hover:bg-emerald-50/60 hover:pl-4 flex items-center justify-between gap-3 transition-all duration-150 group cursor-pointer"
+        {/* Aisle navigation – text links with an animated underline, no pills */}
+        <nav aria-label="Shop by aisle" className="hidden lg:block border-t border-slate-100">
+          <div className="max-w-7xl mx-auto px-4 h-12 flex items-center gap-7">
+            <button
+              ref={megaTriggerRef}
+              type="button"
+              aria-expanded={megaOpen}
+              aria-controls="mega-panel"
+              onClick={() => setMegaOpen(o => !o)}
+              onMouseEnter={openMega}
+              className={`h-10 px-4 rounded-lg flex items-center gap-2 text-sm font-bold cursor-pointer transition-colors duration-200 ${
+                megaOpen ? 'bg-slate-900 text-white' : 'bg-fresh-50 text-fresh-800 hover:bg-fresh-100'
+              }`}
+            >
+              <LayoutGrid className="w-4 h-4" />
+              All aisles
+              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ease-out-expo ${megaOpen ? 'rotate-180' : ''}`} />
+            </button>
+
+            <ul className="flex items-center gap-6 text-sm font-semibold text-slate-700">
+              {FEATURED_AISLES.map(aisle => {
+                const isActive = activeSlug === aisle.slug;
+                return (
+                  <li key={aisle.slug}>
+                    <Link
+                      href={`/category/${aisle.slug}`}
+                      aria-current={isActive ? 'true' : undefined}
+                      className={`link-underline py-1 whitespace-nowrap transition-colors duration-200 ${
+                        isActive ? 'text-fresh-700 font-bold' : 'text-slate-700 hover:text-fresh-600 active:text-fresh-800'
+                      }`}
+                    >
+                      {aisle.name}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <span className="ml-auto hidden xl:flex items-center gap-1.5 text-sm text-slate-600">
+              <Gift className="w-4 h-4 text-amber-500" />
+              Code <strong className="text-slate-900">FRESH10</strong> takes 10% off your first order
+            </span>
+          </div>
+        </nav>
+
+        {/* Mega menu panel */}
+        {megaOpen && groups.length > 0 && activeGroup && (
+          <div
+            id="mega-panel"
+            className="hidden lg:block absolute left-0 right-0 top-full bg-white border-t border-slate-100 shadow-2xl animate-menu-in"
+          >
+            <div className="max-w-7xl mx-auto px-4 py-7 grid grid-cols-12 gap-8 max-h-[calc(100vh-var(--header-offset)-1rem)] overflow-y-auto">
+              {/* Groups */}
+              <ul className="col-span-3 space-y-1" role="tablist" aria-label="Aisle groups">
+                {groups.map(g => {
+                  const isActive = g.key === activeGroup.key;
+                  return (
+                    <li key={g.key}>
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected={isActive}
+                        onMouseEnter={() => setActiveGroupKey(g.key)}
+                        onFocus={() => setActiveGroupKey(g.key)}
+                        onClick={() => setActiveGroupKey(g.key)}
+                        className={`w-full flex items-center gap-3 px-3 h-12 rounded-xl text-left transition-all duration-200 cursor-pointer ${
+                          isActive
+                            ? 'bg-fresh-50 text-fresh-900 shadow-[inset_3px_0_0_0_theme(colors.fresh.600)]'
+                            : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                        }`}
                       >
-                        <Link
-                          href={`/products/${p.slug}`}
-                          onClick={() => setShowResults(false)}
-                          className="flex items-center space-x-3 overflow-hidden flex-1 group"
+                        <span
+                          className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
+                            isActive ? 'bg-fresh-600 text-white' : 'bg-slate-100 text-slate-600'
+                          }`}
                         >
-                          <img
-                            src={p.primary_image || 'https://via.placeholder.com/60'}
-                            alt={p.name}
-                            className="w-11 h-11 object-contain rounded-xl border border-slate-200 p-0.5 shrink-0 group-hover:scale-105 transition"
-                            loading="lazy"
-                          />
-                          <div className="overflow-hidden">
-                            <h4 className="text-xs font-bold text-slate-900 group-hover:text-fresh-600 transition truncate">
-                              {p.name}
-                            </h4>
-                            <div className="flex items-center space-x-2 text-[11px] text-slate-500">
-                              <span>{p.unit}</span>
-                              <span className="font-black text-emerald-700">PKR {p.price.toLocaleString()}</span>
-                              {p.compare_at_price && (
-                                <span className="line-through text-slate-400 text-[10px]">
-                                  PKR {p.compare_at_price.toLocaleString()}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </Link>
-                        <button
-                          onClick={() => addToCart(p, 1)}
-                          className="shrink-0 bg-fresh-600 hover:bg-fresh-700 active:scale-95 text-white px-3 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1 shadow-xs hover:shadow-md transition-all cursor-pointer"
-                        >
-                          <Plus className="w-3 h-3" />
-                          <span>Add</span>
-                        </button>
-                      </div>
+                          <g.Icon className="w-4 h-4" />
+                        </span>
+                        <span className="flex-1 text-sm font-bold">{g.name}</span>
+                        <ChevronRight
+                          className={`w-4 h-4 transition-all duration-200 ${isActive ? 'text-fresh-700 translate-x-0.5' : 'text-slate-300'}`}
+                        />
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              {/* Sub-categories of the active group */}
+              <div className="col-span-6" key={activeGroup.key} role="tabpanel">
+                <div className="flex items-baseline justify-between pb-3 mb-4 border-b border-slate-100">
+                  <h3 className="text-lg font-black text-slate-900">{activeGroup.name}</h3>
+                  {activeGroup.parent && (
+                    <Link
+                      href={`/category/${activeGroup.parent.slug}`}
+                      className="text-sm font-semibold text-fresh-700 hover:text-fresh-800 flex items-center gap-1 group"
+                    >
+                      Shop all {activeGroup.name}
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  )}
+                </div>
+
+                <ul className="grid grid-cols-2 gap-x-6 gap-y-0.5">
+                  {activeGroup.children.map((cat, i) => (
+                    <li key={cat.id} className="animate-fade-in" style={{ animationDelay: `${i * 25}ms` }}>
+                      <Link
+                        href={`/category/${cat.slug}`}
+                        className="flex items-center justify-between h-10 px-3 -mx-3 rounded-lg text-sm text-slate-700 hover:text-fresh-800 hover:bg-fresh-50 transition-colors group"
+                      >
+                        <span className="truncate">{activeGroup.key === '__more' ? cat.name : childLabel(cat)}</span>
+                        <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-fresh-600 group-hover:translate-x-0.5 transition-all" />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-6 pt-4 border-t border-slate-100">
+                  <p className="text-xs font-semibold text-slate-500 mb-2.5">People also search for</p>
+                  <div className="flex flex-wrap gap-2">
+                    {POPULAR_SEARCHES.map(term => (
+                      <button
+                        key={term}
+                        type="button"
+                        onClick={() => fillSearch(term)}
+                        className="px-3 h-8 rounded-full bg-slate-100 hover:bg-fresh-600 hover:text-white text-slate-700 text-sm font-medium transition-colors cursor-pointer"
+                      >
+                        {term}
+                      </button>
                     ))}
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
 
-            {/* Right Action: Redesigned Premium Cart Button */}
-            <div className="flex items-center space-x-2.5">
-              <button
-                onClick={() => setIsCartOpen(true)}
-                className="flex items-center bg-gradient-to-r from-fresh-600 to-emerald-700 hover:from-fresh-500 hover:to-emerald-600 text-white rounded-2xl p-1.5 sm:px-4 sm:py-2 shadow-lg shadow-fresh-600/20 hover:shadow-xl hover:shadow-fresh-600/35 hover:scale-[1.03] active:scale-95 transition-all duration-200 group cursor-pointer"
-                aria-label="View Shopping Basket"
-              >
-                <div className="relative w-8 h-8 sm:w-9 sm:h-9 bg-white/15 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-105 transition">
-                  <ShoppingBag className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-white" />
-                  {totalItems > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-amber-400 text-slate-900 text-[10px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-xs animate-pulse">
-                      {totalItems}
-                    </span>
-                  )}
-                </div>
-                <div className="hidden sm:block text-left pl-3 pr-1">
-                  <span className="block text-[9px] text-emerald-200 font-black tracking-wider uppercase leading-none mb-0.5">
-                    MY BASKET
-                  </span>
-                  <span className="text-xs sm:text-sm font-black tracking-tight leading-none text-white font-mono">
-                    PKR {subtotal.toLocaleString()}
-                  </span>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Search Bar */}
-          <div className="md:hidden mt-3 relative">
-            <div className="relative">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                onFocus={() => {
-                  if (searchResults.length > 0) setShowResults(true);
-                }}
-                placeholder="Search 750+ fresh items..."
-                className="w-full bg-slate-100 focus:bg-white border border-slate-200 focus:border-fresh-500 pl-9 pr-9 py-2 rounded-xl text-xs text-slate-800 placeholder-slate-400 focus:outline-none transition shadow-2xs"
-              />
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-              {searchQuery && (
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSearchResults([]);
-                  }}
-                  className="absolute right-3 top-2.5 text-slate-400"
+              {/* Single featured offer */}
+              <div className="col-span-3">
+                <div
+                  className="relative h-full min-h-[220px] rounded-2xl bg-gradient-to-br from-fresh-900 via-fresh-800 to-fresh-950 text-white p-6 flex flex-col justify-between overflow-hidden"
+                  data-surface="dark"
                 >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-
-            {/* Mobile Search Results Dropdown */}
-            {showResults && (
-              <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-slate-200/80 overflow-hidden z-50">
-                <div className="divide-y divide-slate-100 max-h-64 overflow-y-auto">
-                  {searchResults.map(p => (
-                    <div
-                      key={p.id}
-                      className="p-2.5 flex items-center justify-between gap-2"
-                    >
-                      <Link
-                        href={`/products/${p.slug}`}
-                        onClick={() => setShowResults(false)}
-                        className="flex items-center space-x-2.5 overflow-hidden flex-1"
-                      >
-                        <img
-                          src={p.primary_image || 'https://via.placeholder.com/60'}
-                          alt={p.name}
-                          className="w-9 h-9 object-contain rounded-lg border border-slate-200 p-0.5 shrink-0"
-                          loading="lazy"
-                        />
-                        <div className="overflow-hidden">
-                          <h4 className="text-xs font-bold text-slate-900 truncate">{p.name}</h4>
-                          <span className="text-[11px] font-black text-emerald-700">PKR {p.price.toLocaleString()}</span>
-                        </div>
-                      </Link>
-                      <button
-                        onClick={() => addToCart(p, 1)}
-                        className="shrink-0 bg-fresh-600 text-white p-1.5 rounded-lg text-xs"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Category Navigation Bar with 21st.dev All Categories Trigger & Quick Pills */}
-        <div className="relative bg-white border-t border-slate-100 py-2" ref={megaMenuRef}>
-          <div className="max-w-7xl mx-auto px-4 flex items-center space-x-2 overflow-x-auto no-scrollbar scroll-smooth">
-            {/* 21st.dev Style All Categories Toggle Button (No 'Mega Menu' wording) */}
-            <button
-              onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
-              onMouseEnter={() => setIsMegaMenuOpen(true)}
-              className={`px-4 py-1.5 rounded-full text-xs font-black flex items-center gap-2 transition-all duration-200 shrink-0 cursor-pointer shadow-xs ${
-                isMegaMenuOpen
-                  ? 'bg-slate-900 text-white shadow-md'
-                  : 'bg-emerald-800 hover:bg-emerald-900 text-white border border-emerald-700/80 hover:shadow-md hover:-translate-y-0.5'
-              }`}
-            >
-              <LayoutGrid className="w-3.5 h-3.5 text-emerald-300" />
-              <span>All Categories</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isMegaMenuOpen ? 'rotate-180 text-white' : 'text-emerald-200'}`} />
-            </button>
-
-            {/* "All Products" Pill with Enhanced Hover */}
-            <Link
-              href="/"
-              onClick={() => {
-                onSelectCategory('');
-                setIsMegaMenuOpen(false);
-              }}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 flex items-center gap-1.5 cursor-pointer shrink-0 ${
-                selectedCategory === ''
-                  ? 'bg-gradient-to-r from-fresh-600 to-emerald-700 text-white shadow-md shadow-fresh-600/25 scale-[1.02]'
-                  : 'text-slate-700 bg-slate-100/80 hover:bg-emerald-50 hover:text-fresh-700 hover:border-emerald-300 hover:shadow-sm hover:-translate-y-0.5 border border-transparent'
-              }`}
-            >
-              <Sparkles className={`w-3 h-3 ${selectedCategory === '' ? 'text-amber-300' : 'text-slate-400 group-hover:text-amber-400'}`} />
-              <span>All Products</span>
-            </Link>
-
-            {/* Horizontal Category Pills with Animated Dot & Color Shift on Hover */}
-            {categories.slice(0, 14).map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => {
-                  onSelectCategory(cat.slug);
-                  setIsMegaMenuOpen(false);
-                }}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all duration-200 group flex items-center gap-1.5 cursor-pointer shrink-0 ${
-                  selectedCategory === cat.slug
-                    ? 'bg-gradient-to-r from-fresh-600 to-emerald-700 text-white shadow-md shadow-fresh-600/25 scale-[1.02]'
-                    : 'text-slate-700 bg-slate-100/80 hover:bg-emerald-50 hover:text-fresh-700 hover:border-emerald-300 hover:shadow-sm hover:-translate-y-0.5 border border-transparent'
-                }`}
-              >
-                <span
-                  className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
-                    selectedCategory === cat.slug
-                      ? 'bg-amber-300'
-                      : 'bg-emerald-400 group-hover:scale-150 group-hover:bg-fresh-600'
-                  }`}
-                />
-                <span className="group-hover:tracking-wide transition-all duration-150">{cat.name}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* 21st.dev Style All Categories High-Contrast Solid Dropdown Panel */}
-          {isMegaMenuOpen && (
-            <div
-              className="absolute left-0 right-0 top-full mt-1.5 max-w-7xl mx-auto px-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
-              onMouseLeave={() => setIsMegaMenuOpen(false)}
-            >
-              <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 sm:p-7 overflow-hidden text-slate-800">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-7">
-                  {/* Left Column (4 Cols): Main Supermarket Aisles Tabs */}
-                  <div className="lg:col-span-4 border-r border-slate-100 pr-0 lg:pr-5 space-y-1.5">
-                    <div className="flex items-center justify-between pb-2.5 mb-1.5 border-b border-slate-100">
-                      <span className="text-[11px] font-black uppercase tracking-wider text-slate-500">
-                        Supermarket Aisles
-                      </span>
-                      <span className="text-[10px] text-emerald-800 font-bold bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-full">
-                        750+ Items
-                      </span>
-                    </div>
-
-                    {MEGA_AISLES.map(aisle => {
-                      const isActive = selectedMegaAisle.id === aisle.id;
-                      return (
-                        <div
-                          key={aisle.id}
-                          onMouseEnter={() => setSelectedMegaAisle(aisle)}
-                          onClick={() => {
-                            onSelectCategory(aisle.id);
-                            setIsMegaMenuOpen(false);
-                          }}
-                          className={`p-3 rounded-2xl flex items-center justify-between transition-all duration-150 cursor-pointer group ${
-                            isActive
-                              ? 'bg-emerald-50 text-slate-900 shadow-xs border border-emerald-200/80 font-bold'
-                              : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900 border border-transparent'
-                          }`}
-                        >
-                          <div className="flex items-center space-x-3">
-                            <span className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center text-lg shadow-2xs group-hover:scale-110 transition-transform">
-                              {aisle.icon}
-                            </span>
-                            <div>
-                              <h4 className="text-xs font-bold leading-tight text-slate-900 group-hover:text-emerald-700 transition-colors">
-                                {aisle.name}
-                              </h4>
-                              <span className="text-[10px] text-slate-400 font-medium">{aisle.badge}</span>
-                            </div>
-                          </div>
-                          <ChevronRight
-                            className={`w-4 h-4 transition-transform duration-150 ${
-                              isActive ? 'text-emerald-700 translate-x-1' : 'text-slate-300 group-hover:text-slate-500'
-                            }`}
-                          />
-                        </div>
-                      );
-                    })}
+                  <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-fresh-400/20 blur-2xl animate-blob" aria-hidden="true" />
+                  <div className="relative">
+                    <p className="text-sm font-semibold text-emerald-200">First order with us?</p>
+                    <p className="mt-1 text-2xl font-black leading-tight">10% off your basket</p>
+                    <p className="mt-2 text-sm text-emerald-100/80">Use code FRESH10 at checkout. Free delivery over PKR 2,500.</p>
                   </div>
-
-                  {/* Middle Column (4 Cols): Trending Items in Selected Aisle */}
-                  <div className="lg:col-span-4 space-y-4">
-                    <div>
-                      <div className="inline-flex items-center gap-1.5 text-emerald-800 font-bold text-xs mb-1">
-                        <Flame className="w-4 h-4 text-rose-500" />
-                        <span>Trending in {selectedMegaAisle.name}</span>
-                      </div>
-                      <p className="text-xs text-slate-600 leading-relaxed font-normal">
-                        {selectedMegaAisle.description}
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <span className="text-[11px] font-black uppercase tracking-wider text-slate-400 block">
-                        Quick Popular Searches:
-                      </span>
-                      <div className="flex flex-wrap gap-2">
-                        {selectedMegaAisle.popularSearches.map(term => (
-                          <button
-                            key={term}
-                            onClick={() => handleSelectQuickSearch(term)}
-                            className="bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-800 font-semibold px-3 py-1.5 rounded-xl text-xs transition duration-150 cursor-pointer border border-slate-200/60 shadow-2xs hover:shadow-xs active:scale-95"
-                          >
-                            {term}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="pt-3 border-t border-slate-100">
-                      <Link
-                        href="#products-section"
-                        onClick={() => {
-                          onSelectCategory('');
-                          setIsMegaMenuOpen(false);
-                        }}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline"
-                      >
-                        <span>View all supermarket items</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Right Column (4 Cols): 21st.dev Style High-Contrast Featured Card */}
-                  <div className="lg:col-span-4">
-                    <div
-                      className={`relative rounded-2xl p-6 text-white bg-gradient-to-br ${selectedMegaAisle.accentGradient} shadow-xl overflow-hidden flex flex-col justify-between h-full min-h-[260px] group`}
-                    >
-                      {/* Decorative Background Icon */}
-                      <div className="absolute -right-3 -bottom-3 text-7xl opacity-20 pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
-                        {selectedMegaAisle.imageIcon}
-                      </div>
-
-                      <div className="relative z-10 space-y-2">
-                        <div className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-white/20">
-                          <Gift className="w-3 h-3 text-amber-300" />
-                          <span>Special Aisle Bonus</span>
-                        </div>
-                        <h3 className="text-xl font-black text-white leading-tight">
-                          {selectedMegaAisle.promoTitle}
-                        </h3>
-                        <p className="text-xs text-emerald-100/90 leading-snug">
-                          {selectedMegaAisle.promoSubtitle}
-                        </p>
-                      </div>
-
-                      <div className="relative z-10 pt-4 space-y-3">
-                        <div className="bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 flex items-center justify-between text-xs">
-                          <span className="text-[11px] text-emerald-200">Coupon:</span>
-                          <span className="font-mono font-black text-amber-300 tracking-wider">
-                            {selectedMegaAisle.promoCode} (10% OFF)
-                          </span>
-                        </div>
-
-                        <Link
-                          href="#products-section"
-                          onClick={() => {
-                            onSelectCategory('');
-                            setIsMegaMenuOpen(false);
-                          }}
-                          className="w-full bg-white hover:bg-emerald-50 text-slate-950 font-black text-xs py-2.5 px-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 group cursor-pointer"
-                        >
-                          <span>Explore This Aisle</span>
-                          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={goAllProducts}
+                    className="relative mt-5 h-11 rounded-xl bg-white text-slate-950 text-sm font-bold hover:bg-emerald-50 active:scale-[0.98] transition cursor-pointer"
+                  >
+                    Start shopping
+                  </button>
                 </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </header>
 
-      {/* Floating Bottom App Navigation for Mobile Devices */}
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/90 px-4 py-2 flex items-center justify-around shadow-2xl">
-        <Link
-          href="/"
-          onClick={() => onSelectCategory('')}
-          className={`flex flex-col items-center justify-center space-y-1 transition ${
-            selectedCategory === '' ? 'text-fresh-600 font-bold' : 'text-slate-500 hover:text-fresh-600'
-          }`}
-        >
-          <Home className="w-5 h-5" />
-          <span className="text-[10px]">Store</span>
-        </Link>
+      {/* Dim the page behind the open mega menu */}
+      {megaOpen && (
+        <div
+          className="hidden lg:block fixed inset-0 z-30 bg-slate-950/35 backdrop-blur-[2px] animate-fade-in"
+          onClick={() => setMegaOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Mobile / tablet aisle drawer */}
+      {drawerOpen && (
+        <div className="lg:hidden fixed inset-0 z-[55]" role="dialog" aria-modal="true" aria-label="Shop by aisle">
+          <div className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm animate-fade-in" onClick={() => setDrawerOpen(false)} />
+          <div className="absolute left-0 top-0 bottom-0 w-[86%] max-w-sm bg-white shadow-2xl flex flex-col animate-slide-in-left">
+            <div className="flex items-center justify-between px-4 h-16 border-b border-slate-100 shrink-0">
+              <span className="text-lg font-black text-slate-900">Shop by aisle</span>
+              <button
+                ref={drawerCloseRef}
+                type="button"
+                onClick={() => setDrawerOpen(false)}
+                aria-label="Close menu"
+                className="w-11 h-11 -mr-2 rounded-xl hover:bg-slate-100 flex items-center justify-center cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-3 py-3">
+              <button
+                type="button"
+                onClick={goAllProducts}
+                className="w-full flex items-center gap-3 px-3 h-12 rounded-xl text-sm font-bold text-slate-900 hover:bg-slate-50 cursor-pointer"
+              >
+                <span className="w-8 h-8 rounded-lg bg-fresh-600 text-white flex items-center justify-center">
+                  <LayoutGrid className="w-4 h-4" />
+                </span>
+                All products
+              </button>
+
+              {groups.map(g => {
+                const expanded = openAccordion === g.key;
+                return (
+                  <div key={g.key}>
+                    <button
+                      type="button"
+                      aria-expanded={expanded}
+                      onClick={() => setOpenAccordion(expanded ? '' : g.key)}
+                      className="w-full flex items-center gap-3 px-3 h-12 rounded-xl text-sm font-bold text-slate-900 hover:bg-slate-50 cursor-pointer"
+                    >
+                      <span className="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center">
+                        <g.Icon className="w-4 h-4" />
+                      </span>
+                      <span className="flex-1 text-left">{g.name}</span>
+                      <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-300 ${expanded ? 'rotate-180' : ''}`} />
+                    </button>
+                    <div
+                      className={`grid transition-[grid-template-rows] duration-300 ease-out-expo ${expanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
+                    >
+                      <ul className="overflow-hidden pl-14 pr-2">
+                        {g.parent && (
+                          <li>
+                            <button
+                              type="button"
+                              onClick={() => go(g.parent!.slug)}
+                              className="w-full text-left h-11 text-sm font-semibold text-fresh-700 cursor-pointer"
+                              tabIndex={expanded ? 0 : -1}
+                            >
+                              Shop all {g.name}
+                            </button>
+                          </li>
+                        )}
+                        {g.children.map(cat => (
+                          <li key={cat.id}>
+                            <button
+                              type="button"
+                              onClick={() => go(cat.slug)}
+                              className="w-full text-left h-11 text-sm text-slate-700 hover:text-fresh-700 cursor-pointer"
+                              tabIndex={expanded ? 0 : -1}
+                            >
+                              {g.key === '__more' ? cat.name : childLabel(cat)}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="shrink-0 border-t border-slate-100 p-4 space-y-2 text-sm">
+              <a href="tel:+9221111373742" className="flex items-center gap-2 text-slate-700 h-9">
+                <Phone className="w-4 h-4 text-fresh-600" /> +92 21 111-373-742
+              </a>
+              <a href="/admin" className="flex items-center gap-2 text-slate-500 h-9">
+                <ShieldCheck className="w-4 h-4" /> Staff login
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Floating bottom navigation for phones */}
+      <nav
+        aria-label="Quick navigation"
+        className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] grid grid-cols-5 shadow-2xl"
+      >
+        {[
+          { label: 'Store', Icon: Home, active: pathname === '/', onClick: goHome },
+          { label: 'Aisles', Icon: LayoutGrid, active: activeSlug !== '', onClick: () => setDrawerOpen(true) },
+          { label: 'Search', Icon: Search, active: false, onClick: focusSearch },
+        ].map(item => (
+          <button
+            key={item.label}
+            type="button"
+            onClick={item.onClick}
+            className={`flex flex-col items-center justify-center gap-0.5 min-h-[48px] rounded-lg text-[11px] font-semibold cursor-pointer transition-colors ${
+              item.active ? 'text-fresh-700' : 'text-slate-600 active:text-fresh-700'
+            }`}
+          >
+            <item.Icon className="w-5 h-5" />
+            {item.label}
+          </button>
+        ))}
 
         <button
-          onClick={focusSearch}
-          className="flex flex-col items-center justify-center space-y-1 text-slate-500 hover:text-fresh-600 transition cursor-pointer"
-        >
-          <Search className="w-5 h-5" />
-          <span className="text-[10px]">Search</span>
-        </button>
-
-        <button
+          type="button"
           onClick={() => setIsCartOpen(true)}
-          className="flex flex-col items-center justify-center space-y-1 text-slate-500 hover:text-fresh-600 relative transition cursor-pointer"
+          className="flex flex-col items-center justify-center gap-0.5 min-h-[48px] rounded-lg text-[11px] font-semibold text-slate-600 active:text-fresh-700 cursor-pointer"
         >
-          <div className="relative">
+          <span className="relative">
             <ShoppingBag className="w-5 h-5" />
             {totalItems > 0 && (
-              <span className="absolute -top-1.5 -right-2 bg-fresh-600 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+              <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-fresh-600 text-white text-[10px] font-black flex items-center justify-center">
                 {totalItems}
               </span>
             )}
-          </div>
-          <span className="text-[10px]">Basket</span>
+          </span>
+          Basket
         </button>
 
         <a
           href="https://wa.me/923001234567"
           target="_blank"
           rel="noreferrer"
-          className="flex flex-col items-center justify-center space-y-1 text-slate-500 hover:text-emerald-600 transition"
+          className="flex flex-col items-center justify-center gap-0.5 min-h-[48px] rounded-lg text-[11px] font-semibold text-slate-600 active:text-emerald-700"
         >
           <MessageCircle className="w-5 h-5" />
-          <span className="text-[10px]">WhatsApp</span>
-        </a>
-
-        <a
-          href="/admin"
-          className="flex flex-col items-center justify-center space-y-1 text-slate-500 hover:text-emerald-700 transition"
-        >
-          <ShieldCheck className="w-5 h-5" />
-          <span className="text-[10px]">Admin</span>
+          WhatsApp
         </a>
       </nav>
     </>

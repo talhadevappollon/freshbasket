@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { PLACEHOLDER_IMG } from '@/lib/placeholder';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { X, Trash2, Plus, Minus, ShoppingBag, Truck, ArrowRight, Banknote } from 'lucide-react';
@@ -21,20 +22,36 @@ export default function CartDrawer() {
     setIsCheckoutOpen,
   } = useCart();
 
+
+  // Escape closes the dialog; the page behind stays put while it is open
+  useEffect(() => {
+    if (!isCartOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsCartOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [isCartOpen, setIsCartOpen]);
+
   if (!isCartOpen) return null;
 
   const percentFree = Math.min(100, Math.round((subtotal / freeDeliveryThreshold) * 100));
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div className="fixed inset-0 z-[70] overflow-hidden" role="dialog" aria-modal="true" aria-label="Your grocery basket">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+        className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={() => setIsCartOpen(false)}
       />
 
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col justify-between">
+      <div className="fixed inset-y-0 right-0 max-w-full flex pl-6 sm:pl-10">
+        <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col justify-between animate-slide-in-right">
           {/* Header */}
           <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
             <div className="flex items-center space-x-3">
@@ -51,7 +68,8 @@ export default function CartDrawer() {
               {items.length > 0 && (
                 <button
                   onClick={clearCart}
-                  className="text-gray-400 hover:text-rose-600 text-xs font-semibold p-1 transition"
+                  aria-label="Clear basket"
+                  className="w-11 h-11 rounded-full flex items-center justify-center text-gray-500 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                   title="Clear entire cart"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -59,9 +77,10 @@ export default function CartDrawer() {
               )}
               <button
                 onClick={() => setIsCartOpen(false)}
-                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center transition"
+                aria-label="Close basket"
+                className="w-11 h-11 rounded-full bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-600 flex items-center justify-center transition-colors cursor-pointer"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             </div>
           </div>
@@ -98,7 +117,7 @@ export default function CartDrawer() {
                 </p>
                 <button
                   onClick={() => setIsCartOpen(false)}
-                  className="bg-fresh-600 hover:bg-fresh-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold transition shadow-md shadow-fresh-600/20"
+                  className="h-11 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 text-white px-6 rounded-xl text-sm font-bold transition shadow-md shadow-fresh-600/20 cursor-pointer"
                 >
                   Start Shopping Now
                 </button>
@@ -112,7 +131,7 @@ export default function CartDrawer() {
                     className="shrink-0"
                   >
                     <img
-                      src={item.product.primary_image || 'https://via.placeholder.com/60'}
+                      src={item.product.primary_image || PLACEHOLDER_IMG}
                       alt={item.product.name}
                       className="w-14 h-14 object-contain rounded-xl border border-gray-100 p-1 hover:scale-105 transition"
                     />
@@ -122,7 +141,7 @@ export default function CartDrawer() {
                     <Link
                       href={`/products/${item.product.slug}`}
                       onClick={() => setIsCartOpen(false)}
-                      className="text-xs font-bold text-gray-900 truncate block hover:text-fresh-600 transition"
+                      className="text-sm font-bold text-gray-900 truncate block hover:text-fresh-600 transition"
                     >
                       {item.product.name}
                     </Link>
@@ -136,18 +155,20 @@ export default function CartDrawer() {
                   <div className="flex items-center space-x-1.5 bg-gray-50 border border-gray-200 rounded-xl p-1 shrink-0">
                     <button
                       onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                      className="w-6 h-6 rounded-lg bg-white text-gray-700 hover:bg-gray-100 flex items-center justify-center transition shadow-xs text-xs"
+                      aria-label="Decrease quantity"
+                      className="w-9 h-9 rounded-lg bg-white text-gray-700 hover:bg-rose-50 hover:text-rose-700 active:scale-90 flex items-center justify-center transition shadow-xs cursor-pointer"
                     >
-                      <Minus className="w-3 h-3" />
+                      <Minus className="w-4 h-4" />
                     </button>
                     <span className="text-xs font-bold text-gray-900 w-5 text-center">
                       {item.quantity}
                     </span>
                     <button
                       onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                      className="w-6 h-6 rounded-lg bg-fresh-600 text-white hover:bg-fresh-700 flex items-center justify-center transition shadow-xs text-xs"
+                      aria-label="Increase quantity"
+                      className="w-9 h-9 rounded-lg bg-fresh-600 text-white hover:bg-fresh-700 active:scale-90 flex items-center justify-center transition shadow-xs cursor-pointer"
                     >
-                      <Plus className="w-3 h-3" />
+                      <Plus className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -191,7 +212,7 @@ export default function CartDrawer() {
                     setIsCartOpen(false);
                     setIsCheckoutOpen(true);
                   }}
-                  className="w-full bg-fresh-600 hover:bg-fresh-700 text-white py-3.5 px-4 rounded-2xl font-bold text-sm shadow-xl shadow-fresh-600/30 flex items-center justify-center space-x-2 transition"
+                  className="w-full h-12 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 active:scale-[0.99] text-white px-4 rounded-2xl font-bold text-sm shadow-xl shadow-fresh-600/30 flex items-center justify-center gap-2 transition cursor-pointer"
                 >
                   <span>Proceed to COD Checkout</span>
                   <ArrowRight className="w-4 h-4" />
@@ -200,7 +221,7 @@ export default function CartDrawer() {
                 <Link
                   href="/cart"
                   onClick={() => setIsCartOpen(false)}
-                  className="w-full bg-white hover:bg-gray-100 text-gray-700 border border-gray-200 py-2.5 px-4 rounded-2xl font-bold text-xs flex items-center justify-center space-x-1.5 transition"
+                  className="w-full h-11 bg-white hover:bg-gray-100 active:bg-gray-200 text-gray-700 border border-gray-200 px-4 rounded-2xl font-bold text-sm flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <span>View Full Cart Page & Details</span>
                 </Link>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import { submitCheckout } from '@/lib/api';
 import { OrderCustomer } from '@/types';
@@ -60,6 +60,22 @@ export default function CheckoutModal() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
+
+  // Escape closes the dialog; the page behind stays put while it is open
+  useEffect(() => {
+    if (!isCheckoutOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !isSubmitting) setIsCheckoutOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [isCheckoutOpen, isSubmitting, setIsCheckoutOpen]);
+
   if (!isCheckoutOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -89,15 +105,15 @@ export default function CheckoutModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Express checkout">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
         onClick={() => !isSubmitting && setIsCheckoutOpen(false)}
       />
 
       {/* Modal Card */}
-      <div className="relative bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl z-10 max-h-[90vh] overflow-y-auto border border-gray-100">
+      <div className="relative bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl z-10 max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain border border-gray-100 animate-menu-in">
         <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-2xl bg-fresh-600 text-white flex items-center justify-center font-bold">
@@ -111,9 +127,10 @@ export default function CheckoutModal() {
           <button
             disabled={isSubmitting}
             onClick={() => setIsCheckoutOpen(false)}
-            className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 flex items-center justify-center transition"
+            aria-label="Close checkout"
+            className="w-11 h-11 rounded-full bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-600 flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
@@ -127,10 +144,10 @@ export default function CheckoutModal() {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Customer Contact */}
           <div>
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">1. Contact Information</h3>
+            <h3 className="text-sm font-bold text-gray-500 mb-3">1. Contact Information</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                   Full Name <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -139,12 +156,12 @@ export default function CheckoutModal() {
                   placeholder="e.g. Hamza Tariq"
                   value={formData.customer_name}
                   onChange={e => setFormData({ ...formData, customer_name: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs sm:text-sm focus:border-fresh-500 focus:outline-none bg-gray-50/50"
+                  className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none transition bg-gray-50/50"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                   Mobile Number (WhatsApp) <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -153,12 +170,12 @@ export default function CheckoutModal() {
                   placeholder="e.g. +92 300 1234567"
                   value={formData.customer_phone}
                   onChange={e => setFormData({ ...formData, customer_phone: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs sm:text-sm focus:border-fresh-500 focus:outline-none bg-gray-50/50"
+                  className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none transition bg-gray-50/50"
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                   Email Address <span className="text-gray-400 font-normal">(Optional for order receipt)</span>
                 </label>
                 <input
@@ -166,7 +183,7 @@ export default function CheckoutModal() {
                   placeholder="e.g. hamza@example.com"
                   value={formData.customer_email}
                   onChange={e => setFormData({ ...formData, customer_email: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs sm:text-sm focus:border-fresh-500 focus:outline-none bg-gray-50/50"
+                  className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none transition bg-gray-50/50"
                 />
               </div>
             </div>
@@ -174,14 +191,14 @@ export default function CheckoutModal() {
 
           {/* Delivery Location */}
           <div>
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">2. Delivery Location</h3>
+            <h3 className="text-sm font-bold text-gray-500 mb-3">2. Delivery Location</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">City</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">City</label>
                 <select
                   value={formData.delivery_city}
                   onChange={e => setFormData({ ...formData, delivery_city: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs sm:text-sm focus:border-fresh-500 focus:outline-none bg-white font-medium"
+                  className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none transition bg-white font-medium"
                 >
                   <option value="Karachi">Karachi</option>
                   <option value="Lahore">Lahore</option>
@@ -190,11 +207,11 @@ export default function CheckoutModal() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Select Delivery Area</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Select Delivery Area</label>
                 <select
                   value={formData.delivery_area}
                   onChange={e => setFormData({ ...formData, delivery_area: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs sm:text-sm focus:border-fresh-500 focus:outline-none bg-white font-medium"
+                  className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none transition bg-white font-medium"
                 >
                   {KARACHI_AREAS.map(area => (
                     <option key={area} value={area}>
@@ -205,7 +222,7 @@ export default function CheckoutModal() {
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                   Complete Street Address, House / Flat # <span className="text-rose-500">*</span>
                 </label>
                 <textarea
@@ -214,12 +231,12 @@ export default function CheckoutModal() {
                   placeholder="e.g. House 42-B, Khayaban-e-Seher, Phase 6, DHA"
                   value={formData.delivery_address}
                   onChange={e => setFormData({ ...formData, delivery_address: e.target.value })}
-                  className="w-full px-4 py-2 rounded-xl border border-gray-200 text-xs sm:text-sm focus:border-fresh-500 focus:outline-none bg-gray-50/50"
+                  className="w-full min-h-[88px] py-2.5 px-4 rounded-xl border border-gray-200 text-sm focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none transition bg-gray-50/50"
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">
                   Rider Delivery Notes (Optional)
                 </label>
                 <input
@@ -227,7 +244,7 @@ export default function CheckoutModal() {
                   placeholder="e.g. Leave with gatekeeper or call before ringing bell"
                   value={formData.order_notes}
                   onChange={e => setFormData({ ...formData, order_notes: e.target.value })}
-                  className="w-full px-4 py-2 rounded-xl border border-gray-200 text-xs sm:text-sm focus:border-fresh-500 focus:outline-none bg-gray-50/50"
+                  className="w-full h-11 px-4 rounded-xl border border-gray-200 text-sm focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none transition bg-gray-50/50"
                 />
               </div>
             </div>
@@ -235,7 +252,7 @@ export default function CheckoutModal() {
 
           {/* Payment Method Selector */}
           <div>
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">3. Payment Option</h3>
+            <h3 className="text-sm font-bold text-gray-500 mb-3">3. Payment Option</h3>
             <div className="border-2 border-fresh-600 bg-fresh-50/70 p-4 rounded-2xl flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-xl bg-fresh-600 text-white flex items-center justify-center font-bold">
@@ -254,7 +271,7 @@ export default function CheckoutModal() {
           </div>
 
           {/* Order Summary Breakdown */}
-          <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 space-y-2 text-xs">
+          <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 space-y-2 text-sm">
             <div className="flex justify-between text-gray-600">
               <span>Items Total ({items.length}):</span>
               <span className="font-bold text-gray-900">PKR {subtotal.toLocaleString()}</span>
@@ -275,7 +292,7 @@ export default function CheckoutModal() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-fresh-600 hover:bg-fresh-700 disabled:bg-gray-400 text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-fresh-600/30 flex items-center justify-center space-x-2 transition"
+            className="w-full h-12 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 active:scale-[0.99] disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-2xl font-bold text-sm cursor-pointer shadow-xl shadow-fresh-600/30 flex items-center justify-center space-x-2 transition"
           >
             {isSubmitting ? (
               <>

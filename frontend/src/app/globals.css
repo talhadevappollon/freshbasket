@@ -5,14 +5,26 @@
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
+  --brand: #16a34a;
+  --header-offset: 72px;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* anchored sections (#products-section) must clear the sticky header */
+  scroll-padding-top: var(--header-offset);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   overflow-x: hidden;
-  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  text-wrap: balance;
 }
 
 /* Custom sleek scrollbars */
@@ -29,6 +41,42 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #16a34a;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Keyboard focus: visible, branded, never shown for mouse clicks */
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+.on-dark :focus-visible,
+[data-surface='dark'] :focus-visible {
+  outline-color: #6ee7b7;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 100;
+  background: #0f172a;
+  color: #fff;
+  padding: 0.6rem 1rem;
+  border-radius: 0.75rem;
+  font-weight: 700;
+  font-size: 0.8rem;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: 0.75rem;
 }
 
 /* Smooth Interactive Animation Helpers */
@@ -63,6 +111,24 @@ body {
   }
 }
 
+@keyframes blobDrift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(24px, -18px, 0) scale(1.08);
+  }
+}
+
+@keyframes sheen {
+  from {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(260%) skewX(-18deg);
+  }
+}
+
 .animate-float-gentle {
   animation: floatGentle 3s ease-in-out infinite;
 }
@@ -72,7 +138,11 @@ body {
 }
 
 .animate-card-entrance {
-  animation: cardEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: cardEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-blob {
+  animation: blobDrift 12s ease-in-out infinite;
 }
 
 /* Hover Lift Effect */
@@ -81,4 +151,101 @@ body {
 }
 .hover-lift:hover {
   transform: translateY(-5px);
+}
+
+/* Light sweep across a button/card on hover */
+.sheen {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.sheen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.35), transparent);
+  transform: translateX(-120%) skewX(-18deg);
+  pointer-events: none;
+}
+.sheen:hover::after {
+  animation: sheen 0.9s ease;
+}
+
+/* Animated underline for nav links */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.link-underline:hover::after,
+.link-underline[aria-current='true']::after,
+.link-underline[aria-expanded='true']::after {
+  transform: scaleX(1);
+}
+
+/* Scroll-reveal (see components/Reveal.tsx). Content stays visible without JS. */
+.js-reveal .reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+.js-reveal .reveal[data-reveal='left'] {
+  transform: translateX(-32px);
+}
+.js-reveal .reveal[data-reveal='right'] {
+  transform: translateX(32px);
+}
+.js-reveal .reveal[data-reveal='zoom'] {
+  transform: scale(0.94);
+}
+.js-reveal .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* Skeleton loading blocks */
+.skeleton {
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 37%, #e2e8f0 63%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* Infinite marquee pauses on hover / focus so it is readable and operable */
+.marquee-track:hover .marquee-inner,
+.marquee-track:focus-within .marquee-inner {
+  animation-play-state: paused;
+}
+
+/* Honour the OS "reduce motion" preference – WCAG 2.3.3 */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .js-reveal .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }

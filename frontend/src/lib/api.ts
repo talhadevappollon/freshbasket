@@ -84,8 +84,49 @@ export async function fetchProducts(params?: {
   }
 
   if (params?.category) {
-    const cat = params.category.toLowerCase();
-    prods = prods.filter(p => p.slug.includes(cat) || p.name.toLowerCase().includes(cat));
+    const rawList = fallbackData.products as any[];
+    const slug = params.category.toLowerCase();
+    const category = (fallbackData.categories as any[]).find(c => c.slug.toLowerCase() === slug);
+
+    if (slug === 'karachi-best-selling') {
+      // "Best Selling" has no tag in the scraped data – surface the featured picks instead.
+      prods = prods.filter(p => p.is_featured);
+    } else if (category) {
+      // Category names look like "Bakery/Bread & Loafs"; products carry tags like
+      // "Category_KARACHI/Dairy/Cheese" and a loose category_name, so match on either.
+      const needles: string[] = [
+        category.name.toLowerCase(),
+        category.name.split('/').pop()!.trim().toLowerCase(),
+      ];
+      prods = prods.filter(p => {
+        const raw = rawList[p.id - 1];
+        const haystack: string[] = [
+          String(raw.category_name || '').toLowerCase(),
+          String(raw.brand || '').toLowerCase(),
+          String(raw.name || '').toLowerCase(),
+          ...(raw.tags || []).map((t: string) => t.toLowerCase()),
+        ];
+        return needles.some(n => haystack.some(h => h.includes(n)));
+      });
+    } else {
+      prods = prods.filter(p => p.slug.includes(slug) || p.name.toLowerCase().includes(slug));
+    }
+  }
+
+  switch (params?.sort) {
+    case 'price_asc':
+      prods = [...prods].sort((a, b) => a.price - b.price);
+      break;
+    case 'price_desc':
+      prods = [...prods].sort((a, b) => b.price - a.price);
+      break;
+    case 'name_asc':
+      prods = [...prods].sort((a, b) => a.name.localeCompare(b.name));
+      break;
+  }
+
+  if (params?.featured) {
+    prods = prods.filter(p => p.is_featured);
   }
 
   return { data: prods.slice(0, params?.per_page || 40), total: prods.length };

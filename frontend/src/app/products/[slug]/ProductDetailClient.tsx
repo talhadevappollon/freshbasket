@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { PLACEHOLDER_IMG } from '@/lib/placeholder';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import Header from '@/components/Header';
@@ -77,7 +78,7 @@ export default function ProductDetailPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-slate-50">
-        <Header categories={categories} selectedCategory="" onSelectCategory={() => {}} />
+        <Header categories={categories} />
         <div className="flex-1 flex flex-col items-center justify-center py-32 text-gray-400">
           <Loader2 className="w-10 h-10 animate-spin text-fresh-600 mb-3" />
           <p className="text-sm font-semibold">Loading Fresh Product Details...</p>
@@ -90,7 +91,7 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div className="min-h-screen flex flex-col bg-slate-50">
-        <Header categories={categories} selectedCategory="" onSelectCategory={() => {}} />
+        <Header categories={categories} />
         <div className="flex-1 max-w-md mx-auto py-24 text-center px-4">
           <h2 className="text-xl font-bold text-gray-900 mb-2">Product Not Found</h2>
           <p className="text-xs text-gray-500 mb-6">The requested product could not be found or is out of season.</p>
@@ -114,11 +115,7 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
-      <Header
-        categories={categories}
-        selectedCategory=""
-        onSelectCategory={() => {}}
-      />
+      <Header categories={categories} />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:py-8 pb-20 sm:pb-8">
         {/* Breadcrumb */}
@@ -144,7 +141,7 @@ export default function ProductDetailPage() {
                   </span>
                 )}
                 <img
-                  src={activeImage || product.primary_image || 'https://via.placeholder.com/400'}
+                  src={activeImage || product.primary_image || PLACEHOLDER_IMG}
                   alt={product.name}
                   className="max-h-72 max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
                 />
