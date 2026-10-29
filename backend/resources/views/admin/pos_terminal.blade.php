@@ -170,7 +170,56 @@
 <script>
     let posCart = [];
 
+    // Synthesized Audio Feedback (Web Audio API)
+    function playBeep() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(1760, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        } catch(e) {}
+    }
+
+    function playSuccessChime() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime + (idx * 0.07));
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime + (idx * 0.07));
+                gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + (idx * 0.07) + 0.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + (idx * 0.07));
+                osc.stop(audioCtx.currentTime + (idx * 0.07) + 0.2);
+            });
+        } catch(e) {}
+    }
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'F2') {
+            e.preventDefault();
+            document.getElementById('barcodeInput').focus();
+        } else if (e.key === 'F4') {
+            e.preventDefault();
+            document.getElementById('posCashReceived').focus();
+        } else if (e.key === 'F8') {
+            e.preventDefault();
+            processPosTransaction();
+        }
+    });
+
     function addToPosCart(id, name, price, unit, barcode, stock) {
+        playBeep();
         const existing = posCart.find(it => it.id === id);
         if (existing) {
             existing.quantity += 1;
@@ -341,6 +390,7 @@
         .then(res => res.json())
         .then(data => {
             if (data.success && data.order) {
+                playSuccessChime();
                 alert(`POS Transaction Complete!\nOrder: ${data.order.order_number}\nTotal: PKR ${data.order.total}\nInventory stock has been deducted.`);
                 clearPosCart();
                 document.getElementById('posCashReceived').value = '';

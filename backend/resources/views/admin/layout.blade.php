@@ -128,6 +128,14 @@
                             <span class="bg-amber-400 text-slate-900 text-[10px] px-2 py-0.5 rounded-full font-black">COD</span>
                         </a>
 
+                        <a href="{{ route('admin.riders') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.riders') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-motorcycle w-4 text-center text-emerald-300"></i>
+                                <span>Riders & Fleet Dispatch</span>
+                            </div>
+                            <span class="text-[10px] text-emerald-300 font-mono">Fleet</span>
+                        </a>
+
                         <a href="{{ route('admin.pos') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.pos') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/20' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-cash-register w-4 text-center text-amber-300"></i>
@@ -140,7 +148,7 @@
 
                 <!-- Group 2: Inventory & Catalog -->
                 <div>
-                    <span class="px-3 text-[10px] font-black uppercase tracking-widest text-emerald-400/60">Inventory & Products</span>
+                    <span class="px-3 text-[10px] font-black uppercase tracking-widest text-emerald-400/60">Inventory & Catalog</span>
                     <div class="mt-2 space-y-1">
                         <a href="{{ route('admin.products') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.products') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
                             <div class="flex items-center space-x-3">
@@ -148,6 +156,14 @@
                                 <span>Products Matrix & Stock</span>
                             </div>
                             <span class="text-[10px] text-emerald-300 font-mono">745+</span>
+                        </a>
+
+                        <a href="{{ route('admin.categories') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.categories') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-layer-group w-4 text-center text-fresh-300"></i>
+                                <span>Categories & Aisle Manager</span>
+                            </div>
+                            <span class="text-[10px] text-emerald-300 font-mono">36</span>
                         </a>
 
                         <a href="{{ route('admin.products.barcode_sheet') }}" target="_blank" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.products.barcode_sheet') ? 'bg-fresh-600 text-white' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
@@ -168,7 +184,21 @@
                     </div>
                 </div>
 
-                <!-- Group 3: Customer Relationship (CRM) -->
+                <!-- Group 3: Marketing & Promotions -->
+                <div>
+                    <span class="px-3 text-[10px] font-black uppercase tracking-widest text-emerald-400/60">Marketing & Promotions</span>
+                    <div class="mt-2 space-y-1">
+                        <a href="{{ route('admin.coupons') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.coupons') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-ticket w-4 text-center text-amber-300"></i>
+                                <span>Coupons & Discount Vouchers</span>
+                            </div>
+                            <span class="bg-amber-400 text-slate-900 text-[10px] px-2 py-0.5 rounded-full font-black">Promo</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Group 4: Customer Relationship (CRM) -->
                 <div>
                     <span class="px-3 text-[10px] font-black uppercase tracking-widest text-emerald-400/60">Customer Care & CRM</span>
                     <div class="mt-2 space-y-1">
@@ -183,9 +213,39 @@
                         <a href="{{ route('admin.leads') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.leads') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-headset w-4 text-center"></i>
-                                <span>Customer Support Tickets</span>
+                                <span>Support Tickets & Leads</span>
                             </div>
                             <i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Group 5: Administration & Settings -->
+                <div>
+                    <span class="px-3 text-[10px] font-black uppercase tracking-widest text-emerald-400/60">Administration & Reports</span>
+                    <div class="mt-2 space-y-1">
+                        <a href="{{ route('admin.reports') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.reports') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-file-invoice-dollar w-4 text-center text-emerald-300"></i>
+                                <span>Financial & Profit Reports</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i>
+                        </a>
+
+                        <a href="{{ route('admin.branches') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.branches') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-store w-4 text-center text-fresh-300"></i>
+                                <span>Warehouses & Outlets</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i>
+                        </a>
+
+                        <a href="{{ route('admin.settings') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.settings') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-sliders w-4 text-center text-slate-300"></i>
+                                <span>Store & Delivery Settings</span>
+                            </div>
+                            <i class="fa-solid fa-gear text-[10px] opacity-60"></i>
                         </a>
                     </div>
                 </div>

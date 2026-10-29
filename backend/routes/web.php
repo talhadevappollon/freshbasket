@@ -26,8 +26,33 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/products/{id}/stock', [AdminController::class, 'adjustStock'])->name('products.adjust_stock');
     Route::post('/products/save/{id?}', [AdminController::class, 'saveProduct'])->name('products.save');
 
+    // Categories & Collections
+    Route::get('/categories', [AdminController::class, 'categories'])->name('categories');
+    Route::post('/categories/save/{id?}', [AdminController::class, 'saveCategory'])->name('categories.save');
+
     // Interactive POS Terminal Cashier
     Route::get('/pos', [AdminController::class, 'posTerminal'])->name('pos');
+
+    // Coupons & Discount Vouchers
+    Route::get('/coupons', [AdminController::class, 'coupons'])->name('coupons');
+    Route::post('/coupons/save/{id?}', [AdminController::class, 'saveCoupon'])->name('coupons.save');
+    Route::post('/coupons/{id}/toggle', [AdminController::class, 'toggleCoupon'])->name('coupons.toggle');
+
+    // Riders & Fleet Dispatch
+    Route::get('/riders', [AdminController::class, 'riders'])->name('riders');
+    Route::post('/riders/save/{id?}', [AdminController::class, 'saveRider'])->name('riders.save');
+    Route::post('/riders/{id}/status', [AdminController::class, 'updateRiderStatus'])->name('riders.update_status');
+
+    // Store Branches & Warehouse Hubs
+    Route::get('/branches', [AdminController::class, 'branches'])->name('branches');
+    Route::post('/branches/save/{id?}', [AdminController::class, 'saveBranch'])->name('branches.save');
+
+    // Reports & Financial Analytics
+    Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+
+    // Store POS & General Settings
+    Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+    Route::post('/settings', [AdminController::class, 'updateSettings'])->name('settings.update');
 
     // Customers CRM 360
     Route::get('/customers', [AdminController::class, 'customers'])->name('customers');

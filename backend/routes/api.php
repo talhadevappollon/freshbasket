@@ -20,6 +20,53 @@ Route::prefix('v1')->group(function () {
 
     // Checkout (COD)
     Route::post('/checkout', [CheckoutController::class, 'store']);
+    Route::post('/coupons/validate', function (Request $request) {
+        $request->validate(['code' => 'required|string', 'subtotal' => 'required|numeric']);
+        $code = strtoupper(trim($request->code));
+        $subtotal = floatval($request->subtotal);
+
+        $coupon = \App\Models\Coupon::where('code', $code)->where('is_active', true)->first();
+        if (!$coupon) {
+            return response()->json(['success' => false, 'message' => 'Invalid or expired voucher code.'], 404);
+        }
+
+        if ($coupon->min_spend > 0 && $subtotal < $coupon->min_spend) {
+            return response()->json([
+                'success' => false,
+                'message' => "This voucher requires a minimum cart total of PKR " . number_format($coupon->min_spend, 0) . "."
+            ], 422);
+        }
+
+        if ($coupon->expires_at && now()->isAfter($coupon->expires_at)) {
+            return response()->json(['success' => false, 'message' => 'This promo code has expired.'], 422);
+        }
+
+        if ($coupon->usage_limit > 0 && $coupon->used_count >= $coupon->usage_limit) {
+            return response()->json(['success' => false, 'message' => 'Voucher usage limit reached.'], 422);
+        }
+
+        $discount = 0;
+        if ($coupon->discount_type === 'percentage') {
+            $discount = round(($subtotal * $coupon->discount_value) / 100, 2);
+            if ($coupon->max_discount && $discount > $coupon->max_discount) {
+                $discount = $coupon->max_discount;
+            }
+        } else {
+            $discount = min($coupon->discount_value, $subtotal);
+        }
+
+        return response()->json([
+            'success' => true,
+            'coupon' => [
+                'code' => $coupon->code,
+                'title' => $coupon->title,
+                'discount' => $discount,
+                'discount_type' => $coupon->discount_type,
+                'discount_value' => $coupon->discount_value,
+            ],
+            'message' => "Promo '{$coupon->code}' applied successfully! Saved PKR {$discount}."
+        ]);
+    });
 
     // Order Tracking
     Route::get('/orders/{orderNumber}', [OrderController::class, 'show']);

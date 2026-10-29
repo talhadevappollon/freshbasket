@@ -9,6 +9,10 @@ use App\Models\Customer;
 use App\Models\Category;
 use App\Models\InventoryLog;
 use App\Models\CrmLead;
+use App\Models\Coupon;
+use App\Models\Rider;
+use App\Models\Branch;
+use App\Models\StoreSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -521,5 +525,230 @@ class AdminController extends Controller
         ]);
 
         return redirect()->back()->with('success', "Support Ticket #{$lead->id} updated to " . strtoupper($lead->status) . ".");
+    }
+
+    /**
+     * Categories Management
+     */
+    public function categories(Request $request)
+    {
+        $query = Category::withCount('products')->orderBy('name');
+        if ($request->filled('search')) {
+            $term = $request->search;
+            $query->where('name', 'like', "%{$term}%")->orWhere('slug', 'like', "%{$term}%");
+        }
+        $categories = $query->paginate(24)->withQueryString();
+        $totalCategories = Category::count();
+        $totalProductsCount = Product::count();
+
+        return view('admin.categories', compact('categories', 'totalCategories', 'totalProductsCount'));
+    }
+
+    public function saveCategory(Request $request, $id = null)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:191',
+            'image_url' => 'nullable|url',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        if ($id) {
+            $cat = Category::findOrFail($id);
+            $cat->update($validated);
+            $msg = "Category '{$cat->name}' updated.";
+        } else {
+            $validated['slug'] = Str::slug($validated['name']) . '-' . rand(100, 999);
+            $cat = Category::create($validated);
+            $msg = "Category '{$cat->name}' created successfully.";
+        }
+
+        return redirect()->route('admin.categories')->with('success', $msg);
+    }
+
+    /**
+     * Coupons & Vouchers Center
+     */
+    public function coupons(Request $request)
+    {
+        $coupons = Coupon::latest()->get();
+        $activeCouponsCount = Coupon::where('is_active', true)->count();
+        $totalRedemptions = Coupon::sum('used_count');
+
+        return view('admin.coupons', compact('coupons', 'activeCouponsCount', 'totalRedemptions'));
+    }
+
+    public function saveCoupon(Request $request, $id = null)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|max:50',
+            'title' => 'required|string|max:191',
+            'discount_type' => 'required|in:percentage,fixed',
+            'discount_value' => 'required|numeric|min:0',
+            'min_spend' => 'nullable|numeric|min:0',
+            'max_discount' => 'nullable|numeric|min:0',
+            'usage_limit' => 'required|integer|min:1',
+            'expires_at' => 'nullable|date',
+            'is_active' => 'nullable|boolean',
+        ]);
+
+        $validated['code'] = strtoupper(trim($validated['code']));
+        $validated['is_active'] = $request->has('is_active');
+
+        if ($id) {
+            $coupon = Coupon::findOrFail($id);
+            $coupon->update($validated);
+            $msg = "Voucher '{$coupon->code}' updated.";
+        } else {
+            $coupon = Coupon::create($validated);
+            $msg = "Promo voucher '{$coupon->code}' created successfully.";
+        }
+
+        return redirect()->route('admin.coupons')->with('success', $msg);
+    }
+
+    public function toggleCoupon($id)
+    {
+        $coupon = Coupon::findOrFail($id);
+        $coupon->is_active = !$coupon->is_active;
+        $coupon->save();
+
+        return redirect()->back()->with('success', "Coupon '{$coupon->code}' status changed to " . ($coupon->is_active ? 'ACTIVE' : 'INACTIVE') . ".");
+    }
+
+    /**
+     * Delivery Riders & Fleet
+     */
+    public function riders(Request $request)
+    {
+        $query = Rider::latest();
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status', $request->status);
+        }
+        $riders = $query->paginate(15);
+        $totalRiders = Rider::count();
+        $availableRiders = Rider::where('status', 'available')->count();
+        $deliveringRiders = Rider::where('status', 'delivering')->count();
+        $totalCashCollected = Rider::sum('cash_collected_today');
+
+        return view('admin.riders', compact('riders', 'totalRiders', 'availableRiders', 'deliveringRiders', 'totalCashCollected'));
+    }
+
+    public function saveRider(Request $request, $id = null)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:191',
+            'phone' => 'required|string|max:30',
+            'cnic' => 'nullable|string|max:30',
+            'vehicle_type' => 'required|string|max:50',
+            'vehicle_number' => 'nullable|string|max:30',
+            'assigned_area' => 'required|string|max:100',
+            'status' => 'required|in:available,delivering,off_duty',
+        ]);
+
+        if ($id) {
+            $rider = Rider::findOrFail($id);
+            $rider->update($validated);
+            $msg = "Rider '{$rider->name}' profile updated.";
+        } else {
+            $rider = Rider::create($validated);
+            $msg = "Rider '{$rider->name}' onboarded successfully to delivery fleet.";
+        }
+
+        return redirect()->route('admin.riders')->with('success', $msg);
+    }
+
+    public function updateRiderStatus(Request $request, $id)
+    {
+        $rider = Rider::findOrFail($id);
+        $rider->status = $request->status;
+        if ($request->has('cash_reset') && $request->cash_reset == 1) {
+            $rider->cash_collected_today = 0;
+        }
+        $rider->save();
+
+        return redirect()->back()->with('success', "Rider '{$rider->name}' status updated to " . strtoupper($rider->status) . ".");
+    }
+
+    /**
+     * Store Outlets & Warehouses
+     */
+    public function branches(Request $request)
+    {
+        $branches = Branch::orderBy('name')->get();
+        $totalBranches = $branches->count();
+        $totalPosTerminals = $branches->sum('pos_terminals_count');
+
+        return view('admin.branches', compact('branches', 'totalBranches', 'totalPosTerminals'));
+    }
+
+    public function saveBranch(Request $request, $id = null)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:191',
+            'code' => 'required|string|max:20',
+            'city' => 'required|string|max:50',
+            'area' => 'required|string|max:100',
+            'address' => 'required|string',
+            'phone' => 'required|string|max:30',
+            'manager_name' => 'nullable|string|max:100',
+            'pos_terminals_count' => 'required|integer|min:1',
+        ]);
+
+        if ($id) {
+            $branch = Branch::findOrFail($id);
+            $branch->update($validated);
+            $msg = "Branch '{$branch->name}' updated.";
+        } else {
+            $branch = Branch::create($validated);
+            $msg = "Branch '{$branch->name}' registered successfully.";
+        }
+
+        return redirect()->route('admin.branches')->with('success', $msg);
+    }
+
+    /**
+     * Financial Reports & Executive Analytics
+     */
+    public function reports(Request $request)
+    {
+        $totalSales = Order::where('order_status', '!=', 'cancelled')->sum('total');
+        $codCollected = Order::where('payment_status', 'paid')->sum('total');
+        $codPending = Order::where('payment_status', 'unpaid')->where('order_status', '!=', 'cancelled')->sum('total');
+        $totalStockValue = Product::select(DB::raw('SUM(price * stock_quantity) as val'))->value('val');
+        $totalCostValue = Product::select(DB::raw('SUM(cost_price * stock_quantity) as val'))->value('val');
+        $estimatedProfitMargin = $totalStockValue > 0 ? round((($totalStockValue - $totalCostValue) / $totalStockValue) * 100) : 0;
+
+        $topProducts = Product::orderByDesc('stock_quantity')->take(8)->get();
+        $categoryBreakdown = Category::withCount('products')->orderByDesc('products_count')->take(10)->get();
+
+        return view('admin.reports', compact(
+            'totalSales',
+            'codCollected',
+            'codPending',
+            'totalStockValue',
+            'totalCostValue',
+            'estimatedProfitMargin',
+            'topProducts',
+            'categoryBreakdown'
+        ));
+    }
+
+    /**
+     * Store & POS Settings
+     */
+    public function settings()
+    {
+        $settings = StoreSetting::all()->pluck('value', 'key')->toArray();
+        return view('admin.settings', compact('settings'));
+    }
+
+    public function updateSettings(Request $request)
+    {
+        $data = $request->except(['_token']);
+        foreach ($data as $key => $value) {
+            StoreSetting::set($key, $value);
+        }
+
+        return redirect()->back()->with('success', 'Store configuration and delivery rules successfully saved.');
     }
 }
