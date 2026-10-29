@@ -13,11 +13,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Orders CRM & COD
     Route::get('/orders', [AdminController::class, 'orders'])->name('orders');
+    Route::post('/orders/bulk-status', [AdminController::class, 'bulkOrderStatus'])->name('orders.bulk_status');
+    Route::get('/orders/export-csv', [AdminController::class, 'exportOrdersCsv'])->name('orders.export_csv');
     Route::post('/orders/{id}/status', [AdminController::class, 'updateOrderStatus'])->name('orders.update_status');
     Route::get('/orders/{id}/print', [AdminController::class, 'printOrder'])->name('print_order');
 
     // Products & Inventory Control
     Route::get('/products', [AdminController::class, 'products'])->name('products');
+    Route::get('/products/barcode-sheet', [AdminController::class, 'barcodeSheet'])->name('products.barcode_sheet');
+    Route::get('/products/export-csv', [AdminController::class, 'exportProductsCsv'])->name('products.export_csv');
+    Route::post('/products/{id}/quick-update', [AdminController::class, 'quickUpdateProduct'])->name('products.quick_update');
     Route::post('/products/{id}/stock', [AdminController::class, 'adjustStock'])->name('products.adjust_stock');
     Route::post('/products/save/{id?}', [AdminController::class, 'saveProduct'])->name('products.save');
 

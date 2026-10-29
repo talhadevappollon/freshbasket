@@ -121,6 +121,70 @@ class AdminController extends Controller
     }
 
     /**
+     * Bulk Order Status Update
+     */
+    public function bulkOrderStatus(Request $request)
+    {
+        $request->validate([
+            'order_ids' => 'required|array',
+            'order_ids.*' => 'exists:orders,id',
+            'new_status' => 'required|in:pending,processing,dispatched,delivered,cancelled',
+        ]);
+
+        $orders = Order::whereIn('id', $request->order_ids)->get();
+        foreach ($orders as $order) {
+            $order->order_status = $request->new_status;
+            if ($request->new_status === 'delivered') {
+                $order->payment_status = 'paid';
+            }
+            $order->save();
+        }
+
+        return redirect()->back()->with('success', count($orders) . " orders successfully updated to " . strtoupper($request->new_status) . "!");
+    }
+
+    /**
+     * Export Orders to CSV
+     */
+    public function exportOrdersCsv(Request $request)
+    {
+        $orders = Order::with('customer')->latest()->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="freshbasket_orders_' . date('Y-m-d_His') . '.csv"',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () use ($orders) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['Order Number', 'Date', 'Customer Name', 'Phone', 'Delivery Address', 'City / Area', 'Subtotal PKR', 'Delivery Fee', 'Total PKR', 'Order Status', 'Payment Status', 'Source']);
+
+            foreach ($orders as $o) {
+                fputcsv($file, [
+                    $o->order_number,
+                    $o->created_at->format('Y-m-d H:i:s'),
+                    $o->customer_name,
+                    $o->customer_phone,
+                    $o->delivery_address,
+                    $o->delivery_area,
+                    $o->subtotal,
+                    $o->delivery_fee,
+                    $o->total,
+                    strtoupper($o->order_status),
+                    strtoupper($o->payment_status),
+                    $o->order_source,
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
      * Update Order Status & COD Payment
      */
     public function updateOrderStatus(Request $request, $id)
@@ -261,6 +325,112 @@ class AdminController extends Controller
         }
 
         return redirect()->route('admin.products')->with('success', $msg);
+    }
+
+    /**
+     * Quick Update Product (Inline Price & Stock)
+     */
+    public function quickUpdateProduct(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+        $oldStock = $product->stock_quantity;
+
+        if ($request->filled('price')) {
+            $product->price = floatval($request->price);
+        }
+        if ($request->filled('cost_price')) {
+            $product->cost_price = floatval($request->cost_price);
+        }
+        if ($request->filled('stock_quantity')) {
+            $newStock = intval($request->stock_quantity);
+            if ($newStock !== $oldStock) {
+                $diff = $newStock - $oldStock;
+                $product->stock_quantity = $newStock;
+
+                InventoryLog::create([
+                    'product_id' => $product->id,
+                    'change_qty' => $diff,
+                    'reason' => 'adjustment',
+                    'reference_id' => 'INLINE-EDIT',
+                    'balance_after' => $newStock,
+                    'operator_name' => 'Store Admin',
+                    'notes' => 'Quick inline matrix adjustment',
+                ]);
+            }
+        }
+
+        $product->save();
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'product' => $product]);
+        }
+
+        return redirect()->back()->with('success', "Quick-saved '{$product->name}' (Price: PKR {$product->price}, Stock: {$product->stock_quantity})");
+    }
+
+    /**
+     * Barcode Shelf Tag Sheet for Physical Supermarket Shelves
+     */
+    public function barcodeSheet(Request $request)
+    {
+        $query = Product::with('category')->where('is_active', true);
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+        if ($request->filled('search')) {
+            $term = $request->search;
+            $query->where(function ($q) use ($term) {
+                $q->where('name', 'like', "%{$term}%")
+                  ->orWhere('sku', 'like', "%{$term}%")
+                  ->orWhere('barcode', 'like', "%{$term}%");
+            });
+        }
+        $products = $query->orderBy('name')->take(60)->get();
+        $categories = Category::orderBy('name')->get();
+
+        return view('admin.barcode_sheet', compact('products', 'categories'));
+    }
+
+    /**
+     * Export Products Catalog to CSV
+     */
+    public function exportProductsCsv()
+    {
+        $products = Product::with('category')->orderBy('name')->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="freshbasket_catalog_' . date('Y-m-d_His') . '.csv"',
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () use ($products) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, ['ID', 'SKU', 'Barcode', 'Product Name', 'Category', 'Unit', 'Retail Price PKR', 'Cost Price PKR', 'Margin %', 'Stock Quantity', 'Stock Threshold', 'Status']);
+
+            foreach ($products as $p) {
+                $margin = $p->price > 0 ? round((($p->price - $p->cost_price) / $p->price) * 100) : 0;
+                fputcsv($file, [
+                    $p->id,
+                    $p->sku,
+                    $p->barcode,
+                    $p->name,
+                    $p->category ? $p->category->name : 'N/A',
+                    $p->unit,
+                    $p->price,
+                    $p->cost_price,
+                    $margin . '%',
+                    $p->stock_quantity,
+                    $p->low_stock_threshold,
+                    $p->is_active ? 'Active' : 'Inactive',
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     /**
