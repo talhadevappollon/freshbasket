@@ -1,0 +1,25 @@
+services:
+  # Laravel Backend API Service on Render (Free Tier)
+  - type: web
+    name: freshbasket-api
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    region: oregon
+    envVars:
+      - key: APP_NAME
+        value: "Fresh Basket Pakistan"
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_URL
+        fromService:
+          type: web
+          name: freshbasket-api
+          property: host
+      - key: DB_CONNECTION
+        value: mysql

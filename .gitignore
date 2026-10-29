@@ -20,3 +20,5 @@ backend/database/database.sqlite
 Thumbs.db
 *.log
 
+
+cloudflared.exe
