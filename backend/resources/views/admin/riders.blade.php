@@ -106,7 +106,7 @@
                             <div class="text-xs text-slate-500 font-mono">{{ $rider->phone }}</div>
                             @php
                                 $cleanPhone = preg_replace('/[^0-9]/', '', $rider->phone);
-                                $waText = urlencode("Assalam-o-Alaikum {$rider->name}! Fresh Basket dispatch update from Karachi Warehouse.");
+                                $waText = urlencode("Assalam-o-Alaikum {$rider->name}! Fresh House dispatch update from Karachi Warehouse.");
                             @endphp
                             <a href="https://wa.me/{{ $cleanPhone }}?text={{ $waText }}" target="_blank" class="inline-flex items-center text-[11px] text-emerald-600 hover:text-emerald-700 font-bold mt-1">
                                 <i class="fa-brands fa-whatsapp mr-1 text-sm"></i> WhatsApp Rider

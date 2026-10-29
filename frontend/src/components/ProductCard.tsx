@@ -94,7 +94,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
       {/* Information */}
       <div className="mt-1 sm:mt-2 flex-1 flex flex-col justify-between">
         <div>
-          <span className="text-xs font-semibold text-slate-500 block truncate">{product.brand || 'Fresh Basket'}</span>
+          <span className="text-xs font-semibold text-slate-500 block truncate">{product.brand || 'Fresh House'}</span>
           <Link
             href={`/products/${product.slug}`}
             className="font-bold text-slate-900 text-xs sm:text-sm line-clamp-2 mt-0.5 hover:text-fresh-700 group-hover:text-fresh-700 transition-colors leading-snug"

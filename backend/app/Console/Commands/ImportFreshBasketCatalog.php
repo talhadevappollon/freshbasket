@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 class ImportFreshBasketCatalog extends Command
 {
     protected $signature = 'freshbasket:import';
-    protected $description = 'Import scraped Fresh Basket PK categories and products into MySQL database';
+    protected $description = 'Import scraped Fresh House PK categories and products into MySQL database';
 
     public function handle()
     {
@@ -22,7 +22,7 @@ class ImportFreshBasketCatalog extends Command
             return 1;
         }
 
-        $this->info("Loading Fresh Basket catalog data from: {$filePath}");
+        $this->info("Loading Fresh House catalog data from: {$filePath}");
         $json = file_get_contents($filePath);
         $data = json_decode($json, true);
 
@@ -134,9 +134,9 @@ class ImportFreshBasketCatalog extends Command
                     'name' => $name,
                     'slug' => $slug,
                     'barcode' => $p['barcode'] ?? ('896400' . rand(100000, 999999)),
-                    'description' => $p['description'] ?? "High-grade grocery item directly from Fresh Basket.",
+                    'description' => $p['description'] ?? "High-grade grocery item directly from Fresh House.",
                     'short_description' => Str::limit($p['description'] ?? $name, 120),
-                    'brand' => $p['brand'] ?? 'Fresh Basket',
+                    'brand' => $p['brand'] ?? 'Fresh House',
                     'price' => $price,
                     'compare_at_price' => !empty($p['compare_at_price']) ? floatval($p['compare_at_price']) : null,
                     'cost_price' => $costPrice,
@@ -171,7 +171,7 @@ class ImportFreshBasketCatalog extends Command
                     'balance_after' => $stock,
                     'reference_id' => 'INIT-STOCK',
                     'operator_name' => 'System Admin',
-                    'notes' => 'Initial catalog sync from Fresh Basket',
+                    'notes' => 'Initial catalog sync from Fresh House',
                 ]
             );
 

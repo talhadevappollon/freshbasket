@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "=== Fresh Basket cPanel Automated Deployment ==="
+echo "=== Fresh House cPanel Automated Deployment ==="
 
 # Set environment home variables for cPanel / LiteSpeed web process
 export HOME=/home2/aneetako

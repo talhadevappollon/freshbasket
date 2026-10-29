@@ -32,7 +32,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Store Name</label>
-                    <input type="text" name="store_name" value="{{ $settings['store_name'] ?? 'Fresh Basket Pakistan' }}" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold focus:border-fresh-500 focus:outline-none">
+                    <input type="text" name="store_name" value="{{ $settings['store_name'] ?? 'Fresh House' }}" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold focus:border-fresh-500 focus:outline-none">
                 </div>
 
                 <div>

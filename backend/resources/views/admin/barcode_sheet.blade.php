@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fresh Basket Pakistan — Shelf Barcode Labels</title>
+    <title>Fresh House — Shelf Barcode Labels</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
@@ -23,7 +23,7 @@
         <div>
             <h1 class="text-xl font-black text-gray-900 flex items-center gap-2">
                 <i class="fa-solid fa-barcode text-emerald-600"></i>
-                <span>Fresh Basket Shelf Barcode Generator</span>
+                <span>Fresh House Shelf Barcode Generator</span>
             </h1>
             <p class="text-xs text-gray-500">Printable A4 adhesive stickers (30 per page) for physical supermarket shelving and POS counter scanning</p>
         </div>
@@ -56,7 +56,7 @@
                 <div class="border-2 border-dashed border-gray-300 print:border-gray-400 rounded-xl p-3 flex flex-col justify-between bg-white relative overflow-hidden h-44">
                     <!-- Top Brand & Category -->
                     <div class="flex items-center justify-between border-b border-gray-100 pb-1 mb-1">
-                        <span class="text-[9px] font-black tracking-widest text-emerald-700 uppercase">FRESH BASKET</span>
+                        <span class="text-[9px] font-black tracking-widest text-emerald-700 uppercase">FRESH HOUSE</span>
                         <span class="text-[9px] text-gray-500 font-mono">{{ $p->sku }}</span>
                     </div>
 

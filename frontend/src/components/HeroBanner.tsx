@@ -99,7 +99,7 @@ const BANNER_SLIDES: BannerSlide[] = [
   {
     id: 'slide-4',
     badgeIcon: Gift,
-    badgeText: 'Fresh Basket PERQ Rewards',
+    badgeText: 'Fresh House PERQ Rewards',
     badgeColor: 'bg-emerald-400/25 text-emerald-300 border-emerald-400/40',
     title: 'Your Groceries Can Give Back.',
     highlightText: 'Free Delivery Over PKR 2,500.',

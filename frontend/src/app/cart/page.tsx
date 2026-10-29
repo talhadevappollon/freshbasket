@@ -228,7 +228,7 @@ export default function CartPage() {
                         </Link>
                         <div>
                           <span className="text-[10px] text-slate-400 font-black uppercase tracking-wider block">
-                            {item.product.brand || 'Fresh Basket'}
+                            {item.product.brand || 'Fresh House'}
                           </span>
                           <Link
                             href={`/products/${item.product.slug}`}

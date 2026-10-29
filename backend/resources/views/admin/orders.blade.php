@@ -134,7 +134,7 @@
                             <div class="text-xs text-slate-500 font-mono">{{ $order->customer_phone }}</div>
                             @php
                                 $cleanPhone = preg_replace('/[^0-9]/', '', $order->customer_phone);
-                                $waText = urlencode("Assalam-o-Alaikum {$order->customer_name}! Your Fresh Basket order #{$order->order_number} (Amount: PKR " . number_format($order->total, 0) . ") status: " . strtoupper($order->order_status) . ". Thank you for shopping fresh!");
+                                $waText = urlencode("Assalam-o-Alaikum {$order->customer_name}! Your Fresh House order #{$order->order_number} (Amount: PKR " . number_format($order->total, 0) . ") status: " . strtoupper($order->order_status) . ". Thank you for shopping fresh!");
                             @endphp
                             <a href="https://wa.me/{{ $cleanPhone }}?text={{ $waText }}" target="_blank" class="inline-flex items-center text-[11px] text-emerald-600 hover:text-emerald-700 font-bold mt-1">
                                 <i class="fa-brands fa-whatsapp mr-1 text-sm"></i> WhatsApp
@@ -351,7 +351,7 @@
         document.getElementById('drawerDeliveryAddress').innerText = (order.delivery_area ? order.delivery_area + ' — ' : '') + order.delivery_address;
         
         const cleanPhone = (order.customer_phone || '').replace(/[^0-9]/g, '');
-        const waMsg = encodeURIComponent(`Assalam-o-Alaikum ${order.customer_name}! Your Fresh Basket order #${order.order_number} (PKR ${Number(order.total).toLocaleString()}) is currently: ${order.order_status.toUpperCase()}. Our team is actively packing it.`);
+        const waMsg = encodeURIComponent(`Assalam-o-Alaikum ${order.customer_name}! Your Fresh House order #${order.order_number} (PKR ${Number(order.total).toLocaleString()}) is currently: ${order.order_status.toUpperCase()}. Our team is actively packing it.`);
         document.getElementById('drawerWhatsAppBtn').href = `https://wa.me/${cleanPhone}?text=${waMsg}`;
         document.getElementById('drawerPrintBtn').href = `/admin/orders/${order.id}/print`;
 

@@ -96,7 +96,7 @@
                             <div class="text-xs font-mono font-bold text-slate-800">{{ $customer->phone }}</div>
                             @php
                                 $cleanPhone = preg_replace('/[^0-9]/', '', $customer->phone);
-                                $waText = urlencode("Assalam-o-Alaikum {$customer->name}! Special greetings from Fresh Basket Pakistan. Check out today's fresh arrival organic fruits & vegetables at freshbasket.com.pk");
+                                $waText = urlencode("Assalam-o-Alaikum {$customer->name}! Special greetings from Fresh House. Check out today's fresh arrival organic fruits & vegetables at freshbasket.com.pk");
                             @endphp
                             <a href="https://wa.me/{{ $cleanPhone }}?text={{ $waText }}" target="_blank" class="inline-flex items-center text-xs text-emerald-600 hover:text-emerald-700 font-bold mt-1">
                                 <i class="fa-brands fa-whatsapp text-sm mr-1"></i> WhatsApp

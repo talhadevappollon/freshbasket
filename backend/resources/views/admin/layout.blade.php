@@ -416,7 +416,7 @@
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-gray-100 max-h-[calc(100dvh-2rem)] overflow-y-auto">
             <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
                 <div>
-                    <h3 class="font-black text-gray-900 text-lg">Add New Fresh Basket Product</h3>
+                    <h3 class="font-black text-gray-900 text-lg">Add New Fresh House Product</h3>
                     <p class="text-xs text-gray-500">Item will be synced across Online Storefront & POS Counter</p>
                 </div>
                 <button

@@ -172,7 +172,7 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
 
   // Pages opened through the shell get their title once the category is known
   useEffect(() => {
-    if (current) document.title = `${lastSegment(current.name)} — Fresh Basket Pakistan`;
+    if (current) document.title = `${lastSegment(current.name)} — Fresh House`;
   }, [current]);
 
   // The slug matches no category (typo, deleted aisle): say so instead of showing an empty shelf

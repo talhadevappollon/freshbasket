@@ -112,7 +112,7 @@
                             <img src="{{ $product->primary_image ?: 'https://via.placeholder.com/60' }}" class="w-12 h-12 object-contain rounded-xl border border-gray-100 bg-white p-1 shrink-0">
                             <div>
                                 <span class="font-bold text-gray-900 block line-clamp-1">{{ $product->name }}</span>
-                                <span class="text-xs text-gray-400">{{ $product->unit }} &bull; {{ $product->brand ?? 'Fresh Basket' }}</span>
+                                <span class="text-xs text-gray-400">{{ $product->unit }} &bull; {{ $product->brand ?? 'Fresh House' }}</span>
                             </div>
                         </td>
 

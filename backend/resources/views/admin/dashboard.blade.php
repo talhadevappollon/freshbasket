@@ -7,7 +7,7 @@
         <div class="relative z-10 max-w-xl">
             <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full text-emerald-300 text-xs font-bold uppercase tracking-wider mb-3 border border-white/10">
                 <i class="fa-solid fa-wand-magic-sparkles text-fresh-400"></i>
-                <span>Fresh Basket Executive Operations Hub</span>
+                <span>Fresh House Executive Operations Hub</span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-black tracking-tight leading-tight">
                 Karachi Central Warehouse & POS Command
@@ -236,7 +236,7 @@
                         <td class="px-4">
                             <div class="font-bold text-slate-800">{{ $order->customer_name }}</div>
                             <div class="text-xs text-slate-500 font-mono">{{ $order->customer_phone }}</div>
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $order->customer_phone) }}?text={{ urlencode('Assalam-o-Alaikum! Fresh Basket order #' . $order->order_number . ' is being processed.') }}" target="_blank" class="inline-flex items-center text-[11px] text-emerald-600 hover:text-emerald-700 font-bold mt-1">
+                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $order->customer_phone) }}?text={{ urlencode('Assalam-o-Alaikum! Fresh House order #' . $order->order_number . ' is being processed.') }}" target="_blank" class="inline-flex items-center text-[11px] text-emerald-600 hover:text-emerald-700 font-bold mt-1">
                                 <i class="fa-brands fa-whatsapp mr-1"></i> WhatsApp
                             </a>
                         </td>
@@ -360,7 +360,7 @@
                         </div>
                         <p class="text-xs text-slate-600 mt-1 line-clamp-1 font-medium">{{ $lead->message }}</p>
                     </div>
-                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $lead->phone) }}?text={{ urlencode('Assalam-o-Alaikum ' . $lead->name . ', thank you for contacting Fresh Basket Pakistan.') }}" target="_blank" class="shrink-0 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition">
+                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $lead->phone) }}?text={{ urlencode('Assalam-o-Alaikum ' . $lead->name . ', thank you for contacting Fresh House.') }}" target="_blank" class="shrink-0 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition">
                         <i class="fa-brands fa-whatsapp text-sm"></i>
                         <span>Reply</span>
                     </a>

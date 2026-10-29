@@ -29,7 +29,7 @@ class CrmController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Thank you for reaching out to Fresh Basket. Our support team will get in touch with you shortly!',
+            'message' => 'Thank you for reaching out to Fresh House. Our support team will get in touch with you shortly!',
             'lead_id' => $lead->id,
         ], 201);
     }

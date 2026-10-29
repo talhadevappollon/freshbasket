@@ -28,7 +28,7 @@ export default function OrderSuccessModal() {
   if (!completedOrder) return null;
 
   const whatsappMessage = encodeURIComponent(
-    `Hello Fresh Basket! I just placed order #${completedOrder.order_number} for PKR ${completedOrder.total.toLocaleString()} with Cash On Delivery. Please confirm estimated delivery time.`
+    `Hello Fresh House! I just placed order #${completedOrder.order_number} for PKR ${completedOrder.total.toLocaleString()} with Cash On Delivery. Please confirm estimated delivery time.`
   );
 
   return (

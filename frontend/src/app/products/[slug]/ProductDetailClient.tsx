@@ -180,7 +180,7 @@ export default function ProductDetailPage() {
               <div>
                 <div className="flex items-center justify-between gap-4 mb-2">
                   <span className="bg-emerald-50 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-wider">
-                    {product.brand || 'Fresh Basket'}
+                    {product.brand || 'Fresh House'}
                   </span>
                   <button
                     onClick={handleShare}
@@ -229,7 +229,7 @@ export default function ProductDetailPage() {
 
                 {/* Short Overview */}
                 <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                  {product.short_description || product.description || 'Premium quality fresh grocery directly sourced by Fresh Basket.'}
+                  {product.short_description || product.description || 'Premium quality fresh grocery directly sourced by Fresh House.'}
                 </p>
               </div>
 
@@ -323,7 +323,7 @@ export default function ProductDetailPage() {
             <div className="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-4xl">
               {activeTab === 'desc' && (
                 <div className="space-y-4">
-                  <p>{product.description || 'Sourced with care from authentic growers and top suppliers for Fresh Basket.'}</p>
+                  <p>{product.description || 'Sourced with care from authentic growers and top suppliers for Fresh House.'}</p>
                   <div className="bg-fresh-50 p-4 rounded-2xl border border-fresh-200 text-fresh-900 text-xs">
                     <h4 className="font-bold mb-1 flex items-center gap-1.5">
                       <Sparkles className="w-3.5 h-3.5 text-fresh-600" /> Freshness Guarantee
@@ -337,7 +337,7 @@ export default function ProductDetailPage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                   <div className="p-3 bg-gray-50 rounded-xl flex justify-between">
                     <span className="text-gray-400 font-semibold">Brand / Vendor</span>
-                    <span className="font-bold text-gray-900">{product.brand || 'Fresh Basket'}</span>
+                    <span className="font-bold text-gray-900">{product.brand || 'Fresh House'}</span>
                   </div>
                   <div className="p-3 bg-gray-50 rounded-xl flex justify-between">
                     <span className="text-gray-400 font-semibold">SKU Code</span>

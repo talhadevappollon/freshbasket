@@ -95,7 +95,7 @@ export default function PromoRewardsModal({
       onClick={handleDismiss}
       role="dialog"
       aria-modal="true"
-      aria-label="Fresh Basket Perq Rewards"
+      aria-label="Fresh House Perq Rewards"
     >
       {/* Modal Card */}
       <div
@@ -166,7 +166,7 @@ export default function PromoRewardsModal({
 
           {/* Explanatory Body */}
           <p className="text-sm text-emerald-50/95 leading-relaxed font-medium">
-            Join Fresh Basket Perq Rewards to earn points on eligible orders, get a first order bonus, and redeem your points for savings at checkout.
+            Join Fresh House Perq Rewards to earn points on eligible orders, get a first order bonus, and redeem your points for savings at checkout.
           </p>
 
           {/* CTA Buttons */}
@@ -241,7 +241,7 @@ export default function PromoRewardsModal({
             </svg>
           </div>
 
-          {/* Right: Fresh Basket Green Canvas Tote Bag with Fresh Produce */}
+          {/* Right: Fresh House Green Canvas Tote Bag with Fresh Produce */}
           <div className="relative w-44 sm:w-48 h-36 shrink-0 flex items-end justify-end">
             {/* Produce Popping out of the bag */}
             <div className="absolute bottom-16 right-3 w-40 flex items-end justify-center gap-0.5 z-0">

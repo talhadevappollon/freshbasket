@@ -148,7 +148,7 @@ export default function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-6 border-t border-emerald-900/60 flex flex-col sm:flex-row items-center justify-between text-xs text-emerald-300/60 gap-4">
-          <p>&copy; {new Date().getFullYear()} Fresh Basket Pakistan. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Fresh House. All rights reserved.</p>
           <div className="flex items-center space-x-1">
             <span>Crafted with</span>
             <Heart className="w-3.5 h-3.5 text-rose-500 inline fill-rose-500 animate-pulse" />

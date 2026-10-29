@@ -94,7 +94,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
           {/* Details */}
           <div className="space-y-4 min-w-0">
             <div>
-              <span className="text-sm font-semibold text-fresh-700 block">{product.brand || 'Fresh Basket Pakistan'}</span>
+              <span className="text-sm font-semibold text-fresh-700 block">{product.brand || 'Fresh House'}</span>
               <h3 className="text-lg sm:text-xl font-black text-slate-900 mt-1 leading-snug">{product.name}</h3>
               <span className="text-sm text-slate-600 block mt-1">
                 Pack size: <strong>{product.unit || 'Per unit'}</strong>

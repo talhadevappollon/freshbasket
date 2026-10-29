@@ -251,7 +251,7 @@ export default function Home() {
         <StatsBand />
         <HowItWorks />
 
-        {/* Why choose Fresh Basket */}
+        {/* Why choose Fresh House */}
         <section className="bg-white border-y border-slate-200/80 py-12 px-4 mt-8">
           <div className="max-w-7xl mx-auto">
             <Reveal className="text-center max-w-xl mx-auto mb-10">
@@ -310,7 +310,7 @@ export default function Home() {
         target="_blank"
         rel="noreferrer"
         className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 h-12 w-12 sm:w-auto sm:px-5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-full shadow-2xl flex items-center justify-center gap-2 z-40 transition-all duration-200"
-        aria-label="Chat with Fresh Basket support on WhatsApp"
+        aria-label="Chat with Fresh House support on WhatsApp"
       >
         <MessageCircle className="w-6 h-6" />
         <span className="hidden sm:inline font-bold text-sm">WhatsApp order support</span>

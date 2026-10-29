@@ -59,7 +59,7 @@ export function TrustMarquee() {
     <Reveal as="section" className="py-4" variant="zoom">
       <div
         className="marquee-track overflow-hidden border-y border-slate-200 bg-white py-3.5 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] [-webkit-mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]"
-        aria-label="Why shop with Fresh Basket"
+        aria-label="Why shop with Fresh House"
       >
         <div className="marquee-inner flex w-max animate-marquee">
           {half(false)}

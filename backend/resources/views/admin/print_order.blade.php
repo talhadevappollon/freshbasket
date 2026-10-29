@@ -26,7 +26,7 @@
         <!-- Header -->
         <div class="flex items-start justify-between border-b pb-6 border-gray-200">
             <div>
-                <h1 class="text-2xl font-black text-emerald-800 tracking-tight">FRESH BASKET</h1>
+                <h1 class="text-2xl font-black text-emerald-800 tracking-tight">FRESH HOUSE</h1>
                 <p class="text-xs text-gray-500 font-medium">Fresh Grocery Delivery &bull; Karachi, Pakistan</p>
                 <p class="text-xs text-gray-400">UAN: +92 21 111-373-742 &bull; support@freshbasket.com.pk</p>
             </div>
@@ -131,7 +131,7 @@
 
         <!-- Footer -->
         <div class="pt-6 border-t border-gray-200 text-center text-[10px] text-gray-400">
-            <p>Thank you for shopping with Fresh Basket Pakistan!</p>
+            <p>Thank you for shopping with Fresh House!</p>
             <p class="mt-0.5">Please check all items upon delivery before the rider departs.</p>
         </div>
     </div>
