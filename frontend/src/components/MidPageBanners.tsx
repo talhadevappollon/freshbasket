@@ -157,6 +157,81 @@ export default function MidPageBanners({ onSelectCategory }: MidPageBannersProps
           </div>
         </div>
       </div>
+
+      {/* Panoramic Weekend Mega Restock & Family Savings Banner */}
+      <div className="mt-8 rounded-3xl overflow-hidden bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border border-emerald-800/50 shadow-2xl relative text-white p-6 sm:p-8">
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-fresh-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div className="space-y-3 max-w-2xl">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black px-3 py-1 rounded-full text-[10px] uppercase tracking-wider shadow-sm">
+                <Flame className="w-3.5 h-3.5 text-rose-700 animate-bounce" />
+                <span>Karachi Weekend Mega Restock</span>
+              </span>
+              <span className="bg-white/10 backdrop-blur-md text-emerald-300 font-bold px-3 py-1 rounded-full text-[10px] border border-white/15">
+                Up to 35% OFF Family Essentials
+              </span>
+            </div>
+
+            <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight">
+              Fill Your Pantry With Farm Quality Groceries &amp; Gourmet Imports
+            </h3>
+
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Cold-pressed mustard oils, grass-fed cooking tallow, Yayycheese Greek feta, pure Almarai milk, and farm-picked mushrooms. Packed in cold thermal containers and dispatched in 90 minutes.
+            </p>
+
+            <div className="flex flex-wrap items-center gap-4 pt-1 text-xs text-emerald-200">
+              <div className="flex items-center gap-1.5 font-semibold">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                <span>100% Quality Inspected</span>
+              </div>
+              <div className="flex items-center gap-1.5 font-semibold">
+                <Truck className="w-4 h-4 text-emerald-400" />
+                <span>Free Delivery Over PKR 2,500</span>
+              </div>
+              <div className="flex items-center gap-1.5 font-semibold">
+                <Clock className="w-4 h-4 text-emerald-400" />
+                <span>Same-Day 2-Hour Express</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="shrink-0 flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end gap-3.5">
+            {/* Coupon Code Pill with Copy Action */}
+            <div className="bg-black/50 backdrop-blur-md border border-white/20 p-3.5 rounded-2xl flex items-center justify-between gap-4">
+              <div>
+                <span className="text-[10px] uppercase tracking-wider text-slate-400 block font-bold">
+                  Use Coupon at Checkout
+                </span>
+                <span className="font-mono text-base font-black text-amber-300 tracking-wider">
+                  RESTOCK25
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText('RESTOCK25');
+                  alert('Coupon code RESTOCK25 copied to clipboard! Enjoy 25% OFF.');
+                }}
+                className="bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer shadow-xs"
+              >
+                Copy Code
+              </button>
+            </div>
+
+            <button
+              onClick={() => handleClickAisle('')}
+              className="bg-gradient-to-r from-fresh-500 to-emerald-600 hover:from-fresh-400 hover:to-emerald-500 text-white font-black text-xs sm:text-sm py-3 px-6 rounded-2xl shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 group cursor-pointer"
+            >
+              <span>Explore Restock Deals</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            </button>
+          </div>
+        </div>
+      </div>
     </section>
   );
 }
+

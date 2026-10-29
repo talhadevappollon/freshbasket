@@ -11,6 +11,7 @@ import CheckoutModal from '@/components/CheckoutModal';
 import OrderSuccessModal from '@/components/OrderSuccessModal';
 import PromoRewardsModal from '@/components/PromoRewardsModal';
 import MidPageBanners from '@/components/MidPageBanners';
+import HomePromoBanners from '@/components/HomePromoBanners';
 import Footer from '@/components/Footer';
 import { fetchCategories, fetchProducts } from '@/lib/api';
 import { Category, Product } from '@/types';
@@ -244,6 +245,9 @@ export default function Home() {
             </div>
           )}
         </section>
+
+        {/* Rich Multi-Tiered Promotional Banners Suite */}
+        <HomePromoBanners onSelectCategory={handleSelectCategory} />
 
         {/* Why Choose Fresh Basket Section */}
         <section className="bg-white border-y border-slate-200/80 py-12 px-4 mt-8">

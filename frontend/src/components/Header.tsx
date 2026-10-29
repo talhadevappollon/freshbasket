@@ -439,22 +439,22 @@ export default function Header({
           </div>
         </div>
 
-        {/* Category Navigation Bar with Creative MEGA MENU Trigger & Pills */}
-        <div className="relative bg-white/95 backdrop-blur-xs border-t border-slate-100 py-2" ref={megaMenuRef}>
+        {/* Category Navigation Bar with 21st.dev All Categories Trigger & Quick Pills */}
+        <div className="relative bg-white border-t border-slate-100 py-2" ref={megaMenuRef}>
           <div className="max-w-7xl mx-auto px-4 flex items-center space-x-2 overflow-x-auto no-scrollbar scroll-smooth">
-            {/* Creative Mega Menu Toggle Button */}
+            {/* 21st.dev Style All Categories Toggle Button (No 'Mega Menu' wording) */}
             <button
               onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
               onMouseEnter={() => setIsMegaMenuOpen(true)}
-              className={`px-4 py-1.5 rounded-full text-xs font-black flex items-center gap-2 transition-all duration-200 shrink-0 cursor-pointer shadow-sm ${
+              className={`px-4 py-1.5 rounded-full text-xs font-black flex items-center gap-2 transition-all duration-200 shrink-0 cursor-pointer shadow-xs ${
                 isMegaMenuOpen
-                  ? 'bg-gradient-to-r from-emerald-950 to-slate-950 text-white shadow-md'
-                  : 'bg-emerald-900 hover:bg-emerald-950 text-emerald-100 hover:text-white border border-emerald-800 hover:shadow-md hover:-translate-y-0.5'
+                  ? 'bg-slate-900 text-white shadow-md'
+                  : 'bg-emerald-800 hover:bg-emerald-900 text-white border border-emerald-700/80 hover:shadow-md hover:-translate-y-0.5'
               }`}
             >
-              <LayoutGrid className="w-3.5 h-3.5 text-fresh-400 animate-pulse" />
-              <span>Explore Aisles & Mega Menu</span>
-              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isMegaMenuOpen ? 'rotate-180 text-white' : 'text-emerald-300'}`} />
+              <LayoutGrid className="w-3.5 h-3.5 text-emerald-300" />
+              <span>All Categories</span>
+              <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isMegaMenuOpen ? 'rotate-180 text-white' : 'text-emerald-200'}`} />
             </button>
 
             {/* "All Products" Pill with Enhanced Hover */}
@@ -500,21 +500,21 @@ export default function Header({
             ))}
           </div>
 
-          {/* CREATIVE MEGA MENU EXPANDED PANEL (Desktop Dropdown) */}
+          {/* 21st.dev Style All Categories High-Contrast Solid Dropdown Panel */}
           {isMegaMenuOpen && (
             <div
-              className="absolute left-0 right-0 top-full mt-1 max-w-7xl mx-auto px-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+              className="absolute left-0 right-0 top-full mt-1.5 max-w-7xl mx-auto px-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
               onMouseLeave={() => setIsMegaMenuOpen(false)}
             >
-              <div className="bg-white/98 backdrop-blur-2xl rounded-3xl shadow-2xl border border-slate-200/90 p-6 sm:p-8 overflow-hidden">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <div className="bg-white rounded-3xl shadow-2xl border border-slate-200 p-6 sm:p-7 overflow-hidden text-slate-800">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-7">
                   {/* Left Column (4 Cols): Main Supermarket Aisles Tabs */}
-                  <div className="lg:col-span-4 border-r border-slate-100 pr-0 lg:pr-6 space-y-1">
-                    <div className="flex items-center justify-between pb-3 mb-2 border-b border-slate-100">
-                      <span className="text-[11px] font-black uppercase tracking-wider text-slate-400">
-                        Select Supermarket Aisle
+                  <div className="lg:col-span-4 border-r border-slate-100 pr-0 lg:pr-5 space-y-1.5">
+                    <div className="flex items-center justify-between pb-2.5 mb-1.5 border-b border-slate-100">
+                      <span className="text-[11px] font-black uppercase tracking-wider text-slate-500">
+                        Supermarket Aisles
                       </span>
-                      <span className="text-[10px] text-fresh-700 font-bold bg-fresh-50 px-2 py-0.5 rounded-full">
+                      <span className="text-[10px] text-emerald-800 font-bold bg-emerald-50 border border-emerald-200/60 px-2 py-0.5 rounded-full">
                         750+ Items
                       </span>
                     </div>
@@ -529,24 +529,26 @@ export default function Header({
                             onSelectCategory(aisle.id);
                             setIsMegaMenuOpen(false);
                           }}
-                          className={`p-3 rounded-2xl flex items-center justify-between transition-all duration-200 cursor-pointer group ${
+                          className={`p-3 rounded-2xl flex items-center justify-between transition-all duration-150 cursor-pointer group ${
                             isActive
-                              ? 'bg-emerald-50 text-fresh-800 shadow-xs border-l-4 border-fresh-600 pl-4 font-bold'
-                              : 'text-slate-700 hover:bg-slate-50 hover:text-fresh-700 hover:pl-3.5 border-l-4 border-transparent'
+                              ? 'bg-emerald-50 text-slate-900 shadow-xs border border-emerald-200/80 font-bold'
+                              : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900 border border-transparent'
                           }`}
                         >
                           <div className="flex items-center space-x-3">
-                            <span className="text-xl group-hover:scale-125 transition-transform duration-200">
+                            <span className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-center text-lg shadow-2xs group-hover:scale-110 transition-transform">
                               {aisle.icon}
                             </span>
                             <div>
-                              <h4 className="text-xs font-bold leading-tight">{aisle.name}</h4>
+                              <h4 className="text-xs font-bold leading-tight text-slate-900 group-hover:text-emerald-700 transition-colors">
+                                {aisle.name}
+                              </h4>
                               <span className="text-[10px] text-slate-400 font-medium">{aisle.badge}</span>
                             </div>
                           </div>
                           <ChevronRight
-                            className={`w-4 h-4 transition-transform duration-200 ${
-                              isActive ? 'text-fresh-600 translate-x-1' : 'text-slate-300 group-hover:text-slate-500'
+                            className={`w-4 h-4 transition-transform duration-150 ${
+                              isActive ? 'text-emerald-700 translate-x-1' : 'text-slate-300 group-hover:text-slate-500'
                             }`}
                           />
                         </div>
@@ -557,11 +559,11 @@ export default function Header({
                   {/* Middle Column (4 Cols): Trending Items in Selected Aisle */}
                   <div className="lg:col-span-4 space-y-4">
                     <div>
-                      <div className="inline-flex items-center gap-1.5 text-fresh-700 font-bold text-xs mb-1">
+                      <div className="inline-flex items-center gap-1.5 text-emerald-800 font-bold text-xs mb-1">
                         <Flame className="w-4 h-4 text-rose-500" />
                         <span>Trending in {selectedMegaAisle.name}</span>
                       </div>
-                      <p className="text-xs text-slate-500 leading-relaxed">
+                      <p className="text-xs text-slate-600 leading-relaxed font-normal">
                         {selectedMegaAisle.description}
                       </p>
                     </div>
@@ -575,7 +577,7 @@ export default function Header({
                           <button
                             key={term}
                             onClick={() => handleSelectQuickSearch(term)}
-                            className="bg-slate-100 hover:bg-fresh-600 hover:text-white text-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer shadow-2xs hover:shadow-xs hover:scale-105 active:scale-95"
+                            className="bg-slate-100 hover:bg-emerald-600 hover:text-white text-slate-800 font-semibold px-3 py-1.5 rounded-xl text-xs transition duration-150 cursor-pointer border border-slate-200/60 shadow-2xs hover:shadow-xs active:scale-95"
                           >
                             {term}
                           </button>
@@ -590,39 +592,39 @@ export default function Header({
                           onSelectCategory('');
                           setIsMegaMenuOpen(false);
                         }}
-                        className="inline-flex items-center gap-1.5 text-xs font-bold text-fresh-700 hover:text-fresh-800 hover:underline"
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 hover:underline"
                       >
-                        <span>View all aisles in catalog</span>
+                        <span>View all supermarket items</span>
                         <ArrowRight className="w-3.5 h-3.5" />
                       </Link>
                     </div>
                   </div>
 
-                  {/* Right Column (4 Cols): Creative Visual Card with Promo & Image */}
+                  {/* Right Column (4 Cols): 21st.dev Style High-Contrast Featured Card */}
                   <div className="lg:col-span-4">
                     <div
-                      className={`relative rounded-3xl p-6 text-white bg-gradient-to-br ${selectedMegaAisle.accentGradient} shadow-xl overflow-hidden flex flex-col justify-between h-full min-h-[260px] group`}
+                      className={`relative rounded-2xl p-6 text-white bg-gradient-to-br ${selectedMegaAisle.accentGradient} shadow-xl overflow-hidden flex flex-col justify-between h-full min-h-[260px] group`}
                     >
                       {/* Decorative Background Icon */}
-                      <div className="absolute -right-4 -bottom-4 text-7xl opacity-20 pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
+                      <div className="absolute -right-3 -bottom-3 text-7xl opacity-20 pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
                         {selectedMegaAisle.imageIcon}
                       </div>
 
                       <div className="relative z-10 space-y-2">
-                        <div className="inline-flex items-center gap-1 bg-white/15 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-white/20">
+                        <div className="inline-flex items-center gap-1 bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border border-white/20">
                           <Gift className="w-3 h-3 text-amber-300" />
                           <span>Special Aisle Bonus</span>
                         </div>
                         <h3 className="text-xl font-black text-white leading-tight">
                           {selectedMegaAisle.promoTitle}
                         </h3>
-                        <p className="text-xs text-emerald-100/80 leading-snug">
+                        <p className="text-xs text-emerald-100/90 leading-snug">
                           {selectedMegaAisle.promoSubtitle}
                         </p>
                       </div>
 
                       <div className="relative z-10 pt-4 space-y-3">
-                        <div className="bg-black/30 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 flex items-center justify-between text-xs">
+                        <div className="bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/20 flex items-center justify-between text-xs">
                           <span className="text-[11px] text-emerald-200">Coupon:</span>
                           <span className="font-mono font-black text-amber-300 tracking-wider">
                             {selectedMegaAisle.promoCode} (10% OFF)
