@@ -1,6 +1,11 @@
 {
   "framework": "nextjs",
   "buildCommand": "npm run build",
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "rewrites": [
+    {
+      "source": "/category/:slug",
+      "destination": "/category/_"
+    }
+  ]
 }
-

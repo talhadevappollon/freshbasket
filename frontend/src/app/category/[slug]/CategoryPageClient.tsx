@@ -12,11 +12,15 @@ import OrderSuccessModal from '@/components/OrderSuccessModal';
 import ScrollUI from '@/components/ScrollUI';
 import Reveal from '@/components/Reveal';
 import { fetchCategories, fetchProducts } from '@/lib/api';
+import { resolveCategory } from '@/data/aisles';
 import { FEATURED_AISLES } from '@/data/aisles';
 import { Category, Product } from '@/types';
 import { ChevronRight, ArrowDown, SlidersHorizontal, SearchX, Truck, ShieldCheck, Banknote, ArrowRight } from 'lucide-react';
 
 const PAGE_SIZE = 12;
+
+// Placeholder slug of the generic shell page (see page.tsx): the real slug is read from the URL.
+const SHELL_SLUG = '_';
 
 interface Props {
   slug: string;
@@ -49,8 +53,11 @@ function SkeletonCard() {
   );
 }
 
-export default function CategoryPageClient({ slug, initialName, initialDescription }: Props) {
+export default function CategoryPageClient({ slug: routeSlug, initialName, initialDescription }: Props) {
+  // Pre-built pages know their slug; the shell reads it from the address bar once mounted
+  const [slug, setSlug] = useState(routeSlug === SHELL_SLUG ? '' : routeSlug);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
   const [sortBy, setSortBy] = useState('latest');
@@ -59,14 +66,33 @@ export default function CategoryPageClient({ slug, initialName, initialDescripti
   const [page, setPage] = useState(1);
   const [quickView, setQuickView] = useState<Product | null>(null);
 
+  // Links may carry the bundled catalogue's slug (e.g. karachi-beverages) while the live API names the
+  // same category differently (beverages): resolve by slug first, then by category name.
+  const current = categoriesLoaded ? resolveCategory(categories, slug) : undefined;
+  const activeSlug = current?.slug ?? slug;
+
   useEffect(() => {
-    fetchCategories().then(setCategories);
+    if (routeSlug !== SHELL_SLUG) return;
+    const fromUrl = decodeURIComponent(window.location.pathname.split('/').filter(Boolean)[1] || '');
+    setSlug(fromUrl);
+  }, [routeSlug]);
+
+  useEffect(() => {
+    fetchCategories().then(cats => {
+      setCategories(cats);
+      setCategoriesLoaded(true);
+    });
   }, []);
 
   useEffect(() => {
+    if (!slug || !categoriesLoaded) return;
+    if (!current) {
+      setIsLoading(false); // unknown category: the "aisle not found" state is shown instead
+      return;
+    }
     let cancelled = false;
     setIsLoading(true);
-    fetchProducts({ category: slug, sort: sortBy, per_page: PAGE_SIZE }).then(res => {
+    fetchProducts({ category: activeSlug, sort: sortBy, per_page: PAGE_SIZE }).then(res => {
       if (cancelled) return;
       setProducts(res.data);
       setTotal(res.total);
@@ -76,18 +102,18 @@ export default function CategoryPageClient({ slug, initialName, initialDescripti
     return () => {
       cancelled = true;
     };
-  }, [slug, sortBy]);
+  }, [slug, activeSlug, current, categoriesLoaded, sortBy]);
 
   const loadMore = async () => {
+    if (!slug || !current) return;
     setIsLoadingMore(true);
     const next = page + 1;
-    const res = await fetchProducts({ category: slug, sort: sortBy, per_page: PAGE_SIZE * next });
+    const res = await fetchProducts({ category: activeSlug, sort: sortBy, per_page: PAGE_SIZE * next });
     setProducts(res.data);
     setPage(next);
     setIsLoadingMore(false);
   };
 
-  const current = categories.find(c => c.slug === slug);
   const fullName = current?.name || initialName || humanize(slug);
   const title = lastSegment(fullName);
   const groupName = fullName.includes('/') ? fullName.split('/')[0].trim() : '';
@@ -101,7 +127,52 @@ export default function CategoryPageClient({ slug, initialName, initialDescripti
     return { parent, children: family.filter(c => c.name.includes('/')) };
   }, [categories, fullName, groupName]);
 
-  const otherAisles = FEATURED_AISLES.filter(a => a.slug !== slug).slice(0, 4);
+  const otherAisles = FEATURED_AISLES.filter(a => a.slug !== slug && a.slug !== activeSlug).slice(0, 4);
+
+  // Pages opened through the shell get their title once the category is known
+  useEffect(() => {
+    if (current) document.title = `${lastSegment(current.name)} — Fresh Basket Pakistan`;
+  }, [current]);
+
+  // The slug matches no category (typo, deleted aisle): say so instead of showing an empty shelf
+  const notFound = slug !== '' && categoriesLoaded && !current;
+
+  if (notFound) {
+    return (
+      <div className="min-h-screen flex flex-col bg-slate-50">
+        <Header categories={categories} />
+        <main id="main-content" className="flex-1 pb-20 sm:pb-8">
+          <div className="max-w-xl mx-auto px-4 py-20 text-center">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center">
+              <SearchX className="w-7 h-7" />
+            </div>
+            <h1 className="mt-5 text-2xl font-black text-slate-900">We couldn&apos;t find that aisle</h1>
+            <p className="mt-2 text-sm text-slate-600">
+              The link may be out of date. Browse the whole store or head to one of our busiest aisles.
+            </p>
+            <div className="mt-6 flex flex-wrap justify-center gap-2">
+              <Link
+                href="/#products-section"
+                className="inline-flex items-center h-11 px-5 rounded-xl bg-fresh-700 hover:bg-fresh-800 text-white text-sm font-bold transition-colors"
+              >
+                Browse all products
+              </Link>
+              {otherAisles.slice(0, 3).map(a => (
+                <Link
+                  key={a.slug}
+                  href={`/category/${a.slug}`}
+                  className="inline-flex items-center h-11 px-5 rounded-xl bg-white border border-slate-200 hover:border-fresh-400 text-slate-800 text-sm font-semibold transition-colors"
+                >
+                  {a.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
@@ -172,9 +243,9 @@ export default function CategoryPageClient({ slug, initialName, initialDescripti
                   <li>
                     <Link
                       href={`/category/${siblings.parent.slug}`}
-                      aria-current={siblings.parent.slug === slug ? 'page' : undefined}
+                      aria-current={siblings.parent.slug === activeSlug ? 'page' : undefined}
                       className={`inline-flex items-center h-10 px-4 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${
-                        siblings.parent.slug === slug
+                        siblings.parent.slug === activeSlug
                           ? 'bg-fresh-700 text-white'
                           : 'bg-white border border-slate-200 text-slate-700 hover:border-fresh-400 hover:text-fresh-800'
                       }`}
@@ -187,9 +258,9 @@ export default function CategoryPageClient({ slug, initialName, initialDescripti
                   <li key={c.id}>
                     <Link
                       href={`/category/${c.slug}`}
-                      aria-current={c.slug === slug ? 'page' : undefined}
+                      aria-current={c.slug === activeSlug ? 'page' : undefined}
                       className={`inline-flex items-center h-10 px-4 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${
-                        c.slug === slug
+                        c.slug === activeSlug
                           ? 'bg-fresh-700 text-white'
                           : 'bg-white border border-slate-200 text-slate-700 hover:border-fresh-400 hover:text-fresh-800'
                       }`}

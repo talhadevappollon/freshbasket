@@ -80,6 +80,13 @@ DirectoryIndex index.html index.php
     RewriteCond %{REQUEST_FILENAME}.html -f
     RewriteRule ^([^\.]+)$ $1.html [NC,L]
 
+    # Categories created after the last frontend build have no pre-rendered page: serve the generic
+    # category shell (category/_.html), which reads the slug from the URL and loads the category by API.
+    # Existing pages are matched by the rule above first.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{DOCUMENT_ROOT}/category/_.html -f
+    RewriteRule ^category/([^/\.]+)/?$ category/_.html [L]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$

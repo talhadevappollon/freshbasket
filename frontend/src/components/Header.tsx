@@ -7,7 +7,7 @@ import { useCart } from '@/context/CartContext';
 import { Product, Category } from '@/types';
 import { fetchProducts } from '@/lib/api';
 import { PLACEHOLDER_IMG } from '@/lib/placeholder';
-import { FEATURED_AISLES } from '@/data/aisles';
+import { FEATURED_AISLES, resolveCategory } from '@/data/aisles';
 import {
   ShoppingBag,
   Search,
@@ -343,6 +343,8 @@ export default function Header({ categories }: HeaderProps) {
   // The category page currently shown, so its nav link can be highlighted
   const activeSlug = pathname.startsWith('/category/') ? decodeURIComponent(pathname.split('/')[2] || '') : '';
 
+  const activeCategory = activeSlug ? resolveCategory(categories, activeSlug) : undefined;
+
   /** Every category opens its own page. */
   const go = useCallback(
     (slug: string) => {
@@ -595,7 +597,7 @@ export default function Header({ categories }: HeaderProps) {
 
             <ul className="flex items-center gap-6 text-sm font-semibold text-slate-700">
               {FEATURED_AISLES.map(aisle => {
-                const isActive = activeSlug === aisle.slug;
+                const isActive = activeCategory !== undefined && activeCategory.slug === resolveCategory(categories, aisle.slug)?.slug;
                 return (
                   <li key={aisle.slug}>
                     <Link
