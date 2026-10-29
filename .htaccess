@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Disable directory indexing
+    Options -Indexes
+
+    # Block direct access to sensitive files
+    RewriteRule ^\.env$ - [F,L,NC]
+    RewriteRule ^\.git - [F,L,NC]
+    RewriteRule ^\.cpanel\.yml$ - [F,L,NC]
+    RewriteRule ^backend/\.env$ - [F,L,NC]
+
+    # Rewrite all traffic into backend/public/
+    RewriteCond %{REQUEST_URI} !^/backend/public/
+    RewriteRule ^(.*)$ backend/public/$1 [L]
+</IfModule>
