@@ -45,7 +45,11 @@ if [ -z "$COMPOSER_CMD" ]; then
 fi
 echo "Using Composer command: $COMPOSER_CMD"
 
-# 3. Install Composer dependencies if vendor folder does not exist
+# 3. Ensure required storage and framework directories exist
+mkdir -p storage/framework/views storage/framework/cache/data storage/framework/sessions storage/logs bootstrap/cache
+chmod -R 775 storage bootstrap/cache 2>/dev/null || true
+
+# 4. Install Composer dependencies if vendor folder does not exist
 if [ ! -d "vendor" ]; then
     echo "vendor/ directory not found. Installing composer dependencies..."
     if [ -n "$COMPOSER_CMD" ]; then
@@ -55,14 +59,11 @@ if [ ! -d "vendor" ]; then
     fi
 fi
 
-# 4. Generate application key if missing in .env
+# 5. Generate application key if missing in .env
 if [ -f ".env" ] && ! grep -q "^APP_KEY=base64:" .env; then
     echo "Generating application encryption key..."
     $PHP_BIN artisan key:generate --force || true
 fi
-
-# 5. Fix permissions for storage and bootstrap/cache
-chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 
 # 6. Run database migrations in production with --force flag
 echo "Running database migrations..."
