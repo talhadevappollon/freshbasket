@@ -47,3 +47,4 @@ EXPOSE 8080
 
 # Start Apache in foreground
 CMD ["sh", "-c", "php artisan config:cache && php artisan route:cache && php artisan view:cache && apache2-foreground"]
+

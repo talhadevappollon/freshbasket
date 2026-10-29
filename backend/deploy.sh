@@ -24,3 +24,4 @@ php artisan view:cache
 php artisan up
 
 echo "=== Deployment & Database Migrations Successful! ==="
+

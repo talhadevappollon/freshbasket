@@ -12,3 +12,4 @@ deployment:
     - cd backend && /usr/local/bin/php artisan route:cache
     - cd backend && /usr/local/bin/php artisan view:cache
     - echo "=== cPanel Deployment & Migrations Complete ==="
+
