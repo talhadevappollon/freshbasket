@@ -9,6 +9,7 @@ import QuickViewModal from '@/components/QuickViewModal';
 import CartDrawer from '@/components/CartDrawer';
 import CheckoutModal from '@/components/CheckoutModal';
 import OrderSuccessModal from '@/components/OrderSuccessModal';
+import PromoRewardsModal from '@/components/PromoRewardsModal';
 import Footer from '@/components/Footer';
 import { fetchCategories, fetchProducts } from '@/lib/api';
 import { Category, Product } from '@/types';
@@ -289,6 +290,9 @@ export default function Home() {
         product={quickViewProduct}
         onClose={() => setQuickViewProduct(null)}
       />
+
+      {/* Fresh Basket Perq Rewards Welcome Pop-up Modal */}
+      <PromoRewardsModal linkUrl="#products-section" rewardCoupon="FRESH10" />
 
       {/* Cart Drawer */}
       <CartDrawer />
