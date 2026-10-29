@@ -303,7 +303,7 @@ export default function HeroBanner() {
         {/* Navigation Arrows & Bottom Indicator Strip */}
         <div className="relative z-20 mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
           {/* Indicator pills – the active one fills while the slide is playing */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {BANNER_SLIDES.map((s, idx) => {
               const isActive = currentSlide === idx;
               return (
@@ -313,7 +313,7 @@ export default function HeroBanner() {
                   onClick={() => setCurrentSlide(idx)}
                   aria-label={`Go to slide ${idx + 1}`}
                   aria-current={isActive ? 'true' : undefined}
-                  className="relative h-6 min-w-6 flex items-center justify-center cursor-pointer group/dot"
+                  className="relative h-11 min-w-6 flex items-center justify-center cursor-pointer group/dot"
                 >
                   <span
                     className={`relative block h-2 rounded-full overflow-hidden transition-all duration-300 ${
@@ -335,18 +335,18 @@ export default function HeroBanner() {
                 </button>
               );
             })}
-            <span className="text-xs text-emerald-100/70 tabular-nums ml-2" aria-hidden="true">
+            <span className="hidden sm:inline text-xs text-emerald-100/70 tabular-nums ml-2 whitespace-nowrap" aria-hidden="true">
               {currentSlide + 1} / {BANNER_SLIDES.length}
             </span>
           </div>
 
           {/* Left/Right Carousel Controls */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             {!reduceMotion && (
               <button
                 type="button"
                 onClick={() => setUserPaused(p => !p)}
-                className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
+                className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
                 aria-label={userPaused ? 'Play carousel' : 'Pause carousel'}
               >
                 {userPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
@@ -354,14 +354,14 @@ export default function HeroBanner() {
             )}
             <button
               onClick={prevSlide}
-              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
+              className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
               aria-label="Previous Banner"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={nextSlide}
-              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
+              className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
               aria-label="Next Banner"
             >
               <ChevronRight className="w-4 h-4" />

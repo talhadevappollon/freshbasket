@@ -37,24 +37,24 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
   return (
     <article className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 p-2.5 sm:p-4 shadow-xs hover:shadow-card-hover hover:border-fresh-300 transition-all duration-300 ease-out-expo flex flex-col justify-between group relative overflow-hidden h-full">
       {/* Top badges */}
-      <div className="flex items-center justify-between absolute top-2.5 left-2.5 right-2.5 sm:top-3 sm:left-3 sm:right-3 z-10 pointer-events-none">
+      <div className="flex items-center justify-between gap-1.5 absolute top-2.5 left-2.5 right-2.5 sm:top-3 sm:left-3 sm:right-3 z-10 pointer-events-none">
         {discount ? (
-          <span className="bg-rose-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow-xs">-{discount}%</span>
+          <span className="bg-rose-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow-xs whitespace-nowrap shrink-0">-{discount}%</span>
         ) : product.is_featured ? (
-          <span className="bg-fresh-700 text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow-xs flex items-center gap-1">
-            <Sparkles className="w-3 h-3" /> Fresh pick
+          <span className="bg-fresh-700 text-white text-[11px] font-bold px-2 py-0.5 rounded-full shadow-xs flex items-center gap-1 whitespace-nowrap shrink-0">
+            <Sparkles className="w-3 h-3" aria-hidden="true" /> <span className="sr-only sm:not-sr-only">Fresh pick</span>
           </span>
         ) : (
           <span />
         )}
 
-        <span className="bg-slate-900/75 backdrop-blur-md text-white text-[11px] font-semibold px-2 py-0.5 rounded-md sm:rounded-lg">
+        <span className="bg-slate-900/75 backdrop-blur-md text-white text-[11px] font-semibold px-2 py-0.5 rounded-md sm:rounded-lg truncate min-w-0 ml-auto">
           {product.unit || '1 unit'}
         </span>
       </div>
 
       {/* Image with link and quick-view */}
-      <div className="relative pt-3 pb-1 flex items-center justify-center overflow-hidden h-32 sm:h-44">
+      <div className="relative pt-8 sm:pt-3 pb-1 flex items-center justify-center overflow-hidden h-36 sm:h-44">
         <Link
           href={`/products/${product.slug}`}
           className="w-full h-full flex items-center justify-center"
@@ -122,7 +122,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
               <button
                 type="button"
                 onClick={() => updateQuantity(product.id, cartItem.quantity - 1)}
-                className="w-8 h-8 rounded-lg bg-white text-slate-700 hover:bg-rose-50 hover:text-rose-700 active:scale-90 flex items-center justify-center transition-all cursor-pointer"
+                className="w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-white text-slate-700 hover:bg-rose-50 hover:text-rose-700 active:scale-90 flex items-center justify-center transition-all cursor-pointer"
                 aria-label={`Decrease ${product.name} quantity`}
               >
                 <Minus className="w-3.5 h-3.5" />
@@ -133,7 +133,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
               <button
                 type="button"
                 onClick={() => updateQuantity(product.id, cartItem.quantity + 1)}
-                className="w-8 h-8 rounded-lg bg-fresh-600 text-white hover:bg-fresh-700 active:scale-90 flex items-center justify-center transition-all cursor-pointer"
+                className="w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-fresh-600 text-white hover:bg-fresh-700 active:scale-90 flex items-center justify-center transition-all cursor-pointer"
                 aria-label={`Increase ${product.name} quantity`}
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -143,7 +143,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
             <button
               type="button"
               onClick={handleAdd}
-              className={`h-9 sm:h-10 px-2.5 sm:px-4 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1 border shrink-0 cursor-pointer active:scale-95 ${
+              className={`h-11 min-w-11 justify-center sm:h-10 px-2.5 sm:px-4 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1 border shrink-0 cursor-pointer active:scale-95 ${
                 justAdded
                   ? 'bg-fresh-700 border-fresh-700 text-white'
                   : 'bg-fresh-50 border-fresh-200 text-fresh-700 hover:bg-fresh-600 hover:border-fresh-600 hover:text-white'

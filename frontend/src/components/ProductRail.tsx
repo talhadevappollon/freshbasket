@@ -90,7 +90,7 @@ export default function ProductRail({ title, subtitle, products, viewAllHref, on
 
       <ul
         ref={trackRef}
-        className="flex gap-3 sm:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar scroll-smooth -mx-4 px-4 pb-3"
+        className="flex gap-3 sm:gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar scroll-smooth scroll-pl-4 scroll-pr-4 -mx-4 px-4 pb-3"
         aria-label={title}
       >
         {products.map(product => (
@@ -101,12 +101,13 @@ export default function ProductRail({ title, subtitle, products, viewAllHref, on
       </ul>
 
       {viewAllHref && (
-        <div className="xs:hidden mt-2">
+        <div className="xs:hidden mt-3">
           <Link
             href={viewAllHref}
-            className="inline-flex items-center h-11 px-4 rounded-xl text-sm font-semibold text-fresh-700 hover:bg-fresh-50 active:bg-fresh-100 transition-colors duration-200"
+            className="flex items-center justify-center gap-1.5 w-full h-12 rounded-2xl border border-fresh-200 bg-white text-sm font-bold text-fresh-800 hover:bg-fresh-50 active:bg-fresh-100 transition-colors duration-200"
           >
-            View all
+            View all {title.toLowerCase()}
+            <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
       )}

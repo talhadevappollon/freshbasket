@@ -48,7 +48,7 @@ export default function ScrollUI() {
         type="button"
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         aria-label="Back to top"
-        className={`fixed left-4 sm:left-6 bottom-20 sm:bottom-6 z-40 w-11 h-11 rounded-full bg-slate-900/90 hover:bg-fresh-600 text-white backdrop-blur-md shadow-xl flex items-center justify-center transition-all duration-300 ease-out-expo cursor-pointer ${
+        className={`fixed right-4 sm:right-auto sm:left-6 bottom-20 sm:bottom-6 z-40 w-11 h-11 rounded-full bg-slate-900/90 hover:bg-fresh-600 text-white backdrop-blur-md shadow-xl flex items-center justify-center transition-all duration-300 ease-out-expo cursor-pointer ${
           showTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
         }`}
       >

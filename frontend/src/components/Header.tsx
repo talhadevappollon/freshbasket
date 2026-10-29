@@ -215,8 +215,8 @@ function SearchBox({ inputRef }: SearchBoxProps) {
           onChange={e => setQuery(e.target.value)}
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
-          placeholder="Search mushrooms, milk, cheese, honey…"
-          className="w-full h-11 bg-slate-100/80 hover:bg-slate-100 focus:bg-white border border-transparent focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 pl-11 pr-20 rounded-xl text-sm text-slate-900 placeholder-slate-500 outline-none transition-all duration-200 [&::-webkit-search-cancel-button]:hidden"
+          placeholder="Search groceries…"
+          className="w-full h-11 bg-slate-100/80 hover:bg-slate-100 focus:bg-white border border-transparent focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 pl-11 pr-11 md:pr-20 rounded-xl text-sm text-slate-900 placeholder-slate-500 outline-none transition-all duration-200 [&::-webkit-search-cancel-button]:hidden"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
           {loading && <Loader2 className="w-4 h-4 text-fresh-600 animate-spin" aria-hidden="true" />}
@@ -228,7 +228,7 @@ function SearchBox({ inputRef }: SearchBoxProps) {
                 inputRef.current?.focus();
               }}
               aria-label="Clear search"
-              className="w-6 h-6 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors"
+              className="w-9 h-9 -mr-2 rounded-full text-slate-500 hover:text-slate-900 hover:bg-slate-200 flex items-center justify-center cursor-pointer transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -330,6 +330,9 @@ export default function Header({ categories }: HeaderProps) {
   const [openAccordion, setOpenAccordion] = useState<string>('');
   const [announceIdx, setAnnounceIdx] = useState(0);
   const [bumpKey, setBumpKey] = useState(0);
+  // Phones: the search row tucks away while reading down the page and returns on the way back up
+  const [searchTucked, setSearchTucked] = useState(false);
+  const [searchFocused, setSearchFocused] = useState(false);
 
   const headerRef = useRef<HTMLElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -368,7 +371,32 @@ export default function Header({ categories }: HeaderProps) {
 
   // Condense on scroll
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    let lastY = window.scrollY;
+    let travel = 0; // signed distance scrolled since the direction last changed
+    let lockUntil = 0;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 24);
+      const dy = y - lastY;
+      lastY = y;
+      if (y < 120) {
+        setSearchTucked(false);
+        travel = 0;
+        return;
+      }
+      // Collapsing the row shifts the page a little; ignore that and only react to a deliberate 40px swipe
+      if (performance.now() < lockUntil) return;
+      travel = Math.sign(dy) === Math.sign(travel) ? travel + dy : dy;
+      if (travel > 40) {
+        setSearchTucked(true);
+        travel = 0;
+        lockUntil = performance.now() + 400;
+      } else if (travel < -40) {
+        setSearchTucked(false);
+        travel = 0;
+        lockUntil = performance.now() + 400;
+      }
+    };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -540,7 +568,13 @@ export default function Header({ categories }: HeaderProps) {
               />
             </Link>
 
-            <div className="order-4 md:order-3 w-full md:w-auto md:flex-1 md:max-w-2xl md:mx-auto">
+            <div
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+              className={`order-4 md:order-3 w-full md:w-auto md:flex-1 md:max-w-2xl md:mx-auto max-md:transition-[max-height,opacity,margin,visibility] max-md:duration-300 ${
+                searchTucked && !searchFocused ? 'max-md:max-h-0 max-md:opacity-0 max-md:-mt-2.5 max-md:invisible max-md:overflow-hidden' : 'max-md:max-h-16'
+              }`}
+            >
               <SearchBox inputRef={searchInputRef} />
             </div>
 
@@ -820,10 +854,13 @@ export default function Header({ categories }: HeaderProps) {
             </div>
 
             <div className="shrink-0 border-t border-slate-100 p-4 space-y-2 text-sm">
-              <a href="tel:+9221111373742" className="flex items-center gap-2 text-slate-700 h-9">
+              <Link href="/track" onClick={() => setDrawerOpen(false)} className="flex items-center gap-2 text-slate-800 font-semibold h-11">
+                <PackageSearch className="w-4 h-4 text-fresh-600" /> Track your order
+              </Link>
+              <a href="tel:+9221111373742" className="flex items-center gap-2 text-slate-700 h-11">
                 <Phone className="w-4 h-4 text-fresh-600" /> +92 21 111-373-742
               </a>
-              <a href="/admin" className="flex items-center gap-2 text-slate-500 h-9">
+              <a href="/admin" className="flex items-center gap-2 text-slate-500 h-11">
                 <ShieldCheck className="w-4 h-4" /> Staff login
               </a>
             </div>

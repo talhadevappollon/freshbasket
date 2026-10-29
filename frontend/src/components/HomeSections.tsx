@@ -200,7 +200,7 @@ export function DealOfTheDay({ product }: { product?: Product | null }) {
             <Timer className="w-4 h-4" />
             Featured pick
           </span>
-          <h2 className="mt-4 text-3xl sm:text-4xl font-black tracking-tight leading-tight">{product.name}</h2>
+          <h2 className="mt-4 text-2xl sm:text-4xl font-black tracking-tight leading-tight break-words">{product.name}</h2>
           <p className="mt-3 text-base text-emerald-100/85 max-w-md">
             A best seller from this week&apos;s baskets, checked for freshness and packed cold for delivery across Karachi.
           </p>

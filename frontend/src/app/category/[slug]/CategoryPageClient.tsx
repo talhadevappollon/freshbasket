@@ -249,7 +249,7 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
           {/* Category banner */}
           <section
             data-surface="dark"
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-fresh-950 via-fresh-900 to-[#173216] text-white p-7 sm:p-10 animate-fade-in-up"
+            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-fresh-950 via-fresh-900 to-[#173216] text-white p-6 sm:p-10 animate-fade-in-up"
           >
             <div className="absolute -right-16 -top-16 w-72 h-72 rounded-full bg-fresh-400/15 blur-3xl animate-blob" aria-hidden="true" />
             <div className="absolute right-6 bottom-0 text-[9rem] leading-none opacity-[0.07] select-none font-black tracking-tighter hidden sm:block" aria-hidden="true">
@@ -262,7 +262,7 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
                 {description ||
                   `Freshly stocked ${title.toLowerCase()} delivered across Karachi in as little as 2 hours, with Cash on Delivery.`}
               </p>
-              <div className="mt-5 flex flex-wrap gap-2 text-sm font-medium">
+              <div className="mt-4 sm:mt-5 hidden sm:flex flex-wrap gap-2 text-sm font-medium">
                 <span className="inline-flex items-center gap-1.5 h-9 px-3.5 rounded-full bg-white/10 border border-white/15">
                   <Truck className="w-4 h-4 text-emerald-300" /> 2-hour express slots
                 </span>
@@ -331,11 +331,11 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
                 </>
               )}
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
               <button
                 type="button"
                 onClick={() => setFiltersOpen(true)}
-                className="lg:hidden relative inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-white border border-slate-200 hover:border-fresh-400 text-sm font-semibold text-slate-800 cursor-pointer transition"
+                className="lg:hidden relative inline-flex shrink-0 items-center gap-2 h-11 px-4 rounded-xl bg-white border border-slate-200 hover:border-fresh-400 text-sm font-semibold text-slate-800 cursor-pointer transition"
               >
                 <SlidersHorizontal className="w-4 h-4 text-fresh-600" />
                 Filters
@@ -343,14 +343,14 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
                   <span className="min-w-5 h-5 px-1.5 rounded-full bg-fresh-700 text-white text-[11px] font-bold flex items-center justify-center">{filterCount}</span>
                 )}
               </button>
-              <label htmlFor="category-sort" className="text-sm font-semibold text-slate-600">
+              <label htmlFor="category-sort" className="sr-only sm:not-sr-only text-sm font-semibold text-slate-600 whitespace-nowrap">
                 Sort by
               </label>
               <select
                 id="category-sort"
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
-                className="h-10 bg-white border border-slate-200 hover:border-fresh-400 text-sm font-semibold text-slate-800 rounded-xl px-3 focus:outline-none focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 cursor-pointer transition"
+                className="h-11 sm:h-10 flex-1 min-w-0 sm:flex-none bg-white border border-slate-200 hover:border-fresh-400 text-sm font-semibold text-slate-800 rounded-xl px-3 focus:outline-none focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 cursor-pointer transition"
               >
                 <option value="latest">Featured &amp; newest</option>
                 <option value="price_asc">Price: low to high</option>

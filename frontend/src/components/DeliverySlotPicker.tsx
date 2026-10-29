@@ -65,13 +65,13 @@ export default function DeliverySlotPicker({ date, windowKey, onChange }: Props)
               }`}
             >
               <span
-                className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${selected ? 'bg-fresh-600 text-white' : 'bg-gray-100 text-gray-500'}`}
+                className={`hidden min-[400px]:flex w-8 h-8 rounded-lg items-center justify-center shrink-0 ${selected ? 'bg-fresh-600 text-white' : 'bg-gray-100 text-gray-500'}`}
                 aria-hidden="true"
               >
                 {w.key === 'asap' ? <Zap className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
               </span>
               <span className="leading-tight">
-                <span className="block text-sm font-bold">{w.label}</span>
+                <span className="block text-sm font-bold whitespace-nowrap">{w.label}</span>
                 {w.hint && <span className="block text-[11px] text-gray-500">{w.hint}</span>}
               </span>
             </button>

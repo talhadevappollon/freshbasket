@@ -49,8 +49,8 @@ export default function MidPageBanners() {
           <span className="text-xs font-black tracking-wide text-fresh-600 bg-fresh-50 border border-fresh-200 px-2.5 py-0.5 rounded-full inline-block mb-1">
             Curated Collections
           </span>
-          <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-fresh-600 animate-pulse" />
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-start gap-2">
+            <Sparkles className="w-5 h-5 mt-1 shrink-0 text-fresh-600 animate-pulse" />
             <span>Seasonal Fresh Picks & Special Aisle Banners</span>
           </h2>
         </div>

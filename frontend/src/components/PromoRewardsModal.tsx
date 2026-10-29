@@ -294,7 +294,7 @@ export default function PromoRewardsModal({
               {/* Canvas texture weave lines */}
               <div className="w-full flex flex-col items-center justify-center space-y-0.5 text-center mt-2">
                 <span className="text-[11px] font-black tracking-tight text-white/95 leading-tight lowercase">
-                  fresh basket
+                  fresh house
                 </span>
                 <span className="text-[7px] text-emerald-300/90 font-bold uppercase tracking-widest leading-none">
                   perq rewards

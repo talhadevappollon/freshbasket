@@ -129,8 +129,8 @@ export default function ProductDetailPage() {
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:py-8 pb-36 sm:pb-8">
         {/* Breadcrumb */}
-        <div className="flex items-center space-x-2 text-xs text-gray-400 mb-6 font-medium">
-          <Link href="/" className="hover:text-fresh-600 transition flex items-center gap-1">
+        <div className="flex items-center flex-wrap space-x-2 text-xs text-gray-400 mb-4 sm:mb-6 font-medium min-h-11">
+          <Link href="/" className="hover:text-fresh-600 transition flex items-center gap-1 min-h-11">
             <ArrowLeft className="w-3.5 h-3.5" /> Supermarket
           </Link>
           <span>/</span>
@@ -184,7 +184,7 @@ export default function ProductDetailPage() {
                   </span>
                   <button
                     onClick={handleShare}
-                    className="text-xs text-gray-500 hover:text-fresh-600 flex items-center gap-1 font-semibold"
+                    className="text-xs text-gray-500 hover:text-fresh-600 flex items-center gap-1 font-semibold h-11 px-2 -mr-2 rounded-lg cursor-pointer"
                   >
                     <Share2 className="w-3.5 h-3.5" />
                     <span>{copied ? 'Link Copied!' : 'Share'}</span>

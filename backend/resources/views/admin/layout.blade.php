@@ -76,9 +76,17 @@
         /* Tables: row hover */
         tbody tr { transition: background-color .15s; }
         tbody tr:hover { background-color: rgb(243 247 243 / .7); }
+        /* Data tables scroll sideways on phones instead of squeezing every column to a sliver */
+        @media (max-width: 767px) { main .overflow-x-auto > table { min-width: 820px; } }
         /* Stops iOS from zooming into small inputs */
         @media (max-width: 640px) { input, select, textarea { font-size: 16px !important; } }
-        @media (pointer: coarse) { aside nav a { min-height: 44px; } }
+        /* Touch screens: comfortable targets for the dense admin controls (tables, filters, status buttons) */
+        @media (pointer: coarse) {
+            aside nav a { min-height: 44px; }
+            main button, main select, main a[class*="rounded"], main a[class*="flex"], main input:not([type=checkbox]):not([type=radio]):not([type=hidden]), header a, header button { min-height: 40px; }
+            main button:not([class*="w-"]), header button:not([class*="w-"]) { min-width: 40px; }
+            main input[type=checkbox], main input[type=radio] { width: 20px; height: 20px; }
+        }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
         }
@@ -310,7 +318,7 @@
         <!-- Main Workspace -->
         <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
             <!-- Top Header (Glassmorphic) -->
-            <header class="glass-header border-b border-slate-200/80 px-6 sm:px-8 py-3.5 flex items-center justify-between shadow-xs sticky top-0 z-20">
+            <header class="glass-header border-b border-slate-200/80 px-3 sm:px-8 py-2.5 sm:py-3.5 flex items-center justify-between gap-2 shadow-xs sticky top-0 z-20">
                 <div class="flex items-center space-x-4">
                     <button onclick="toggleSidebar()" aria-label="Open menu" class="lg:hidden w-11 h-11 flex items-center justify-center rounded-xl text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-bars text-lg"></i>
@@ -318,7 +326,7 @@
 
                     <div>
                         <div class="flex items-center space-x-2">
-                            <h2 class="text-sm sm:text-lg font-black text-slate-900 tracking-tight truncate max-w-[180px] sm:max-w-none">
+                            <h2 class="text-sm sm:text-lg font-black text-slate-900 tracking-tight truncate max-w-[120px] sm:max-w-none">
                                 Fresh House Command
                             </h2>
                             <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black bg-fresh-100 text-fresh-800 border border-fresh-200">
@@ -337,7 +345,7 @@
                 </div>
 
                 <!-- Topbar Actions -->
-                <div class="flex items-center space-x-2 sm:space-x-3">
+                <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
                     <!-- Global Search Button (Ctrl+K) -->
                     <button
                         onclick="openGlobalSearch()"
@@ -370,14 +378,15 @@
                     <a
                         href="{{ url('/') }}"
                         target="_blank"
-                        class="bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-2xs transition"
+                        aria-label="Open storefront"
+                        class="max-sm:hidden bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-2xs transition"
                     >
                         <i class="fa-solid fa-arrow-up-right-from-square text-xs text-fresh-600"></i>
                         <span class="hidden md:inline">Storefront</span>
                     </a>
 
                     <!-- Admin Profile Pill -->
-                    <div class="flex items-center space-x-2 pl-2 sm:pl-3 border-l border-slate-200">
+                    <div class="max-sm:hidden flex items-center space-x-2 pl-2 sm:pl-3 border-l border-slate-200">
                         <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-fresh-500 to-fresh-800 text-white font-black flex items-center justify-center text-xs shadow-sm">
                             FB
                         </div>

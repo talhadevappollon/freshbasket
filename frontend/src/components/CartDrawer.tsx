@@ -63,7 +63,7 @@ export default function CartDrawer() {
               </div>
               <div>
                 <h3 className="font-bold text-gray-900 text-base leading-tight">Your Grocery Basket</h3>
-                <span className="text-xs text-gray-400 font-medium">{items.length} items selected</span>
+                <span className="text-xs text-gray-400 font-medium">{items.length} {items.length === 1 ? "item" : "items"} selected</span>
               </div>
             </div>
 

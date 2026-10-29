@@ -422,7 +422,7 @@ export default function HomePromoBanners() {
 
           <div className="shrink-0 flex flex-col sm:flex-row lg:flex-col gap-3">
             <a
-              href="https://wa.me/923001234567?text=Assalam-o-Alaikum!%20I%20want%20to%20order%20groceries%20from%20Fresh%20Basket%20Pakistan."
+              href="https://wa.me/923001234567?text=Assalam-o-Alaikum!%20I%20want%20to%20order%20groceries%20from%20Fresh%20House."
               target="_blank"
               rel="noreferrer"
               className="bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black text-xs sm:text-sm py-3.5 px-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-200 flex items-center justify-center gap-2.5 cursor-pointer group"

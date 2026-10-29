@@ -131,8 +131,8 @@ export default function CheckoutModal() {
       {/* Modal Card */}
       <div className="relative bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl z-10 max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain border border-gray-100 animate-menu-in">
         <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-fresh-600 text-white flex items-center justify-center font-bold">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 shrink-0 rounded-2xl bg-fresh-600 text-white flex items-center justify-center font-bold">
               <Banknote className="w-5 h-5" />
             </div>
             <div>
@@ -168,6 +168,7 @@ export default function CheckoutModal() {
                 </label>
                 <input
                   type="text"
+                  autoComplete="name"
                   required
                   placeholder="e.g. Hamza Tariq"
                   value={formData.customer_name}
@@ -182,6 +183,8 @@ export default function CheckoutModal() {
                 </label>
                 <input
                   type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
                   required
                   placeholder="e.g. +92 300 1234567"
                   value={formData.customer_phone}
@@ -196,6 +199,7 @@ export default function CheckoutModal() {
                 </label>
                 <input
                   type="email"
+                  autoComplete="email"
                   placeholder="e.g. hamza@example.com"
                   value={formData.customer_email}
                   onChange={e => setFormData({ ...formData, customer_email: e.target.value })}
@@ -243,6 +247,7 @@ export default function CheckoutModal() {
                 </label>
                 <textarea
                   rows={2}
+                  autoComplete="street-address"
                   required
                   placeholder="e.g. House 42-B, Khayaban-e-Seher, Phase 6, DHA"
                   value={formData.delivery_address}
@@ -279,9 +284,9 @@ export default function CheckoutModal() {
           {/* Payment Method Selector */}
           <div>
             <h3 className="text-sm font-bold text-gray-500 mb-3">4. Payment Option</h3>
-            <div className="border-2 border-fresh-600 bg-fresh-50/70 p-4 rounded-2xl flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-fresh-600 text-white flex items-center justify-center font-bold">
+            <div className="border-2 border-fresh-600 bg-fresh-50/70 p-3 sm:p-4 rounded-2xl flex items-center justify-between gap-2">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 shrink-0 rounded-xl bg-fresh-600 text-white flex items-center justify-center font-bold">
                   <Banknote className="w-5 h-5" />
                 </div>
                 <div>
@@ -291,7 +296,7 @@ export default function CheckoutModal() {
               </div>
               <div className="flex items-center space-x-1.5 text-fresh-700 font-bold text-xs bg-white px-3 py-1.5 rounded-xl border border-fresh-200 shadow-xs">
                 <CheckCircle2 className="w-4 h-4 text-fresh-600" />
-                <span>Selected</span>
+                <span className="hidden xs:inline">Selected</span>
               </div>
             </div>
           </div>
@@ -309,12 +314,13 @@ export default function CheckoutModal() {
               </span>
             </div>
             <div className="flex justify-between pt-2 border-t border-gray-200 text-sm font-black text-gray-900">
-              <span>Total Cash Due at Doorstep:</span>
-              <span className="text-emerald-800">PKR {total.toLocaleString()}</span>
+              <span>Total due in cash:</span>
+              <span className="text-emerald-800 whitespace-nowrap">PKR {total.toLocaleString()}</span>
             </div>
           </div>
 
           {/* Submit Order Button */}
+          <div className="sticky bottom-0 -mx-6 -mb-6 sm:-mx-8 sm:-mb-8 px-6 sm:px-8 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] bg-white/95 backdrop-blur border-t border-gray-100 rounded-b-3xl">
           <button
             type="submit"
             disabled={isSubmitting}
@@ -328,10 +334,12 @@ export default function CheckoutModal() {
             ) : (
               <>
                 <CheckCircle2 className="w-5 h-5" />
-                <span>Confirm Order with Cash On Delivery &bull; PKR {total.toLocaleString()}</span>
+                <span className="sm:hidden">Place order &bull; PKR {total.toLocaleString()}</span>
+                <span className="hidden sm:inline">Confirm Order with Cash On Delivery &bull; PKR {total.toLocaleString()}</span>
               </>
             )}
           </button>
+          </div>
         </form>
       </div>
     </div>

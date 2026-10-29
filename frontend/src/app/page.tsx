@@ -306,10 +306,10 @@ export default function Home() {
 
       {/* Floating WhatsApp quick-order button (sits above the mobile bottom nav) */}
       <a
-        href="https://wa.me/923001234567?text=Assalam-o-Alaikum!%20I%20want%20to%20order%20groceries%20from%20Fresh%20Basket%20Pakistan."
+        href="https://wa.me/923001234567?text=Assalam-o-Alaikum!%20I%20want%20to%20order%20groceries%20from%20Fresh%20House."
         target="_blank"
         rel="noreferrer"
-        className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 h-12 w-12 sm:w-auto sm:px-5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-full shadow-2xl flex items-center justify-center gap-2 z-40 transition-all duration-200"
+        className="hidden sm:flex fixed sm:bottom-6 sm:right-6 h-12 sm:w-auto sm:px-5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-full shadow-2xl flex items-center justify-center gap-2 z-40 transition-all duration-200"
         aria-label="Chat with Fresh House support on WhatsApp"
       >
         <MessageCircle className="w-6 h-6" />
