@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fresh Basket Pakistan — Enterprise Admin CRM & POS Command Center</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="alternate icon" href="/favicon.ico">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Plus Jakarta Sans -->
@@ -74,8 +77,11 @@
 <body class="bg-[#f1f5f9] text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-fresh-600 selection:text-white">
 
     <div class="flex flex-1 min-h-screen">
-        <!-- Sidebar -->
-        <aside id="adminSidebar" class="w-72 bg-gradient-to-b from-[#052312] via-[#09351c] to-[#03170c] text-white flex flex-col shrink-0 border-r border-emerald-950/80 shadow-2xl relative z-30 transition-all duration-300">
+        <!-- Mobile Backdrop Overlay -->
+        <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 hidden lg:hidden"></div>
+
+        <!-- Sidebar (Hidden by default on mobile, slide-over drawer) -->
+        <aside id="adminSidebar" class="hidden lg:flex fixed lg:static inset-y-0 left-0 w-72 bg-gradient-to-b from-[#052312] via-[#09351c] to-[#03170c] text-white flex-col shrink-0 border-r border-emerald-950/80 shadow-2xl z-50 lg:z-30 transition-all duration-300">
             <!-- Brand Section -->
             <div class="p-6 border-b border-emerald-900/40 flex items-center justify-between">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3.5 group">
@@ -93,6 +99,9 @@
                         </div>
                     </div>
                 </a>
+                <button onclick="toggleSidebar()" class="lg:hidden text-emerald-400/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
             </div>
 
             <!-- Fast Action Badge Strip -->
@@ -277,14 +286,14 @@
 
                     <div>
                         <div class="flex items-center space-x-2">
-                            <h2 class="text-base sm:text-lg font-black text-slate-900 tracking-tight">
-                                Fresh Basket Enterprise Command Hub
+                            <h2 class="text-sm sm:text-lg font-black text-slate-900 tracking-tight truncate max-w-[180px] sm:max-w-none">
+                                Fresh Basket Command
                             </h2>
                             <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black bg-fresh-100 text-fresh-800 border border-fresh-200">
                                 Karachi Hub
                             </span>
                         </div>
-                        <div class="flex items-center space-x-3 text-xs text-slate-500 mt-0.5 font-medium">
+                        <div class="hidden sm:flex items-center space-x-3 text-xs text-slate-500 mt-0.5 font-medium">
                             <span class="flex items-center gap-1.5 text-fresh-700 font-bold">
                                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                                 Hub Operations Active
@@ -508,7 +517,16 @@
 
         function toggleSidebar() {
             const sb = document.getElementById('adminSidebar');
-            sb.classList.toggle('hidden');
+            const bd = document.getElementById('sidebarBackdrop');
+            if (sb.classList.contains('hidden')) {
+                sb.classList.remove('hidden');
+                sb.classList.add('flex');
+                if (bd) bd.classList.remove('hidden');
+            } else {
+                sb.classList.add('hidden');
+                sb.classList.remove('flex');
+                if (bd) bd.classList.add('hidden');
+            }
         }
 
         function openGlobalSearch() {
