@@ -10,10 +10,13 @@ import CartDrawer from '@/components/CartDrawer';
 import CheckoutModal from '@/components/CheckoutModal';
 import OrderSuccessModal from '@/components/OrderSuccessModal';
 import PromoRewardsModal from '@/components/PromoRewardsModal';
+import MidPageBanners from '@/components/MidPageBanners';
 import Footer from '@/components/Footer';
 import { fetchCategories, fetchProducts } from '@/lib/api';
 import { Category, Product } from '@/types';
-import { Sparkles, SlidersHorizontal, Loader2, MessageCircle, Flame, Clock, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
+import { Sparkles, SlidersHorizontal, Loader2, MessageCircle, Flame, Clock, ShieldCheck, Truck, RefreshCw, ArrowDown } from 'lucide-react';
+
+const INITIAL_ROWS_COUNT = 8; // Exactly 2 rows of 4 columns by default on desktop
 
 export default function Home() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -34,14 +37,14 @@ export default function Home() {
     loadCats();
   }, []);
 
-  // Load Products whenever category or sort changes
+  // Load Products whenever category or sort changes (default 2 rows = 8 products)
   useEffect(() => {
     async function loadProds() {
       setIsLoading(true);
       const res = await fetchProducts({
         category: selectedCategory || undefined,
         sort: sortBy,
-        per_page: 32,
+        per_page: INITIAL_ROWS_COUNT,
       });
       setProducts(res.data);
       setTotalProducts(res.total);
@@ -64,7 +67,7 @@ export default function Home() {
     const res = await fetchProducts({
       category: selectedCategory || undefined,
       sort: sortBy,
-      per_page: 32 * nextPage,
+      per_page: INITIAL_ROWS_COUNT * nextPage,
     });
     setProducts(res.data);
     setPage(nextPage);
@@ -137,19 +140,22 @@ export default function Home() {
           onSelectCategory={handleSelectCategory}
         />
 
+        {/* Animated Curated Aisle & Mid-Page Seasonal Banners */}
+        <MidPageBanners onSelectCategory={handleSelectCategory} />
+
         {/* Products Catalog Grid */}
         <section id="products-section" className="max-w-7xl mx-auto px-4 py-8">
           {/* Section Toolbar */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-slate-200/80 gap-4 mb-8">
             <div>
               <div className="flex items-center space-x-2">
-                <Sparkles className="w-5 h-5 text-fresh-600" />
+                <Sparkles className="w-5 h-5 text-fresh-600 animate-pulse" />
                 <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
                   {currentCategoryName}
                 </h2>
               </div>
               <p className="text-xs text-slate-500 mt-0.5 font-medium">
-                Showing {products.length} of {totalProducts} verified fresh products
+                Showing {products.length} of {totalProducts} verified fresh products (2 rows by default)
               </p>
             </div>
 
@@ -160,7 +166,7 @@ export default function Home() {
               <select
                 value={sortBy}
                 onChange={e => setSortBy(e.target.value)}
-                className="bg-white border border-slate-200 text-xs font-bold text-slate-800 rounded-xl px-3.5 py-2 focus:outline-none focus:border-fresh-500 shadow-2xs cursor-pointer"
+                className="bg-white border border-slate-200 hover:border-fresh-400 text-xs font-bold text-slate-800 rounded-xl px-3.5 py-2 focus:outline-none focus:border-fresh-500 shadow-2xs cursor-pointer transition-colors"
               >
                 <option value="latest">Featured & Newest</option>
                 <option value="price_asc">Price: Low to High</option>
@@ -170,7 +176,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Product Cards Grid */}
+          {/* Product Cards Grid with Staggered Entrance Animations */}
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-24 text-slate-400">
               <Loader2 className="w-8 h-8 animate-spin text-fresh-600 mb-2" />
@@ -179,23 +185,46 @@ export default function Home() {
           ) : products.length > 0 ? (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-2.5 sm:gap-6">
-                {products.map(product => (
-                  <ProductCard
+                {products.map((product, idx) => (
+                  <div
                     key={product.id}
-                    product={product}
-                    onQuickView={(p) => setQuickViewProduct(p)}
-                  />
+                    className="animate-card-entrance"
+                    style={{ animationDelay: `${(idx % 8) * 50}ms` }}
+                  >
+                    <ProductCard
+                      product={product}
+                      onQuickView={(p) => setQuickViewProduct(p)}
+                    />
+                  </div>
                 ))}
               </div>
 
-              {/* Load More Button */}
+              {/* Load More Button Options */}
               {products.length < totalProducts && (
-                <div className="text-center mt-12">
+                <div className="text-center mt-12 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <button
                     onClick={handleLoadMore}
-                    className="bg-white hover:bg-fresh-50 border border-slate-200 hover:border-fresh-300 text-slate-800 hover:text-fresh-700 font-bold px-8 py-3 rounded-2xl text-xs sm:text-sm shadow-2xs transition"
+                    className="w-full sm:w-auto bg-white hover:bg-gradient-to-r hover:from-fresh-600 hover:to-emerald-700 border border-slate-200 hover:border-fresh-600 text-slate-800 hover:text-white font-extrabold px-8 py-3.5 rounded-2xl text-xs sm:text-sm shadow-sm hover:shadow-xl hover:-translate-y-0.5 active:scale-95 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 group"
                   >
-                    Load More Products ({totalProducts - products.length} remaining)
+                    <span>Load Next 2 Rows ({totalProducts - products.length} remaining)</span>
+                    <ArrowDown className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
+                  </button>
+
+                  <button
+                    onClick={async () => {
+                      setIsLoading(true);
+                      const res = await fetchProducts({
+                        category: selectedCategory || undefined,
+                        sort: sortBy,
+                        per_page: 120,
+                      });
+                      setProducts(res.data);
+                      setPage(15);
+                      setIsLoading(false);
+                    }}
+                    className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 font-bold px-6 py-3.5 rounded-2xl text-xs transition-all duration-200 cursor-pointer hover:shadow-xs active:scale-95"
+                  >
+                    Show All {totalProducts} Products
                   </button>
                 </div>
               )}

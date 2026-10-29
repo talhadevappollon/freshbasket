@@ -38,7 +38,7 @@ export default function CategorySlider({
         {selectedCategory && (
           <button
             onClick={() => onSelectCategory('')}
-            className="text-xs font-bold text-fresh-600 hover:text-fresh-700 bg-fresh-50 px-3 py-1.5 rounded-xl border border-fresh-200 transition"
+            className="text-xs font-bold text-fresh-600 hover:text-white bg-fresh-50 hover:bg-fresh-600 px-3.5 py-1.5 rounded-xl border border-fresh-200 hover:border-fresh-600 shadow-2xs hover:shadow-md transition-all duration-200 cursor-pointer"
           >
             Clear Filter &times;
           </button>
@@ -54,25 +54,27 @@ export default function CategorySlider({
             <button
               key={cat.id}
               onClick={() => onSelectCategory(isSelected ? '' : cat.slug)}
-              className={`p-4 rounded-2xl border text-left flex flex-col justify-between transition-all group ${
+              className={`p-4 rounded-2xl border text-left flex flex-col justify-between transition-all duration-300 group cursor-pointer ${
                 isSelected
-                  ? 'bg-fresh-600 text-white border-fresh-600 shadow-lg shadow-fresh-600/20 scale-[1.02]'
-                  : 'bg-white hover:bg-fresh-50/50 text-gray-800 border-gray-100 hover:border-fresh-200 shadow-sm'
+                  ? 'bg-gradient-to-br from-fresh-600 to-emerald-700 text-white border-fresh-600 shadow-xl shadow-fresh-600/30 scale-[1.03]'
+                  : 'bg-white hover:bg-emerald-50/50 text-slate-800 border-slate-200/80 hover:border-emerald-300 shadow-2xs hover:shadow-xl hover:-translate-y-1.5'
               }`}
             >
               <div className="flex items-center justify-between mb-3">
                 <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg ${
+                  className={`w-11 h-11 rounded-2xl flex items-center justify-center text-lg transition-transform duration-300 ${
                     isSelected
                       ? 'bg-white/20 text-white'
-                      : 'bg-emerald-50 text-fresh-700 group-hover:bg-fresh-100 transition'
+                      : 'bg-emerald-50 text-fresh-700 group-hover:scale-110 group-hover:rotate-6 group-hover:bg-fresh-100 shadow-2xs'
                   }`}
                 >
                   <Icon className="w-5 h-5" />
                 </div>
                 <span
-                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                    isSelected ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-500'
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full transition-colors duration-200 ${
+                    isSelected
+                      ? 'bg-white/20 text-white'
+                      : 'bg-slate-100 text-slate-500 group-hover:bg-fresh-600 group-hover:text-white'
                   }`}
                 >
                   Fresh
@@ -80,18 +82,21 @@ export default function CategorySlider({
               </div>
               <div>
                 <h4
-                  className={`text-xs font-bold leading-snug line-clamp-2 ${
-                    isSelected ? 'text-white' : 'text-gray-900 group-hover:text-fresh-700'
+                  className={`text-xs font-bold leading-snug line-clamp-2 transition-colors duration-200 ${
+                    isSelected ? 'text-white' : 'text-slate-900 group-hover:text-fresh-700'
                   }`}
                 >
-                  {{ ...cat }.name}
+                  {cat.name}
                 </h4>
                 <p
-                  className={`text-[10px] mt-0.5 font-medium ${
-                    isSelected ? 'text-emerald-100' : 'text-gray-400'
+                  className={`text-[10px] mt-1 font-semibold flex items-center gap-1 transition-all duration-200 ${
+                    isSelected
+                      ? 'text-emerald-100'
+                      : 'text-slate-400 group-hover:text-fresh-600 group-hover:translate-x-1'
                   }`}
                 >
-                  Explore aisle &rarr;
+                  <span>Explore aisle</span>
+                  <span>&rarr;</span>
                 </p>
               </div>
             </button>
