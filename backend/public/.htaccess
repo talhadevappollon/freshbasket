@@ -84,7 +84,6 @@ DirectoryIndex index.html index.php
     # category shell (category/_.html), which reads the slug from the URL and loads the category by API.
     # Existing pages are matched by the rule above first.
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{DOCUMENT_ROOT}/category/_.html -f
     RewriteRule ^category/([^/\.]+)/?$ category/_.html [L]
 
     # Redirect Trailing Slashes If Not A Folder...
