@@ -88,9 +88,7 @@ export default function Header({
               <Phone className="w-3 h-3 text-fresh-400" /> Helpline: +92 21 111-373-742
             </a>
             <a
-              href="http://localhost:8000/admin"
-              target="_blank"
-              rel="noreferrer"
+              href="/admin"
               className="bg-emerald-800 hover:bg-emerald-700 text-white px-2.5 py-0.5 rounded text-[10px] font-bold transition ml-2"
             >
               Admin CRM &rarr;

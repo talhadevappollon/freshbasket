@@ -80,9 +80,7 @@ export default function Footer() {
               </div>
               <div className="pt-2">
                 <a
-                  href="http://localhost:8000/admin"
-                  target="_blank"
-                  rel="noreferrer"
+                  href="/admin"
                   className="inline-block bg-emerald-900 hover:bg-emerald-800 text-fresh-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold border border-emerald-800 transition"
                 >
                   Admin CRM Login &rarr;
