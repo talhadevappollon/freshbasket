@@ -18,6 +18,15 @@ if ($providedKey !== $SECRET_TOKEN) {
 $backendDir = dirname(__DIR__, 1);
 $projectDir = dirname($backendDir);
 $envPath = $backendDir . '/.env';
+$logPath = $backendDir . '/composer_install.log';
+
+// Handle Composer background runner
+if (isset($_GET['action']) && $_GET['action'] === 'run_composer') {
+    $cmd = "cd " . escapeshellarg($backendDir) . " && export HOME=/home2/aneetako && export COMPOSER_HOME=/home2/aneetako/.composer && /usr/local/bin/ea-php84 composer.phar install --no-dev --prefer-dist --optimize-autoloader > " . escapeshellarg($logPath) . " 2>&1 &";
+    pclose(popen($cmd, 'r'));
+    header("Location: ?secret=freshbasket2026&view_log=1");
+    exit;
+}
 
 // Handle updating .env from UI
 $msg = '';
@@ -69,6 +78,7 @@ header('Content-Type: text/html; charset=utf-8');
         .step { margin-bottom: 22px; border-bottom: 1px solid #334155; padding-bottom: 18px; }
         a.btn, button.btn { background: #10b981; color: white; padding: 9px 18px; border-radius: 6px; text-decoration: none; font-weight: 600; display: inline-block; border: none; cursor: pointer; }
         a.btn-blue { background: #3b82f6; }
+        a.btn-purple { background: #8b5cf6; }
         input[type="text"], input[type="password"] { background: #0f172a; border: 1px solid #475569; color: #f8fafc; padding: 8px 12px; border-radius: 6px; width: 100%; box-sizing: border-box; margin-bottom: 10px; }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .notice { background: #1e3a8a; border-left: 4px solid #3b82f6; padding: 12px; border-radius: 4px; margin-bottom: 15px; }
@@ -84,14 +94,19 @@ header('Content-Type: text/html; charset=utf-8');
     <div class="step">
         <h3>1. PHP & Composer Status</h3>
         <p>PHP Version: <strong><?= phpversion() ?></strong></p>
-        <p>Composer Vendor: <?= file_exists($backendDir . '/vendor/autoload.php') ? '<span class="badge badge-success">INSTALLED</span>' : '<span class="badge badge-fail">MISSING (Needs composer install)</span>' ?></p>
+        <p>Composer Vendor: <?= file_exists($backendDir . '/vendor/autoload.php') ? '<span class="badge badge-success">INSTALLED (Ready!)</span>' : '<span class="badge badge-fail">MISSING (Click below to install)</span>' ?></p>
         <p>composer.phar: <?= file_exists($backendDir . '/composer.phar') ? '<span class="badge badge-success">Downloaded</span>' : '<span class="badge badge-fail">Not Present</span>' ?></p>
+        
         <?php if (!file_exists($backendDir . '/vendor/autoload.php')): ?>
-            <div style="background: #312e81; padding: 12px; border-radius: 8px; margin-top: 10px;">
-                <strong>⚡ To Install Composer Vendor:</strong>
-                <p style="margin: 5px 0 0 0;">Open <strong>Terminal</strong> in cPanel and paste this one command:</p>
-                <pre>cd /home2/aneetako/freshbasket.aneetakomal.com/backend && composer install --no-dev</pre>
-            </div>
+            <p>
+                <a class="btn btn-purple" href="?secret=freshbasket2026&action=run_composer">⚡ Start Background Composer Install</a>
+            </p>
+        <?php endif; ?>
+
+        <?php if (file_exists($logPath)): ?>
+            <h4>Composer Install Log:</h4>
+            <pre><?= htmlspecialchars(file_get_contents($logPath)) ?></pre>
+            <p><a class="btn" style="background: #475569; font-size: 12px; padding: 5px 10px;" href="?secret=freshbasket2026">Refresh Log</a></p>
         <?php endif; ?>
     </div>
 
@@ -108,7 +123,6 @@ header('Content-Type: text/html; charset=utf-8');
         $pdo = null;
         $connectedHost = null;
 
-        // Try configured host first, then localhost fallback
         $hostsToTry = array_unique([$dbHost, 'localhost', '127.0.0.1']);
         $lastError = '';
 
@@ -128,9 +142,6 @@ header('Content-Type: text/html; charset=utf-8');
 
         if ($pdo) {
             echo "<p><span class=\"badge badge-success\">CONNECTED SUCCESSFULLY via $connectedHost!</span></p>";
-            if ($connectedHost !== $dbHost) {
-                echo "<p style='color: #fbbf24;'>Note: Connected using <strong>$connectedHost</strong> instead of <strong>$dbHost</strong>. Please update DB_HOST to <code>$connectedHost</code> in .env below.</p>";
-            }
 
             // Tables check
             $stmt = $pdo->query("SHOW TABLES");
@@ -146,13 +157,6 @@ header('Content-Type: text/html; charset=utf-8');
             }
         } else {
             echo "<p><span class=\"badge badge-fail\">Connection Failed:</span> " . htmlspecialchars($lastError) . "</p>";
-            echo "<div style='background: #450a0a; padding: 12px; border-radius: 8px; margin-top: 10px;'>
-                    <strong>⚠️ Common cPanel MySQL fix:</strong><br>
-                    1. In cPanel > <strong>MySQL® Databases</strong>, scroll down to <strong>Add User To Database</strong>.<br>
-                    2. Select User <code>$dbUser</code> and Database <code>$dbName</code>, click <strong>Add</strong>.<br>
-                    3. Check <strong>ALL PRIVILEGES</strong> and click <strong>Make Changes</strong>.<br>
-                    4. Ensure password matches what you set when creating the user.
-                  </div>";
         }
 
         // Direct SQL import action
@@ -172,33 +176,7 @@ header('Content-Type: text/html; charset=utf-8');
     </div>
 
     <div class="step">
-        <h3>3. Edit Database (.env) Settings</h3>
-        <form method="POST" action="?secret=freshbasket2026">
-            <input type="hidden" name="update_env" value="1">
-            <div class="grid">
-                <div>
-                    <label>DB Host (use <code>localhost</code> or <code>127.0.0.1</code>)</label>
-                    <input type="text" name="db_host" value="<?= htmlspecialchars($env['DB_HOST'] ?? 'localhost') ?>">
-                </div>
-                <div>
-                    <label>DB Name</label>
-                    <input type="text" name="db_name" value="<?= htmlspecialchars($env['DB_DATABASE'] ?? '') ?>">
-                </div>
-                <div>
-                    <label>DB Username</label>
-                    <input type="text" name="db_user" value="<?= htmlspecialchars($env['DB_USERNAME'] ?? '') ?>">
-                </div>
-                <div>
-                    <label>DB Password</label>
-                    <input type="password" name="db_pass" value="<?= htmlspecialchars($env['DB_PASSWORD'] ?? '') ?>">
-                </div>
-            </div>
-            <button type="submit" class="btn">Update .env Credentials</button>
-        </form>
-    </div>
-
-    <div class="step">
-        <h3>4. Quick Links</h3>
+        <h3>3. Quick Links</h3>
         <p>
             <a class="btn" href="/admin" target="_blank">Open Admin CRM (/admin)</a> &nbsp;
             <a class="btn btn-blue" href="/backend/public/cpanel_deploy.php?secret=freshbasket2026" target="_blank">Run deploy.sh Trigger</a>
