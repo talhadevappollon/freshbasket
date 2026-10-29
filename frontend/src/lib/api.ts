@@ -1,4 +1,4 @@
-import { Product, Category, OrderResponse, OrderCustomer, CartItem } from '@/types';
+import { Product, Category, OrderResponse, TrackedOrder, OrderCustomer, CartItem } from '@/types';
 import fallbackData from '@/data/initialCatalog.json';
 
 const API_BASE =
@@ -32,6 +32,7 @@ export async function fetchProducts(params?: {
   featured?: boolean;
   sort?: string;
   per_page?: number;
+  page?: number;
 }): Promise<{ data: Product[]; total: number }> {
   try {
     const query = new URLSearchParams();
@@ -40,6 +41,7 @@ export async function fetchProducts(params?: {
     if (params?.featured) query.set('featured', '1');
     if (params?.sort) query.set('sort', params.sort);
     if (params?.per_page) query.set('per_page', params.per_page.toString());
+    if (params?.page && params.page > 1) query.set('page', params.page.toString());
 
     const res = await fetch(`${API_BASE}/products?${query.toString()}`, { cache: 'no-store' });
     if (res.ok) {
@@ -129,7 +131,9 @@ export async function fetchProducts(params?: {
     prods = prods.filter(p => p.is_featured);
   }
 
-  return { data: prods.slice(0, params?.per_page || 40), total: prods.length };
+  const perPage = params?.per_page || 40;
+  const start = ((params?.page || 1) - 1) * perPage;
+  return { data: prods.slice(start, start + perPage), total: prods.length };
 }
 
 export async function fetchProductBySlug(slug: string): Promise<{ product: Product; related: Product[] } | null> {
@@ -248,6 +252,8 @@ export async function submitCheckout(
       payment_method: 'cod',
       payment_status: 'unpaid',
       order_status: 'pending',
+      delivery_date: customer.delivery_date ?? null,
+      delivery_window: customer.delivery_window ?? null,
       created_at: new Date().toISOString(),
       items: items.map(it => ({
         id: it.product.id,
@@ -266,15 +272,22 @@ export async function submitCheckout(
   }
 }
 
-export async function trackOrder(orderNumber: string): Promise<OrderResponse | null> {
+/** The store only answers when the phone number used at checkout matches the order. */
+export async function trackOrder(
+  orderNumber: string,
+  phone: string
+): Promise<{ order: TrackedOrder | null; error?: 'not_found' | 'network' | 'rate_limited' }> {
   try {
-    const res = await fetch(`${API_BASE}/orders/${orderNumber}`);
+    const res = await fetch(`${API_BASE}/orders/${encodeURIComponent(orderNumber.trim())}?phone=${encodeURIComponent(phone.trim())}`, {
+      cache: 'no-store',
+      headers: { Accept: 'application/json' },
+    });
     if (res.ok) {
       const data = await res.json();
-      return data.order;
+      return { order: data.order };
     }
-  } catch (err) {
-    console.error('Track order error', err);
+    return { order: null, error: res.status === 429 ? 'rate_limited' : 'not_found' };
+  } catch {
+    return { order: null, error: 'network' };
   }
-  return null;
 }

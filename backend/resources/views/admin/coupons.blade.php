@@ -43,7 +43,7 @@
                 <h3 class="text-2xl font-black text-emerald-800 mt-1">{{ $totalRedemptions }} Orders</h3>
             </div>
             <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg">
-                <i class="fa-solid fa-badge-percent"></i>
+                <i class="fa-solid fa-percent"></i>
             </div>
         </div>
 

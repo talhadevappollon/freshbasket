@@ -3,10 +3,10 @@
 @section('content')
 <div class="space-y-8 max-w-7xl mx-auto">
     <!-- Top Welcome & Highlights -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-gradient-to-r from-[#041d0e] via-[#09351c] to-[#0d4a27] rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-emerald-800/40">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-gradient-to-r from-fresh-950 via-fresh-900 to-fresh-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-emerald-800/40">
         <div class="relative z-10 max-w-xl">
             <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full text-emerald-300 text-xs font-bold uppercase tracking-wider mb-3 border border-white/10">
-                <i class="fa-solid fa-sparkles text-fresh-400"></i>
+                <i class="fa-solid fa-wand-magic-sparkles text-fresh-400"></i>
                 <span>Fresh Basket Executive Operations Hub</span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-black tracking-tight leading-tight">
@@ -40,7 +40,7 @@
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gross Sales Revenue</span>
                 <div class="w-10 h-10 rounded-2xl bg-fresh-50 text-fresh-600 flex items-center justify-center text-lg">
-                    <i class="fa-solid fa-chart-line-up"></i>
+                    <i class="fa-solid fa-chart-line"></i>
                 </div>
             </div>
             <h3 class="text-2xl sm:text-3xl font-black text-slate-900 mt-2">
@@ -391,12 +391,12 @@
                 datasets: [{
                     label: 'Gross Sales (PKR)',
                     data: @json($salesChartValues),
-                    borderColor: '#16a34a',
+                    borderColor: '#478f45',
                     backgroundColor: gradient,
                     borderWidth: 3,
                     fill: true,
                     tension: 0.4,
-                    pointBackgroundColor: '#16a34a',
+                    pointBackgroundColor: '#478f45',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
@@ -451,8 +451,8 @@
                         '#fbbf24', // Amber
                         '#a855f7', // Purple
                         '#3b82f6', // Blue
-                        '#10b981', // Emerald
-                        '#f43f5e'  // Rose
+                        '#478f45', // Brand green
+                        '#b20f0b'  // Brand red
                     ],
                     borderWidth: 2,
                     borderColor: '#ffffff',

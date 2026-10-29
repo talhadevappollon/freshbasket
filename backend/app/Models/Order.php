@@ -27,6 +27,8 @@ class Order extends Model
         'order_status',
         'order_source',
         'order_notes',
+        'delivery_date',
+        'delivery_window',
     ];
 
     protected $casts = [
@@ -34,7 +36,15 @@ class Order extends Model
         'delivery_fee' => 'float',
         'discount' => 'float',
         'total' => 'float',
+        'delivery_date' => 'date:Y-m-d',
     ];
+
+    protected $appends = ['delivery_window_label'];
+
+    public function getDeliveryWindowLabelAttribute(): ?string
+    {
+        return \App\Support\DeliverySlots::label($this->delivery_window);
+    }
 
     public function customer()
     {

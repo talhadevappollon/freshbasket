@@ -69,7 +69,7 @@ Route::prefix('v1')->group(function () {
     });
 
     // Order Tracking
-    Route::get('/orders/{orderNumber}', [OrderController::class, 'show']);
+    Route::get('/orders/{orderNumber}', [OrderController::class, 'show'])->middleware('throttle:20,1');
 
     // CRM / Support Leads
     Route::post('/crm/inquiries', [CrmController::class, 'storeInquiry']);

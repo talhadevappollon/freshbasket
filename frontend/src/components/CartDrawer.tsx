@@ -4,7 +4,9 @@ import React, { useEffect } from 'react';
 import { PLACEHOLDER_IMG } from '@/lib/placeholder';
 import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
-import { X, Trash2, Plus, Minus, ShoppingBag, Truck, ArrowRight, Banknote } from 'lucide-react';
+import QuantityStepper from '@/components/QuantityStepper';
+import AddedToast from '@/components/AddedToast';
+import { X, Trash2, ShoppingBag, Truck, ArrowRight, Banknote } from 'lucide-react';
 
 export default function CartDrawer() {
   const {
@@ -38,7 +40,8 @@ export default function CartDrawer() {
     };
   }, [isCartOpen, setIsCartOpen]);
 
-  if (!isCartOpen) return null;
+  // The add-to-basket toast lives here so every page that mounts the drawer gets it
+  if (!isCartOpen) return <AddedToast />;
 
   const percentFree = Math.min(100, Math.round((subtotal / freeDeliveryThreshold) * 100));
 
@@ -151,26 +154,13 @@ export default function CartDrawer() {
                     </p>
                   </div>
 
-                  {/* Quantity Stepper */}
-                  <div className="flex items-center space-x-1.5 bg-gray-50 border border-gray-200 rounded-xl p-1 shrink-0">
-                    <button
-                      onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                      aria-label="Decrease quantity"
-                      className="w-9 h-9 rounded-lg bg-white text-gray-700 hover:bg-rose-50 hover:text-rose-700 active:scale-90 flex items-center justify-center transition shadow-xs cursor-pointer"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="text-xs font-bold text-gray-900 w-5 text-center">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                      aria-label="Increase quantity"
-                      className="w-9 h-9 rounded-lg bg-fresh-600 text-white hover:bg-fresh-700 active:scale-90 flex items-center justify-center transition shadow-xs cursor-pointer"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
+                  <QuantityStepper
+                    value={item.quantity}
+                    min={0}
+                    max={item.product.stock_quantity > 0 ? item.product.stock_quantity : 99}
+                    label={item.product.name}
+                    onChange={q => updateQuantity(item.product.id, q)}
+                  />
                 </div>
               ))
             )}

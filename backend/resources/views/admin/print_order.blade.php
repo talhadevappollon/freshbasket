@@ -64,6 +64,11 @@
                 <h3 class="font-bold text-gray-400 uppercase text-[10px] tracking-wider mb-1">Delivery Address</h3>
                 <p class="font-semibold text-gray-800">{{ $order->delivery_area ?? 'Karachi' }}, {{ $order->delivery_city }}</p>
                 <p class="text-gray-600 mt-0.5 leading-relaxed">{{ $order->delivery_address }}</p>
+                @if($order->delivery_window)
+                    <p class="mt-2 font-bold text-gray-800 text-[11px]">
+                        Delivery slot: {{ $order->delivery_date ? $order->delivery_date->format('D, j M Y') : '' }} &middot; {{ $order->delivery_window_label }}
+                    </p>
+                @endif
                 @if($order->order_notes)
                     <p class="mt-2 text-amber-900 font-medium bg-amber-50 p-1.5 rounded text-[11px]">
                         <strong>Rider Note:</strong> {{ $order->order_notes }}

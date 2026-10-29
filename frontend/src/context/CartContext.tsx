@@ -21,6 +21,9 @@ interface CartContextType {
   setIsCheckoutOpen: (open: boolean) => void;
   completedOrder: OrderResponse | null;
   setCompletedOrder: (order: OrderResponse | null) => void;
+  /** Most recent add-to-basket, drives the confirmation toast. `id` changes on every add. */
+  lastAdded: { id: number; product: Product; quantity: number } | null;
+  dismissLastAdded: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -30,6 +33,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [completedOrder, setCompletedOrder] = useState<OrderResponse | null>(null);
+  const [lastAdded, setLastAdded] = useState<{ id: number; product: Product; quantity: number } | null>(null);
 
   // Load from local storage
   useEffect(() => {
@@ -52,20 +56,27 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [items]);
 
+  // A line never exceeds the shelf stock (when the store reports one)
+  const clampToStock = (product: Product, quantity: number) =>
+    product.stock_quantity > 0 ? Math.min(quantity, product.stock_quantity) : quantity;
+
   const addToCart = (product: Product, quantity = 1) => {
     setItems(prev => {
       const existing = prev.find(item => item.product.id === product.id);
       if (existing) {
         return prev.map(item =>
           item.product.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
+            ? { ...item, quantity: clampToStock(product, item.quantity + quantity) }
             : item
         );
       }
-      return [...prev, { product, quantity }];
+      return [...prev, { product, quantity: clampToStock(product, quantity) }];
     });
-    setIsCartOpen(true);
+    // Confirm with a toast instead of throwing the whole basket drawer over the page on every tap
+    setLastAdded({ id: Date.now(), product, quantity });
   };
+
+  const dismissLastAdded = () => setLastAdded(null);
 
   const removeFromCart = (productId: number) => {
     setItems(prev => prev.filter(item => item.product.id !== productId));
@@ -78,7 +89,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
     setItems(prev =>
       prev.map(item =>
-        item.product.id === productId ? { ...item, quantity } : item
+        item.product.id === productId ? { ...item, quantity: clampToStock(item.product, quantity) } : item
       )
     );
   };
@@ -118,6 +129,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setIsCheckoutOpen,
         completedOrder,
         setCompletedOrder,
+        lastAdded,
+        dismissLastAdded,
       }}
     >
       {children}

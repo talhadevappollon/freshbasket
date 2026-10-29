@@ -9,13 +9,12 @@ import CartDrawer from '@/components/CartDrawer';
 import CheckoutModal from '@/components/CheckoutModal';
 import OrderSuccessModal from '@/components/OrderSuccessModal';
 import { useCart } from '@/context/CartContext';
+import QuantityStepper from '@/components/QuantityStepper';
 import { fetchCategories } from '@/lib/api';
 import { Category } from '@/types';
 import {
   ShoppingBag,
   Trash2,
-  Plus,
-  Minus,
   ArrowRight,
   ArrowLeft,
   Truck,
@@ -244,24 +243,13 @@ export default function CartPage() {
                       </div>
 
                       <div className="flex items-center justify-between sm:justify-end space-x-6">
-                        {/* Stepper */}
-                        <div className="flex items-center space-x-2 bg-slate-100 rounded-xl p-1 border border-slate-200">
-                          <button
-                            onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                            className="w-7 h-7 rounded-lg bg-white text-slate-700 hover:bg-slate-50 flex items-center justify-center transition shadow-2xs text-xs"
-                          >
-                            <Minus className="w-3.5 h-3.5" />
-                          </button>
-                          <span className="text-xs font-bold text-slate-900 w-6 text-center font-mono">
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                            className="w-7 h-7 rounded-lg bg-fresh-600 text-white hover:bg-fresh-700 flex items-center justify-center transition shadow-2xs text-xs"
-                          >
-                            <Plus className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
+                        <QuantityStepper
+                          value={item.quantity}
+                          min={0}
+                          max={item.product.stock_quantity > 0 ? item.product.stock_quantity : 99}
+                          label={item.product.name}
+                          onChange={q => updateQuantity(item.product.id, q)}
+                        />
 
                         <div className="text-right min-w-[90px]">
                           <span className="font-black text-sm text-slate-900 block font-mono">

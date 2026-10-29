@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import { submitCheckout } from '@/lib/api';
 import { OrderCustomer } from '@/types';
+import DeliverySlotPicker from '@/components/DeliverySlotPicker';
+import { slotDays } from '@/data/deliverySlots';
 import {
   X,
   Banknote,
@@ -55,6 +57,9 @@ export default function CheckoutModal() {
     delivery_area: 'DHA Phase 6',
     delivery_address: '',
     order_notes: '',
+    // Express today unless the shopper picks a window
+    delivery_date: slotDays()[0].date,
+    delivery_window: 'asap',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,6 +81,13 @@ export default function CheckoutModal() {
     };
   }, [isCheckoutOpen, isSubmitting, setIsCheckoutOpen]);
 
+  // A tab left open overnight must not offer yesterday's slot
+  useEffect(() => {
+    if (!isCheckoutOpen) return;
+    const days = slotDays();
+    setFormData(f => (days.some(d => d.date === f.delivery_date) ? f : { ...f, delivery_date: days[0].date, delivery_window: 'asap' }));
+  }, [isCheckoutOpen]);
+
   if (!isCheckoutOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -91,6 +103,10 @@ export default function CheckoutModal() {
     try {
       const res = await submitCheckout(formData, items);
       if (res.success && res.order) {
+        try {
+          // lets the tracking page pick the order up on this device
+          localStorage.setItem('fb_last_order', JSON.stringify({ n: res.order.order_number, p: formData.customer_phone }));
+        } catch {}
         clearCart();
         setIsCheckoutOpen(false);
         setCompletedOrder(res.order);
@@ -250,9 +266,19 @@ export default function CheckoutModal() {
             </div>
           </div>
 
+          {/* Delivery Slot */}
+          <div>
+            <h3 className="text-sm font-bold text-gray-500 mb-3">3. Delivery Time</h3>
+            <DeliverySlotPicker
+              date={formData.delivery_date || ''}
+              windowKey={formData.delivery_window || ''}
+              onChange={(date, win) => setFormData({ ...formData, delivery_date: date, delivery_window: win })}
+            />
+          </div>
+
           {/* Payment Method Selector */}
           <div>
-            <h3 className="text-sm font-bold text-gray-500 mb-3">3. Payment Option</h3>
+            <h3 className="text-sm font-bold text-gray-500 mb-3">4. Payment Option</h3>
             <div className="border-2 border-fresh-600 bg-fresh-50/70 p-4 rounded-2xl flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-xl bg-fresh-600 text-white flex items-center justify-center font-bold">

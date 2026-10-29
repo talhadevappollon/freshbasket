@@ -2,7 +2,9 @@
 
 import React, { useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
-import { CheckCircle2, Clock, MapPin, Banknote, Phone, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+import { windowLabel } from '@/data/deliverySlots';
+import { CheckCircle2, Clock, MapPin, Banknote, Phone, PackageSearch } from 'lucide-react';
 
 export default function OrderSuccessModal() {
   const { completedOrder, setCompletedOrder } = useCart();
@@ -68,8 +70,12 @@ export default function OrderSuccessModal() {
           <div className="flex items-start gap-2 text-sm text-gray-600">
             <Clock className="w-4 h-4 text-fresh-600 shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold text-gray-800">Express Delivery Window:</span>
-              <p className="text-gray-500 text-xs">Estimated arrival in 60 - 90 minutes</p>
+              <span className="font-bold text-gray-800">Delivery window:</span>
+              <p className="text-gray-500 text-xs">
+                {completedOrder.delivery_window && completedOrder.delivery_window !== 'asap'
+                  ? `${completedOrder.delivery_date ? new Date(completedOrder.delivery_date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) + ' · ' : ''}${windowLabel(completedOrder.delivery_window)}`
+                  : 'Express: estimated arrival in 60 - 90 minutes'}
+              </p>
             </div>
           </div>
 
@@ -91,14 +97,23 @@ export default function OrderSuccessModal() {
 
         {/* WhatsApp & Continue Shopping Buttons */}
         <div className="space-y-2">
+          <Link
+            href="/track"
+            onClick={() => setCompletedOrder(null)}
+            className="w-full h-12 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow transition-colors"
+          >
+            <PackageSearch className="w-4 h-4" />
+            <span>Track this order</span>
+          </Link>
+
           <a
             href={`https://wa.me/923001234567?text=${whatsappMessage}`}
             target="_blank"
             rel="noreferrer"
-            className="w-full h-12 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 shadow transition-colors"
+            className="w-full h-12 bg-white hover:bg-fresh-50 border border-gray-200 hover:border-fresh-300 text-gray-800 rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition-colors"
           >
-            <Phone className="w-4 h-4" />
-            <span>Track Order via WhatsApp Support</span>
+            <Phone className="w-4 h-4 text-fresh-600" />
+            <span>Confirm via WhatsApp</span>
           </a>
 
           <button

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { FEATURED_AISLES } from '@/data/aisles';
-import { ShoppingBag, Phone, Mail, MapPin, ShieldCheck, Heart, ArrowRight, MessageCircle, Sparkles } from 'lucide-react';
+import { ShoppingBag, Phone, Mail, MapPin, ShieldCheck, Heart, ArrowRight, MessageCircle, Sparkles, PackageSearch } from 'lucide-react';
 
 export default function Footer() {
   const aisles = FEATURED_AISLES.map(a => ({ name: a.name, slug: a.slug }));
@@ -121,6 +121,16 @@ export default function Footer() {
                 </div>
                 <span className="group-hover:text-fresh-300 transition-colors truncate">orders@freshbasket.com.pk</span>
               </a>
+
+              <Link
+                href="/track"
+                className="flex items-center space-x-2 group hover:text-white hover:translate-x-1 transition-all duration-200"
+              >
+                <div className="w-7 h-7 rounded-lg bg-emerald-900/60 group-hover:bg-fresh-600 text-fresh-400 group-hover:text-white flex items-center justify-center transition shrink-0">
+                  <PackageSearch className="w-3.5 h-3.5" />
+                </div>
+                <span className="group-hover:text-fresh-300 transition-colors">Track your order</span>
+              </Link>
 
               <div className="pt-2">
                 <a

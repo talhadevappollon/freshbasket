@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -11,13 +11,15 @@ import CheckoutModal from '@/components/CheckoutModal';
 import OrderSuccessModal from '@/components/OrderSuccessModal';
 import ScrollUI from '@/components/ScrollUI';
 import Reveal from '@/components/Reveal';
+import CategoryFilters, { ActiveFilterChips, EMPTY_FILTERS, Filters, activeFilterCount, applyFilters } from '@/components/CategoryFilters';
 import { fetchCategories, fetchProducts } from '@/lib/api';
 import { resolveCategory } from '@/data/aisles';
 import { FEATURED_AISLES } from '@/data/aisles';
 import { Category, Product } from '@/types';
 import { ChevronRight, ArrowDown, SlidersHorizontal, SearchX, Truck, ShieldCheck, Banknote, ArrowRight } from 'lucide-react';
 
-const PAGE_SIZE = 12;
+const PAGE_SIZE = 12; // products revealed per step
+const FETCH_SIZE = 100; // products fetched per request (the API's maximum), so filters have a real set to work on
 
 // Placeholder slug of the generic shell page (see page.tsx): the real slug is read from the URL.
 const SHELL_SLUG = '_';
@@ -63,7 +65,11 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
   const [sortBy, setSortBy] = useState('latest');
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [page, setPage] = useState(1);
+  const [fetchedPages, setFetchedPages] = useState(1);
+  const [visible, setVisible] = useState(PAGE_SIZE);
+  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement>(null);
   const [quickView, setQuickView] = useState<Product | null>(null);
 
   // Links may carry the bundled catalogue's slug (e.g. karachi-beverages) while the live API names the
@@ -76,6 +82,10 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
     const fromUrl = decodeURIComponent(window.location.pathname.split('/').filter(Boolean)[1] || '');
     setSlug(fromUrl);
   }, [routeSlug]);
+
+  useEffect(() => {
+    setFilters(EMPTY_FILTERS);
+  }, [activeSlug]);
 
   useEffect(() => {
     fetchCategories().then(cats => {
@@ -92,11 +102,12 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
     }
     let cancelled = false;
     setIsLoading(true);
-    fetchProducts({ category: activeSlug, sort: sortBy, per_page: PAGE_SIZE }).then(res => {
+    fetchProducts({ category: activeSlug, sort: sortBy, per_page: FETCH_SIZE }).then(res => {
       if (cancelled) return;
       setProducts(res.data);
       setTotal(res.total);
-      setPage(1);
+      setFetchedPages(1);
+      setVisible(PAGE_SIZE);
       setIsLoading(false);
     });
     return () => {
@@ -104,15 +115,45 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
     };
   }, [slug, activeSlug, current, categoriesLoaded, sortBy]);
 
-  const loadMore = async () => {
-    if (!slug || !current) return;
+  const filtered = useMemo(() => applyFilters(products, filters), [products, filters]);
+  const shown = filtered.slice(0, visible);
+  const hasMoreOnServer = products.length < total;
+  const hasMore = visible < filtered.length || hasMoreOnServer;
+  const filterCount = activeFilterCount(filters);
+
+  // Reveal the next batch; once everything fetched is on screen, pull the next page from the store
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore) return;
+    if (visible < filtered.length) {
+      setVisible(v => v + PAGE_SIZE);
+      return;
+    }
+    if (!hasMoreOnServer || !current) return;
     setIsLoadingMore(true);
-    const next = page + 1;
-    const res = await fetchProducts({ category: activeSlug, sort: sortBy, per_page: PAGE_SIZE * next });
-    setProducts(res.data);
-    setPage(next);
+    const next = fetchedPages + 1;
+    const res = await fetchProducts({ category: activeSlug, sort: sortBy, per_page: FETCH_SIZE, page: next });
+    setProducts(prev => {
+      const seen = new Set(prev.map(p => p.id));
+      return [...prev, ...res.data.filter(p => !seen.has(p.id))];
+    });
+    setFetchedPages(next);
+    setVisible(v => v + PAGE_SIZE);
     setIsLoadingMore(false);
-  };
+  }, [isLoadingMore, visible, filtered.length, hasMoreOnServer, current, fetchedPages, activeSlug, sortBy]);
+
+  // Changing filters or sort starts again from the top of the list
+  useEffect(() => {
+    setVisible(PAGE_SIZE);
+  }, [filters, sortBy]);
+
+  // Infinite scroll: the button below stays as the keyboard / no-JS-observer fallback
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el || !hasMore || isLoading || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver(entries => entries[0]?.isIntersecting && loadMore(), { rootMargin: '600px 0px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [hasMore, isLoading, loadMore]);
 
   const fullName = current?.name || initialName || humanize(slug);
   const title = lastSegment(fullName);
@@ -274,19 +315,34 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
           )}
 
           {/* Toolbar */}
-          <div className="mt-8 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-slate-200">
+          <div className="mt-8 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-slate-200">
             <p className="text-sm text-slate-600" aria-live="polite">
               {isLoading ? (
                 'Loading products…'
+              ) : filterCount > 0 ? (
+                <>
+                  <strong className="text-slate-900">{filtered.length}</strong> of {products.length}
+                  {hasMoreOnServer ? '+' : ''} products match your filters
+                </>
               ) : (
                 <>
-                  Showing <strong className="text-slate-900">{products.length}</strong> of{' '}
+                  Showing <strong className="text-slate-900">{Math.min(shown.length, total)}</strong> of{' '}
                   <strong className="text-slate-900">{total}</strong> products
                 </>
               )}
             </p>
             <div className="flex items-center gap-2">
-              <SlidersHorizontal className="w-4 h-4 text-slate-500" />
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(true)}
+                className="lg:hidden relative inline-flex items-center gap-2 h-10 px-4 rounded-xl bg-white border border-slate-200 hover:border-fresh-400 text-sm font-semibold text-slate-800 cursor-pointer transition"
+              >
+                <SlidersHorizontal className="w-4 h-4 text-fresh-600" />
+                Filters
+                {filterCount > 0 && (
+                  <span className="min-w-5 h-5 px-1.5 rounded-full bg-fresh-700 text-white text-[11px] font-bold flex items-center justify-center">{filterCount}</span>
+                )}
+              </button>
               <label htmlFor="category-sort" className="text-sm font-semibold text-slate-600">
                 Sort by
               </label>
@@ -304,69 +360,105 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
             </div>
           </div>
 
-          {/* Grid */}
-          {isLoading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-6">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <SkeletonCard key={i} />
-              ))}
-            </div>
-          ) : products.length > 0 ? (
-            <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-6">
-                {products.map((product, idx) => (
-                  <div
-                    key={product.id}
-                    className="animate-card-entrance"
-                    style={{ animationDelay: `${(idx % PAGE_SIZE) * 40}ms` }}
-                  >
-                    <ProductCard product={product} onQuickView={setQuickView} />
-                  </div>
-                ))}
-              </div>
-
-              {products.length < total && (
-                <div className="text-center mt-10">
-                  <button
-                    type="button"
-                    onClick={loadMore}
-                    disabled={isLoadingMore}
-                    className="inline-flex items-center justify-center gap-2 h-12 px-8 rounded-2xl bg-white border border-slate-200 hover:border-fresh-600 hover:bg-fresh-600 hover:text-white text-slate-800 text-sm font-bold shadow-sm active:scale-95 disabled:opacity-60 transition-all duration-200 cursor-pointer group"
-                  >
-                    {isLoadingMore ? 'Loading…' : `Show more (${total - products.length} left)`}
-                    <ArrowDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
-                  </button>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="text-center bg-white rounded-3xl border border-slate-200 px-6 py-16">
-              <div className="w-14 h-14 mx-auto rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center">
-                <SearchX className="w-7 h-7" />
-              </div>
-              <h2 className="mt-4 text-lg font-black text-slate-900">Nothing in {title} right now</h2>
-              <p className="mt-1 text-sm text-slate-600 max-w-md mx-auto">
-                This aisle is being restocked. Browse the whole store or jump to one of our busiest aisles.
-              </p>
-              <div className="mt-6 flex flex-wrap justify-center gap-2">
-                <Link
-                  href="/#products-section"
-                  className="inline-flex items-center h-11 px-5 rounded-xl bg-fresh-700 hover:bg-fresh-800 text-white text-sm font-bold transition-colors"
-                >
-                  Browse all products
-                </Link>
-                {otherAisles.slice(0, 3).map(a => (
-                  <Link
-                    key={a.slug}
-                    href={`/category/${a.slug}`}
-                    className="inline-flex items-center h-11 px-5 rounded-xl bg-white border border-slate-200 hover:border-fresh-400 text-slate-800 text-sm font-semibold transition-colors"
-                  >
-                    {a.name}
-                  </Link>
-                ))}
-              </div>
+          {filterCount > 0 && (
+            <div className="mb-5">
+              <ActiveFilterChips filters={filters} onChange={setFilters} />
             </div>
           )}
+
+          <div className="lg:grid lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-8 lg:items-start">
+            {!isLoading && products.length > 0 && (
+              <CategoryFilters
+                products={products}
+                filters={filters}
+                onChange={setFilters}
+                resultCount={filtered.length}
+                open={filtersOpen}
+                onClose={() => setFiltersOpen(false)}
+              />
+            )}
+
+            <div className={!isLoading && products.length > 0 ? '' : 'lg:col-span-2'}>
+              {/* Grid */}
+              {isLoading ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-6">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <SkeletonCard key={i} />
+                  ))}
+                </div>
+              ) : shown.length > 0 ? (
+                <>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-6">
+                    {shown.map((product, idx) => (
+                      <div
+                        key={product.id}
+                        className="animate-card-entrance"
+                        style={{ animationDelay: `${(idx % PAGE_SIZE) * 40}ms` }}
+                      >
+                        <ProductCard product={product} onQuickView={setQuickView} />
+                      </div>
+                    ))}
+                  </div>
+
+                  {hasMore && (
+                    <div ref={sentinelRef} className="text-center mt-10">
+                      <button
+                        type="button"
+                        onClick={loadMore}
+                        disabled={isLoadingMore}
+                        className="inline-flex items-center justify-center gap-2 h-12 px-8 rounded-2xl bg-white border border-slate-200 hover:border-fresh-600 hover:bg-fresh-600 hover:text-white text-slate-800 text-sm font-bold shadow-sm active:scale-95 disabled:opacity-60 transition-all duration-200 cursor-pointer group"
+                      >
+                        {isLoadingMore ? 'Loading…' : 'Show more'}
+                        <ArrowDown className="w-4 h-4 group-hover:translate-y-0.5 transition-transform" />
+                      </button>
+                    </div>
+                  )}
+                </>
+              ) : products.length > 0 ? (
+                <div className="text-center bg-white rounded-3xl border border-slate-200 px-6 py-16">
+                  <div className="w-14 h-14 mx-auto rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center">
+                    <SearchX className="w-7 h-7" />
+                  </div>
+                  <h2 className="mt-4 text-lg font-black text-slate-900">No products match these filters</h2>
+                  <p className="mt-1 text-sm text-slate-600 max-w-md mx-auto">Try widening the price range or removing a brand.</p>
+                  <button
+                    type="button"
+                    onClick={() => setFilters(EMPTY_FILTERS)}
+                    className="mt-6 inline-flex items-center h-11 px-5 rounded-xl bg-fresh-700 hover:bg-fresh-800 text-white text-sm font-bold transition-colors cursor-pointer"
+                  >
+                    Clear all filters
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center bg-white rounded-3xl border border-slate-200 px-6 py-16">
+                  <div className="w-14 h-14 mx-auto rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center">
+                    <SearchX className="w-7 h-7" />
+                  </div>
+                  <h2 className="mt-4 text-lg font-black text-slate-900">Nothing in {title} right now</h2>
+                  <p className="mt-1 text-sm text-slate-600 max-w-md mx-auto">
+                    This aisle is being restocked. Browse the whole store or jump to one of our busiest aisles.
+                  </p>
+                  <div className="mt-6 flex flex-wrap justify-center gap-2">
+                    <Link
+                      href="/#products-section"
+                      className="inline-flex items-center h-11 px-5 rounded-xl bg-fresh-700 hover:bg-fresh-800 text-white text-sm font-bold transition-colors"
+                    >
+                      Browse all products
+                    </Link>
+                    {otherAisles.slice(0, 3).map(a => (
+                      <Link
+                        key={a.slug}
+                        href={`/category/${a.slug}`}
+                        className="inline-flex items-center h-11 px-5 rounded-xl bg-white border border-slate-200 hover:border-fresh-400 text-slate-800 text-sm font-semibold transition-colors"
+                      >
+                        {a.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Other aisles */}
           <Reveal className="mt-14">

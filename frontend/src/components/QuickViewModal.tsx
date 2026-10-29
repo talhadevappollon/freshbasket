@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { PLACEHOLDER_IMG } from '@/lib/placeholder';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
-import { X, Plus, Minus, ShoppingBag, ShieldCheck, Banknote } from 'lucide-react';
+import { X, ShoppingBag, ShieldCheck, Banknote } from 'lucide-react';
+import QuantityStepper from '@/components/QuantityStepper';
 
 interface QuickViewModalProps {
   product: Product | null;
@@ -118,27 +119,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
 
             {/* Quantity + add */}
             <div className="flex items-center gap-3 pt-1">
-              <div className="flex items-center gap-1 bg-slate-100 rounded-xl p-1 border border-slate-200 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setQty(Math.max(1, qty - 1))}
-                  aria-label="Decrease quantity"
-                  className="w-10 h-10 rounded-lg bg-white text-slate-700 flex items-center justify-center hover:bg-rose-50 hover:text-rose-700 active:scale-90 transition cursor-pointer"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                <span className="w-8 text-center font-bold text-base tabular-nums" aria-live="polite">
-                  {qty}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setQty(qty + 1)}
-                  aria-label="Increase quantity"
-                  className="w-10 h-10 rounded-lg bg-white text-slate-700 flex items-center justify-center hover:bg-fresh-50 hover:text-fresh-700 active:scale-90 transition cursor-pointer"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
-              </div>
+              <QuantityStepper value={qty} min={1} max={product.stock_quantity > 0 ? product.stock_quantity : 99} label="quantity" size="lg" onChange={setQty} />
 
               <button
                 type="button"

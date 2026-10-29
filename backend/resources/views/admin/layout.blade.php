@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fresh Basket Pakistan — Enterprise Admin CRM & POS Command Center</title>
+    <title>Fresh House — Admin CRM &amp; POS</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="alternate icon" href="/favicon.ico">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" href="/icon-512.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#101e10">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Plus Jakarta Sans -->
@@ -18,6 +20,15 @@
     <!-- Chart.js for executive analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Brand palette sampled from the Fresh House logo (same values as the storefront): leaf green #478f45, apple red #b20f0b
+        const FRESH = {
+            50: '#f3f7f3', 100: '#e7efe6', 200: '#cde0cc', 300: '#a5cca4', 400: '#6db26c', 500: '#478f45',
+            600: '#3a7538', 700: '#2e5d2d', 800: '#254724', 900: '#1d361c', 950: '#101e10',
+        };
+        const BRAND = {
+            50: '#fdf2f1', 100: '#fce4e4', 200: '#f9c9c8', 300: '#f69a98', 400: '#f44d48', 500: '#d4261e',
+            600: '#b20f0b', 700: '#950d09', 800: '#750d0a', 900: '#570c0a', 950: '#2e0605',
+        };
         tailwind.config = {
             theme: {
                 extend: {
@@ -25,29 +36,55 @@
                         sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
                     },
                     colors: {
-                        fresh: {
-                            50: '#f0fdf4',
-                            100: '#dcfce7',
-                            200: '#bbf7d0',
-                            300: '#86efac',
-                            400: '#4ade80',
-                            500: '#22c55e',
-                            600: '#16a34a',
-                            700: '#15803d',
-                            800: '#166534',
-                            900: '#14532d',
-                            950: '#062d16',
-                        }
-                    }
+                        fresh: FRESH,
+                        brand: BRAND,
+                        // Existing views use the default green hues; point them at the logo green. Status colours that carry
+                        // meaning (amber = pending, blue/indigo/purple = in progress) are left alone; danger reds use the logo red.
+                        emerald: FRESH, green: FRESH, teal: FRESH, lime: FRESH,
+                        rose: BRAND, red: BRAND,
+                    },
+                    // Tailwind v3 (CDN) has no xs / 2xs shadows or blur, and no fade-in animation; the views use them.
+                    boxShadow: {
+                        '2xs': '0 1px 0 0 rgb(15 23 42 / 0.04)',
+                        xs: '0 1px 2px 0 rgb(15 23 42 / 0.06)',
+                    },
+                    backdropBlur: { xs: '2px' },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0', transform: 'translateY(-6px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        menuIn: { '0%': { opacity: '0', transform: 'translateY(8px) scale(0.98)' }, '100%': { opacity: '1', transform: 'translateY(0) scale(1)' } },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both',
+                        'menu-in': 'menuIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) both',
+                    },
                 }
             }
         }
     </script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        html { scroll-behavior: smooth; }
+        /* Keyboard focus: visible ring on every control, none for mouse clicks */
+        :focus-visible { outline: 2px solid #478f45; outline-offset: 2px; }
+        input:focus-visible, select:focus-visible, textarea:focus-visible { outline-offset: 0; }
+        .skip-link { position: absolute; left: 12px; top: -64px; z-index: 100; background: #101e10; color: #fff; padding: 10px 16px; border-radius: 12px; font-size: 13px; font-weight: 700; transition: top .2s; }
+        .skip-link:focus { top: 12px; }
+        /* Buttons respond to press as well as hover */
+        button:not(:disabled) { transition-property: color, background-color, border-color, box-shadow, transform, opacity; transition-duration: .15s; }
+        button:not(:disabled):active { transform: scale(.97); }
+        button:disabled { cursor: not-allowed; }
+        /* Tables: row hover */
+        tbody tr { transition: background-color .15s; }
+        tbody tr:hover { background-color: rgb(243 247 243 / .7); }
+        /* Stops iOS from zooming into small inputs */
+        @media (max-width: 640px) { input, select, textarea { font-size: 16px !important; } }
+        @media (pointer: coarse) { aside nav a { min-height: 44px; } }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+        }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #f8fafc; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb { background: #a5cca4; border-radius: 9999px; }
         .glass-header {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
@@ -74,32 +111,27 @@
         }
     </style>
 </head>
-<body class="bg-[#f1f5f9] text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-fresh-600 selection:text-white">
+<body class="bg-[#f3f6f3] text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-fresh-600 selection:text-white">
 
+    <a href="#admin-main" class="skip-link">Skip to content</a>
     <div class="flex flex-1 min-h-screen">
         <!-- Mobile Backdrop Overlay -->
         <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 hidden lg:hidden"></div>
 
         <!-- Sidebar (Hidden by default on mobile, slide-over drawer) -->
-        <aside id="adminSidebar" class="hidden lg:flex fixed lg:static inset-y-0 left-0 w-72 bg-gradient-to-b from-[#052312] via-[#09351c] to-[#03170c] text-white flex-col shrink-0 border-r border-emerald-950/80 shadow-2xl z-50 lg:z-30 transition-all duration-300">
+        <aside id="adminSidebar" class="hidden lg:flex fixed lg:static inset-y-0 left-0 w-72 bg-gradient-to-b from-fresh-950 via-[#17301a] to-[#0b160b] text-white flex-col shrink-0 border-r border-fresh-950 shadow-2xl z-50 lg:z-30 transition-all duration-300">
             <!-- Brand Section -->
             <div class="p-6 border-b border-emerald-900/40 flex items-center justify-between">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3.5 group">
-                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-fresh-400 to-fresh-600 flex items-center justify-center text-white text-xl shadow-lg shadow-fresh-500/30 group-hover:scale-105 transition transform">
-                        <i class="fa-solid fa-basket-shopping"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center space-x-1.5">
-                            <span class="font-black text-xl tracking-tight text-white">FRESH</span>
-                            <span class="font-black text-xl tracking-tight text-fresh-400">BASKET</span>
-                        </div>
-                        <div class="flex items-center gap-1.5 mt-0.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-                            <span class="text-[9px] text-emerald-300/80 font-bold tracking-widest uppercase">PAKISTAN CRM & POS</span>
-                        </div>
-                    </div>
+                <a href="{{ route('admin.dashboard') }}" class="flex flex-col gap-2 group" aria-label="Fresh House admin home">
+                    <span class="bg-white rounded-xl px-3 py-2 shadow-lg shadow-black/20 group-hover:shadow-black/30 transition">
+                        <img src="/logo.png" alt="Fresh House" width="150" height="34" class="h-8 w-auto">
+                    </span>
+                    <span class="flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-fresh-400 animate-pulse"></span>
+                        <span class="text-[10px] text-fresh-300 font-bold tracking-widest uppercase">Admin CRM &amp; POS</span>
+                    </span>
                 </a>
-                <button onclick="toggleSidebar()" class="lg:hidden text-emerald-400/80 hover:text-white p-2 rounded-xl hover:bg-white/10 transition">
+                <button onclick="toggleSidebar()" aria-label="Close menu" class="lg:hidden text-emerald-400/80 hover:text-white w-11 h-11 flex items-center justify-center rounded-xl hover:bg-white/10 transition">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
@@ -280,26 +312,26 @@
             <!-- Top Header (Glassmorphic) -->
             <header class="glass-header border-b border-slate-200/80 px-6 sm:px-8 py-3.5 flex items-center justify-between shadow-xs sticky top-0 z-20">
                 <div class="flex items-center space-x-4">
-                    <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition">
+                    <button onclick="toggleSidebar()" aria-label="Open menu" class="lg:hidden w-11 h-11 flex items-center justify-center rounded-xl text-slate-600 hover:bg-slate-100 transition">
                         <i class="fa-solid fa-bars text-lg"></i>
                     </button>
 
                     <div>
                         <div class="flex items-center space-x-2">
                             <h2 class="text-sm sm:text-lg font-black text-slate-900 tracking-tight truncate max-w-[180px] sm:max-w-none">
-                                Fresh Basket Command
+                                Fresh House Command
                             </h2>
                             <span class="hidden sm:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black bg-fresh-100 text-fresh-800 border border-fresh-200">
                                 Karachi Hub
                             </span>
                         </div>
-                        <div class="hidden sm:flex items-center space-x-3 text-xs text-slate-500 mt-0.5 font-medium">
+                        <div class="hidden sm:flex items-center space-x-3 whitespace-nowrap text-xs text-slate-500 mt-0.5 font-medium">
                             <span class="flex items-center gap-1.5 text-fresh-700 font-bold">
                                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                                 Hub Operations Active
                             </span>
-                            <span>&bull;</span>
-                            <span id="liveClock" class="font-mono text-slate-700 font-bold">Loading PKT...</span>
+                            <span class="hidden 2xl:inline">&bull;</span>
+                            <span id="liveClock" class="hidden 2xl:inline font-mono text-slate-700 font-bold">Loading PKT...</span>
                         </div>
                     </div>
                 </div>
@@ -309,17 +341,17 @@
                     <!-- Global Search Button (Ctrl+K) -->
                     <button
                         onclick="openGlobalSearch()"
-                        class="hidden md:flex items-center space-x-2 bg-slate-100 hover:bg-slate-200/80 text-slate-500 px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 transition"
+                        class="hidden md:flex items-center space-x-2 whitespace-nowrap bg-slate-100 hover:bg-slate-200/80 text-slate-500 px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-200 transition"
                     >
                         <i class="fa-solid fa-magnifying-glass text-slate-400"></i>
-                        <span>Search orders, products...</span>
+                        <span>Search<span class="hidden xl:inline"> orders, products...</span></span>
                         <kbd class="ml-2 font-mono text-[10px] bg-white px-1.5 py-0.5 rounded border border-slate-300 text-slate-600 font-bold">Ctrl K</kbd>
                     </button>
 
                     <!-- Quick Add Product Trigger -->
                     <button
                         onclick="document.getElementById('quickAddProductModal').classList.remove('hidden'); document.getElementById('quickAddProductModal').classList.add('flex');"
-                        class="bg-fresh-600 hover:bg-fresh-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-md shadow-fresh-600/20 flex items-center gap-1.5 transition"
+                        class="bg-fresh-600 hover:bg-fresh-700 text-white px-3.5 h-10 whitespace-nowrap rounded-xl text-xs font-bold shadow-md shadow-fresh-600/20 flex items-center gap-1.5 transition"
                     >
                         <i class="fa-solid fa-plus"></i>
                         <span class="hidden sm:inline">Add SKU</span>
@@ -328,7 +360,7 @@
                     <!-- POS Terminal Shortcut -->
                     <a
                         href="{{ route('admin.pos') }}"
-                        class="bg-gradient-to-r from-slate-900 to-emerald-950 hover:bg-black text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5 transition"
+                        class="bg-gradient-to-r from-fresh-900 to-fresh-950 hover:from-fresh-800 hover:to-fresh-900 text-white px-3.5 h-10 whitespace-nowrap rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5 transition"
                     >
                         <i class="fa-solid fa-cash-register text-amber-400"></i>
                         <span class="hidden sm:inline">POS Counter</span>
@@ -346,7 +378,7 @@
 
                     <!-- Admin Profile Pill -->
                     <div class="flex items-center space-x-2 pl-2 sm:pl-3 border-l border-slate-200">
-                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 to-fresh-800 text-white font-black flex items-center justify-center text-xs shadow-sm">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-fresh-500 to-fresh-800 text-white font-black flex items-center justify-center text-xs shadow-sm">
                             FB
                         </div>
                         <div class="hidden lg:block text-left">
@@ -359,29 +391,29 @@
 
             <!-- Success Alert -->
             @if(session('success'))
-                <div id="toastSuccess" class="mx-6 sm:mx-8 mt-6 p-4 rounded-2xl bg-fresh-50 border border-fresh-200 text-fresh-800 flex items-center justify-between shadow-sm animate-fade-in">
+                <div id="toastSuccess" role="status" class="mx-6 sm:mx-8 mt-6 p-4 rounded-2xl bg-fresh-50 border border-fresh-200 text-fresh-800 flex items-center justify-between shadow-sm animate-fade-in">
                     <div class="flex items-center space-x-3">
                         <div class="w-8 h-8 rounded-xl bg-fresh-500 text-white flex items-center justify-center font-bold text-sm shadow-xs">
                             <i class="fa-solid fa-check"></i>
                         </div>
                         <span class="text-xs font-bold">{{ session('success') }}</span>
                     </div>
-                    <button onclick="document.getElementById('toastSuccess').remove()" class="text-fresh-700 hover:text-fresh-900 p-1">
+                    <button onclick="document.getElementById('toastSuccess').remove()" aria-label="Dismiss" class="text-fresh-700 hover:text-fresh-900 w-9 h-9 rounded-lg hover:bg-fresh-100">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
             @endif
 
             <!-- Main Content Container -->
-            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <main id="admin-main" tabindex="-1" class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 focus:outline-none">
                 @yield('content')
             </main>
         </div>
     </div>
 
     <!-- Quick Add Product Modal -->
-    <div id="quickAddProductModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-gray-100 max-h-[90vh] overflow-y-auto">
+    <div id="quickAddProductModal" role="dialog" aria-modal="true" aria-label="Add new product" class="fixed inset-0 bg-black/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 shadow-2xl border border-gray-100 max-h-[calc(100dvh-2rem)] overflow-y-auto">
             <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
                 <div>
                     <h3 class="font-black text-gray-900 text-lg">Add New Fresh Basket Product</h3>
@@ -389,7 +421,7 @@
                 </div>
                 <button
                     onclick="document.getElementById('quickAddProductModal').classList.add('hidden'); document.getElementById('quickAddProductModal').classList.remove('flex');"
-                    class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center"
+                    aria-label="Close" class="w-11 h-11 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center"
                 >
                     <i class="fa-solid fa-xmark"></i>
                 </button>
@@ -399,13 +431,13 @@
                 @csrf
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Product Title</label>
-                    <input type="text" name="name" required placeholder="e.g. Fresh Red Apples (1 kg)" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:outline-none">
+                    <input type="text" name="name" required placeholder="e.g. Fresh Red Apples (1 kg)" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">Category</label>
-                        <select name="category_id" required class="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:outline-none bg-white font-medium">
+                        <select name="category_id" required class="w-full px-3 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none bg-white font-medium">
                             @foreach(\App\Models\Category::orderBy('name')->get() as $cat)
                                 <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                             @endforeach
@@ -414,26 +446,26 @@
 
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">Pack Unit / Weight</label>
-                        <input type="text" name="unit" placeholder="e.g. 500g, 1 kg, 1 dozen" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:outline-none">
+                        <input type="text" name="unit" placeholder="e.g. 500g, 1 kg, 1 dozen" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">Retail Price (PKR)</label>
-                        <input type="number" step="0.01" name="price" required placeholder="PKR 450" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:outline-none font-bold text-emerald-800">
+                        <input type="number" step="0.01" name="price" required placeholder="PKR 450" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none font-bold text-emerald-800">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">Supplier Cost Price (PKR)</label>
-                        <input type="number" step="0.01" name="cost_price" placeholder="PKR 350" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:outline-none">
+                        <input type="number" step="0.01" name="cost_price" placeholder="PKR 350" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 mb-1">Initial Stock (Units)</label>
-                        <input type="number" name="stock_quantity" value="50" required class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:outline-none font-bold">
+                        <input type="number" name="stock_quantity" value="50" required class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none font-bold">
                     </div>
 
                     <div>
@@ -444,20 +476,20 @@
 
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Image URL</label>
-                    <input type="url" name="primary_image" placeholder="https://cdn.shopify.com/..." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:outline-none">
+                    <input type="url" name="primary_image" placeholder="https://cdn.shopify.com/..." class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
                 </div>
 
                 <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
                     <button
                         type="button"
                         onclick="document.getElementById('quickAddProductModal').classList.add('hidden'); document.getElementById('quickAddProductModal').classList.remove('flex');"
-                        class="px-4 py-2 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100"
+                        class="px-4 h-11 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100"
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
-                        class="px-6 py-2.5 rounded-xl text-xs font-bold bg-fresh-600 hover:bg-fresh-700 text-white shadow-lg shadow-fresh-600/30"
+                        class="px-6 h-11 rounded-xl text-xs font-bold bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 text-white shadow-lg shadow-fresh-600/30"
                     >
                         Save & Add to Catalog
                     </button>
@@ -467,14 +499,14 @@
     </div>
 
     <!-- Global Search Modal (Ctrl + K) -->
-    <div id="globalSearchModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs hidden items-start justify-center p-4 sm:p-12 z-50">
-        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-gray-100 max-h-[85vh] flex flex-col">
+    <div id="globalSearchModal" role="dialog" aria-modal="true" aria-label="Global search" class="fixed inset-0 bg-black/60 backdrop-blur-xs hidden items-start justify-center p-4 sm:p-12 z-50">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-gray-100 max-h-[calc(100dvh-2rem)] flex flex-col">
             <div class="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
                 <div class="flex items-center space-x-2 text-slate-800">
                     <i class="fa-solid fa-magnifying-glass text-fresh-600"></i>
                     <h3 class="font-black text-base">Global Storefront & POS Search</h3>
                 </div>
-                <button onclick="closeGlobalSearch()" class="text-slate-400 hover:text-slate-600">
+                <button onclick="closeGlobalSearch()" aria-label="Close search" class="w-11 h-11 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>

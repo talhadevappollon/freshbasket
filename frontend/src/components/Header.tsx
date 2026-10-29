@@ -31,6 +31,7 @@ import {
   Gift,
   ShieldCheck,
   Loader2,
+  PackageSearch,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -493,6 +494,10 @@ export default function Header({ categories }: HeaderProps) {
                 <Phone className="w-3.5 h-3.5 text-emerald-300" />
                 +92 21 111-373-742
               </a>
+              <Link href="/track" className="flex items-center gap-1.5 h-9 hover:text-white transition-colors">
+                <PackageSearch className="w-3.5 h-3.5 text-emerald-300" />
+                Track order
+              </Link>
               <a href="/admin" className="flex items-center gap-1.5 h-9 text-emerald-200/70 hover:text-white transition-colors">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 Staff login

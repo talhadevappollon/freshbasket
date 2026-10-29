@@ -10,7 +10,9 @@ use App\Models\Product;
 use App\Models\InventoryLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use App\Support\DeliverySlots;
 
 class CheckoutController extends Controller
 {
@@ -24,12 +26,22 @@ class CheckoutController extends Controller
             'delivery_area' => 'nullable|string|max:100',
             'delivery_address' => 'required|string',
             'order_notes' => 'nullable|string',
+            'delivery_date' => 'nullable|date_format:Y-m-d',
+            'delivery_window' => 'nullable|string|in:' . implode(',', DeliverySlots::keys()),
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.quantity' => 'required|integer|min:1',
         ]);
 
-        return DB::transaction(function () use ($validated, $request) {
+        $slotError = DeliverySlots::validate($validated['delivery_date'] ?? null, $validated['delivery_window'] ?? null);
+        if ($slotError) {
+            return response()->json(['success' => false, 'message' => $slotError], 422);
+        }
+
+        // Orders still save if this release is live before its migration has run
+        $hasSlotColumns = Schema::hasColumn('orders', 'delivery_window');
+
+        return DB::transaction(function () use ($validated, $request, $hasSlotColumns) {
             // 1. Sync / Find Customer (CRM 360)
             $customer = Customer::firstOrCreate(
                 ['phone' => $validated['customer_phone']],
@@ -117,7 +129,10 @@ class CheckoutController extends Controller
                 'order_status' => 'pending',
                 'order_source' => 'online',
                 'order_notes' => $validated['order_notes'] ?? null,
-            ]);
+            ] + ($hasSlotColumns ? [
+                'delivery_date' => $validated['delivery_date'] ?? null,
+                'delivery_window' => $validated['delivery_window'] ?? null,
+            ] : []));
 
             // Save items
             foreach ($orderItemsData as $itemData) {

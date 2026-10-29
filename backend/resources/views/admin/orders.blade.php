@@ -144,6 +144,12 @@
                         <td class="px-4 max-w-xs">
                             <span class="font-bold text-xs text-slate-800 block">{{ $order->delivery_area ?? 'Karachi' }}</span>
                             <p class="text-xs text-slate-500 truncate mt-0.5">{{ $order->delivery_address }}</p>
+                            @if($order->delivery_window)
+                                <p class="inline-flex items-center gap-1 text-[11px] font-bold text-fresh-800 bg-fresh-50 border border-fresh-200 px-1.5 py-0.5 rounded mt-1">
+                                    <i class="fa-solid fa-clock"></i>
+                                    {{ $order->delivery_date ? $order->delivery_date->format('D, j M') : '' }} &middot; {{ $order->delivery_window_label }}
+                                </p>
+                            @endif
                             @if($order->order_notes)
                                 <p class="text-[11px] text-amber-800 bg-amber-50 p-1 rounded mt-1 truncate">
                                     <i class="fa-solid fa-note-sticky mr-1"></i> {{ $order->order_notes }}

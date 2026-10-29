@@ -3,7 +3,7 @@
 @section('content')
 <div class="max-w-7xl mx-auto space-y-6">
     <!-- POS Terminal Top Bar -->
-    <div class="bg-gradient-to-r from-emerald-950 via-emerald-900 to-fresh-950 rounded-3xl p-6 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="bg-gradient-to-r from-fresh-950 via-fresh-900 to-fresh-800 rounded-3xl p-6 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <div class="flex items-center space-x-2">
                 <span class="w-3 h-3 rounded-full bg-fresh-400 animate-pulse"></span>
@@ -36,20 +36,20 @@
                         type="text"
                         id="barcodeInput"
                         placeholder="Scan or type barcode (e.g. 896400... or SKU) and press Enter..."
-                        class="w-full pl-11 pr-24 py-3.5 bg-gray-50 border border-gray-200 focus:border-fresh-500 rounded-2xl text-sm font-mono font-bold focus:outline-none focus:bg-white transition"
+                        aria-label="Scan or type a barcode" class="w-full pl-11 pr-24 h-14 bg-gray-50 border border-gray-200 hover:border-fresh-300 focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 rounded-2xl text-sm font-mono font-bold focus:outline-none focus:bg-white transition"
                         autofocus
                     />
-                    <i class="fa-solid fa-barcode text-gray-400 absolute left-4 top-4 text-base"></i>
+                    <i class="fa-solid fa-barcode text-gray-400 absolute left-4 top-1/2 -translate-y-1/2 text-base" aria-hidden="true"></i>
                     <button
                         onclick="scanCurrentBarcode()"
-                        class="absolute right-2 top-2 bg-fresh-600 hover:bg-fresh-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition"
+                        class="absolute right-2 top-2 h-10 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 text-white px-5 rounded-xl text-xs font-bold shadow-sm transition"
                     >
                         Enter
                     </button>
                 </div>
                 <div class="flex items-center justify-between text-[11px] text-gray-400 mt-2 px-1">
-                    <span><i class="fa-solid fa-bolt mr-1 text-fresh-600"></i> USB & Bluetooth barcode scanners supported</span>
-                    <span id="scanNotice" class="text-fresh-600 font-bold"></span>
+                    <span class="flex items-center flex-wrap gap-x-3 gap-y-1"><span><i class="fa-solid fa-bolt mr-1 text-fresh-600"></i> USB &amp; Bluetooth scanners supported</span><span class="hidden sm:inline"><kbd class="font-mono bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 text-gray-600">F2</kbd> scan &nbsp;<kbd class="font-mono bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 text-gray-600">F4</kbd> cash &nbsp;<kbd class="font-mono bg-gray-100 px-1.5 py-0.5 rounded border border-gray-200 text-gray-600">F8</kbd> finish</span></span>
+                    <span id="scanNotice" role="status" aria-live="polite" class="text-fresh-700 font-bold"></span>
                 </div>
             </div>
 
@@ -62,15 +62,16 @@
                         id="catalogSearch"
                         onkeyup="filterPosCatalog()"
                         placeholder="Search items..."
-                        class="px-3 py-1.5 rounded-xl border border-gray-200 text-xs w-48 focus:outline-none focus:border-fresh-500"
+                        aria-label="Search counter items" class="h-11 px-4 rounded-xl border border-gray-200 hover:border-fresh-300 text-xs w-full sm:w-56 focus:outline-none focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 transition"
                     />
                 </div>
 
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[500px] overflow-y-auto pr-1" id="posItemsGrid">
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[560px] overflow-y-auto pr-1" id="posItemsGrid">
                     @foreach($products as $p)
                     <button
                         onclick="addToPosCart({{ $p->id }}, '{{ addslashes($p->name) }}', {{ $p->price }}, '{{ $p->unit }}', '{{ $p->barcode }}', {{ $p->stock_quantity }})"
-                        class="pos-item-card p-3 rounded-2xl border border-gray-100 bg-gray-50/50 hover:bg-fresh-50/70 hover:border-fresh-300 transition text-left flex flex-col justify-between group"
+                        {{ $p->stock_quantity <= 0 ? 'disabled' : '' }}
+                        class="pos-item-card min-h-[96px] p-3 rounded-2xl border border-gray-100 bg-gray-50/50 hover:bg-fresh-50/70 hover:border-fresh-300 active:bg-fresh-100 disabled:opacity-50 disabled:hover:bg-gray-50/50 disabled:hover:border-gray-100 transition text-left flex flex-col justify-between group"
                         data-name="{{ strtolower($p->name) }}"
                         data-barcode="{{ $p->barcode }}"
                         data-sku="{{ strtolower($p->sku) }}"
@@ -85,7 +86,13 @@
 
                         <div class="flex items-center justify-between pt-2 border-t border-gray-200/50 text-xs">
                             <span class="font-black text-gray-900">PKR {{ number_format($p->price, 0) }}</span>
-                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">{{ $p->stock_quantity }} in stock</span>
+                            @if($p->stock_quantity <= 0)
+                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-brand-100 text-brand-700">Out of stock</span>
+                            @elseif($p->stock_quantity < 10)
+                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">Only {{ $p->stock_quantity }} left</span>
+                            @else
+                                <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">{{ $p->stock_quantity }} in stock</span>
+                            @endif
                         </div>
                     </button>
                     @endforeach
@@ -94,19 +101,19 @@
         </div>
 
         <!-- Right: Register Ticket & Cash Settlement (5 Cols) -->
-        <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-5 sticky top-24">
+        <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm space-y-5 lg:sticky lg:top-24">
             <div class="flex items-center justify-between pb-3 border-b border-gray-100">
                 <div>
                     <h3 class="font-black text-gray-900 text-lg">Active Register Ticket</h3>
                     <span class="text-xs text-gray-400">Cash Sale Receipt</span>
                 </div>
-                <button onclick="clearPosCart()" class="text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 px-2.5 py-1 rounded-lg">
+                <button onclick="clearPosCart()" class="h-10 px-4 text-xs font-bold text-brand-600 hover:text-brand-700 bg-brand-50 hover:bg-brand-100 rounded-xl">
                     Clear
                 </button>
             </div>
 
             <!-- Cart Items List -->
-            <div id="posCartList" class="divide-y divide-gray-100 max-h-64 overflow-y-auto pr-1">
+            <div id="posCartList" aria-live="polite" class="divide-y divide-gray-100 max-h-72 overflow-y-auto pr-1">
                 <div class="py-12 text-center text-gray-400 text-xs" id="posEmptyNotice">
                     <i class="fa-solid fa-basket-shopping text-3xl mb-2 text-gray-300 block"></i>
                     No items on ticket. Scan barcode or click an item on the left.
@@ -125,30 +132,31 @@
                 </div>
                 <div class="flex justify-between pt-2 border-t border-gray-200 text-base font-black text-gray-900">
                     <span>Payable Total:</span>
-                    <span id="posTotal" class="text-emerald-800 text-xl font-black">PKR 0</span>
+                    <span id="posTotal" aria-live="polite" class="text-fresh-800 text-xl font-black">PKR 0</span>
                 </div>
             </div>
 
             <!-- Cash Payment Calculator -->
             <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 space-y-3">
                 <label class="block text-xs font-bold text-gray-700">Cash Received from Shopper (PKR)</label>
-                <div class="flex gap-2">
+                <div class="flex flex-wrap gap-2">
                     <input
                         type="number"
                         id="posCashReceived"
                         oninput="calculateChangeDue()"
                         placeholder="e.g. 1000"
-                        class="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-xl text-sm font-bold font-mono focus:outline-none focus:border-fresh-500"
+                        aria-label="Cash received" class="basis-full h-11 px-3 bg-white border border-gray-200 hover:border-fresh-300 rounded-xl text-sm font-bold font-mono focus:outline-none focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 transition"
                     />
                     <!-- Quick Currency Presets -->
-                    <button type="button" onclick="setCashAmount(500)" class="px-2 py-1 bg-white border border-gray-200 hover:bg-gray-100 rounded-lg text-xs font-bold font-mono">500</button>
-                    <button type="button" onclick="setCashAmount(1000)" class="px-2 py-1 bg-white border border-gray-200 hover:bg-gray-100 rounded-lg text-xs font-bold font-mono">1000</button>
-                    <button type="button" onclick="setCashAmount(5000)" class="px-2 py-1 bg-white border border-gray-200 hover:bg-gray-100 rounded-lg text-xs font-bold font-mono">5000</button>
+                    <button type="button" onclick="setCashAmount(0)" title="Exact amount" class="flex-1 h-11 px-3 bg-white border border-gray-200 hover:border-fresh-400 hover:bg-fresh-50 hover:text-fresh-800 rounded-xl text-xs font-bold font-mono">Exact</button>
+                    <button type="button" onclick="setCashAmount(500)" class="flex-1 h-11 px-3 bg-white border border-gray-200 hover:border-fresh-400 hover:bg-fresh-50 hover:text-fresh-800 rounded-xl text-xs font-bold font-mono">500</button>
+                    <button type="button" onclick="setCashAmount(1000)" class="flex-1 h-11 px-3 bg-white border border-gray-200 hover:border-fresh-400 hover:bg-fresh-50 hover:text-fresh-800 rounded-xl text-xs font-bold font-mono">1000</button>
+                    <button type="button" onclick="setCashAmount(5000)" class="flex-1 h-11 px-3 bg-white border border-gray-200 hover:border-fresh-400 hover:bg-fresh-50 hover:text-fresh-800 rounded-xl text-xs font-bold font-mono">5000</button>
                 </div>
 
                 <div class="flex justify-between items-center pt-2 border-t border-gray-200 text-xs">
                     <span class="font-bold text-gray-600">Change Due to Customer:</span>
-                    <span id="posChangeDue" class="font-black text-emerald-700 text-sm font-mono">PKR 0</span>
+                    <span id="posChangeDue" aria-live="polite" class="font-black text-fresh-700 text-base font-mono">PKR 0</span>
                 </div>
             </div>
 
@@ -157,7 +165,7 @@
                 id="posCheckoutBtn"
                 onclick="processPosTransaction()"
                 disabled
-                class="w-full bg-fresh-600 hover:bg-fresh-700 disabled:bg-gray-300 text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-fresh-600/30 flex items-center justify-center space-x-2 transition"
+                class="w-full h-14 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 disabled:bg-gray-300 disabled:shadow-none text-white rounded-2xl font-bold text-sm shadow-xl shadow-fresh-600/30 flex items-center justify-center space-x-2 transition"
             >
                 <i class="fa-solid fa-receipt"></i>
                 <span>Complete Cash Sale & Deduct Stock</span>
@@ -166,9 +174,26 @@
     </div>
 </div>
 
+<!-- Toasts (replace blocking alert() dialogs so the cashier never loses the scan field) -->
+<div id="posToasts" class="fixed bottom-4 right-4 left-4 sm:left-auto sm:w-96 z-[60] flex flex-col gap-2 pointer-events-none" aria-live="assertive"></div>
+
 <!-- POS Interactive Script -->
 <script>
     let posCart = [];
+
+    function escapeHtml(v) {
+        return String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function posToast(message, kind) {
+        const tone = kind === 'error' ? 'bg-brand-600' : kind === 'warn' ? 'bg-amber-600' : 'bg-fresh-700';
+        const icon = kind === 'error' ? 'fa-circle-exclamation' : kind === 'warn' ? 'fa-triangle-exclamation' : 'fa-circle-check';
+        const el = document.createElement('div');
+        el.className = tone + ' text-white rounded-2xl px-4 py-3 text-sm font-semibold shadow-2xl flex items-start gap-3 animate-menu-in pointer-events-auto';
+        el.innerHTML = '<i class="fa-solid ' + icon + ' mt-0.5" aria-hidden="true"></i><span class="whitespace-pre-line">' + escapeHtml(message) + '</span>';
+        document.getElementById('posToasts').appendChild(el);
+        setTimeout(() => { el.style.transition = 'opacity .3s'; el.style.opacity = '0'; setTimeout(() => el.remove(), 300); }, kind === 'error' ? 6000 : 3500);
+    }
 
     // Synthesized Audio Feedback (Web Audio API)
     function playBeep() {
@@ -222,6 +247,10 @@
         playBeep();
         const existing = posCart.find(it => it.id === id);
         if (existing) {
+            if (stock > 0 && existing.quantity >= stock) {
+                posToast('Only ' + stock + ' of ' + name + ' in stock.', 'warn');
+                return;
+            }
             existing.quantity += 1;
         } else {
             posCart.push({ id, name, price, unit, barcode, stock, quantity: 1 });
@@ -230,6 +259,11 @@
     }
 
     function updatePosQty(id, qty) {
+        const current = posCart.find(it => it.id === id);
+        if (current && qty > current.quantity && current.stock > 0 && qty > current.stock) {
+            posToast('Only ' + current.stock + ' of ' + current.name + ' in stock.', 'warn');
+            return;
+        }
         if (qty <= 0) {
             posCart = posCart.filter(it => it.id !== id);
         } else {
@@ -277,19 +311,19 @@
             count += item.quantity;
 
             html += `
-                <div class="py-2.5 flex items-center justify-between text-xs gap-2">
+                <div class="py-3 flex items-center justify-between text-xs gap-2">
                     <div class="flex-1 min-w-0">
-                        <span class="font-bold text-gray-900 block truncate">${item.name}</span>
+                        <span class="font-bold text-gray-900 block truncate">${escapeHtml(item.name)}</span>
                         <span class="text-[10px] text-gray-400 font-mono">PKR ${item.price.toLocaleString()} x ${item.quantity}</span>
                     </div>
 
-                    <div class="flex items-center space-x-1 shrink-0">
-                        <button onclick="updatePosQty(${item.id}, ${item.quantity - 1})" class="w-6 h-6 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold">-</button>
-                        <span class="font-bold font-mono px-1">${item.quantity}</span>
-                        <button onclick="updatePosQty(${item.id}, ${item.quantity + 1})" class="w-6 h-6 rounded bg-fresh-600 hover:bg-fresh-700 text-white font-bold">+</button>
+                    <div class="flex items-center shrink-0 rounded-xl border border-gray-200 overflow-hidden">
+                        <button onclick="updatePosQty(${item.id}, ${item.quantity - 1})" aria-label="Decrease ${escapeHtml(item.name)}" class="w-10 h-10 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold text-base">&minus;</button>
+                        <span class="font-bold font-mono w-8 text-center">${item.quantity}</span>
+                        <button onclick="updatePosQty(${item.id}, ${item.quantity + 1})" aria-label="Increase ${escapeHtml(item.name)}" class="w-10 h-10 bg-fresh-600 hover:bg-fresh-700 text-white font-bold text-base">+</button>
                     </div>
 
-                    <div class="text-right min-w-[70px]">
+                    <div class="text-right min-w-[76px]">
                         <span class="font-black text-gray-900">PKR ${lineTotal.toLocaleString()}</span>
                     </div>
                 </div>
@@ -305,7 +339,8 @@
     }
 
     function setCashAmount(amt) {
-        document.getElementById('posCashReceived').value = amt;
+        if (amt === 0) amt = posCart.reduce((sum, it) => sum + it.price * it.quantity, 0);
+        document.getElementById('posCashReceived').value = amt || '';
         calculateChangeDue();
     }
 
@@ -344,15 +379,15 @@
                 if (data.success && data.product) {
                     const p = data.product;
                     addToPosCart(p.id, p.name, p.price, p.unit, p.barcode, p.stock_quantity);
-                    notice.innerText = 'Added: ' + p.name;
+                    notice.innerText = 'Added: ' + p.name; notice.className = 'text-fresh-700 font-bold';
                     document.getElementById('barcodeInput').value = '';
                 } else {
-                    notice.innerText = 'Barcode not found!';
+                    notice.innerText = 'Barcode not found!'; notice.className = 'text-brand-600 font-bold'; playBeep();
                 }
                 setTimeout(() => { notice.innerText = ''; }, 3000);
             })
             .catch(() => {
-                notice.innerText = 'Scanner lookup error';
+                notice.innerText = 'Scanner lookup error'; notice.className = 'text-brand-600 font-bold';
             });
     }
 
@@ -368,6 +403,11 @@
 
         const total = posCart.reduce((s, it) => s + it.price * it.quantity, 0);
         const cash = parseFloat(document.getElementById('posCashReceived').value) || total;
+        if (cash < total) {
+            posToast('Cash received (PKR ' + cash.toLocaleString() + ') is less than the total (PKR ' + total.toLocaleString() + ').', 'warn');
+            document.getElementById('posCashReceived').focus();
+            return;
+        }
 
         const payload = {
             cashier_name: 'Counter 1',
@@ -391,16 +431,17 @@
         .then(data => {
             if (data.success && data.order) {
                 playSuccessChime();
-                alert(`POS Transaction Complete!\nOrder: ${data.order.order_number}\nTotal: PKR ${data.order.total}\nInventory stock has been deducted.`);
+                posToast(`Sale complete: ${data.order.order_number}\nTotal PKR ${Number(data.order.total).toLocaleString()}. Stock deducted.`, 'ok');
                 clearPosCart();
                 document.getElementById('posCashReceived').value = '';
+                document.getElementById('barcodeInput').focus();
                 window.open('/admin/orders/' + data.order.id + '/print', '_blank');
             } else {
-                alert('Error processing POS transaction: ' + (data.message || 'Unknown error'));
+                posToast('Could not record the sale: ' + (data.message || 'Unknown error'), 'error');
             }
         })
         .catch(err => {
-            alert('POS network error');
+            posToast('Network error. The sale was not recorded, please try again.', 'error');
         })
         .finally(() => {
             btn.disabled = false;

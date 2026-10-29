@@ -42,6 +42,29 @@ export interface OrderCustomer {
   delivery_area: string;
   delivery_address: string;
   order_notes?: string;
+  /** YYYY-MM-DD and a key from data/deliverySlots.ts */
+  delivery_date?: string;
+  delivery_window?: string;
+}
+
+/** What the public tracking endpoint returns: no phone or street address. */
+export interface TrackedOrder {
+  order_number: string;
+  order_status: string;
+  payment_method: string;
+  payment_status: string;
+  delivery_city: string;
+  delivery_area?: string | null;
+  delivery_date?: string | null;
+  delivery_window?: string | null;
+  delivery_window_label?: string | null;
+  subtotal: number;
+  delivery_fee: number;
+  discount: number;
+  total: number;
+  created_at: string;
+  updated_at: string;
+  items: { product_name: string; unit?: string; price: number; quantity: number; subtotal: number }[];
 }
 
 export interface OrderResponse {
@@ -59,7 +82,11 @@ export interface OrderResponse {
   payment_method: string;
   payment_status: string;
   order_status: string;
+  delivery_date?: string | null;
+  delivery_window?: string | null;
+  delivery_window_label?: string | null;
   created_at: string;
+  updated_at?: string;
   items: {
     id: number;
     product_name: string;
