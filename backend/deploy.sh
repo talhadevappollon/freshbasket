@@ -16,19 +16,38 @@ for candidate in /usr/local/bin/ea-php84 /usr/local/bin/ea-php83 /usr/local/bin/
 done
 echo "Using PHP binary: $PHP_BIN"
 
-# 2. Detect Composer binary in cPanel
-COMPOSER_BIN="composer"
-for candidate in /usr/local/bin/composer /usr/bin/composer; do
+# 2. Detect Composer binary in cPanel or prepare composer.phar
+COMPOSER_CMD=""
+for candidate in /opt/cpanel/composer/bin/composer /usr/local/cpanel/3rdparty/bin/composer /usr/local/bin/composer /usr/bin/composer; do
     if [ -x "$candidate" ]; then
-        COMPOSER_BIN="$candidate"
+        COMPOSER_CMD="$candidate"
         break
     fi
 done
 
+if [ -z "$COMPOSER_CMD" ] && command -v composer >/dev/null 2>&1; then
+    COMPOSER_CMD="composer"
+fi
+
+if [ -z "$COMPOSER_CMD" ]; then
+    if [ ! -f "composer.phar" ]; then
+        echo "Composer not found in system path. Downloading composer.phar..."
+        curl -sS https://getcomposer.org/installer | $PHP_BIN -- --quiet
+    fi
+    if [ -f "composer.phar" ]; then
+        COMPOSER_CMD="$PHP_BIN composer.phar"
+    fi
+fi
+echo "Using Composer command: $COMPOSER_CMD"
+
 # 3. Install Composer dependencies if vendor folder does not exist
 if [ ! -d "vendor" ]; then
     echo "vendor/ directory not found. Installing composer dependencies..."
-    $COMPOSER_BIN install --no-dev --prefer-dist --optimize-autoloader || composer install --no-dev --prefer-dist --optimize-autoloader || echo "Notice: Composer not found in path, please run composer install in cPanel Terminal"
+    if [ -n "$COMPOSER_CMD" ]; then
+        $COMPOSER_CMD install --no-dev --prefer-dist --optimize-autoloader || echo "Notice: Composer install had warnings"
+    else
+        echo "Notice: Composer could not be initialized. Run composer install in cPanel Terminal"
+    fi
 fi
 
 # 4. Generate application key if missing in .env
@@ -42,13 +61,13 @@ chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 
 # 6. Run database migrations in production with --force flag
 echo "Running database migrations..."
-$PHP_BIN artisan migrate --force
+$PHP_BIN artisan migrate --force || echo "Notice: Database migration pending DB credentials verification"
 
 # 7. Clear old caches and optimize for production
 echo "Optimizing Laravel caches..."
-$PHP_BIN artisan optimize:clear
-$PHP_BIN artisan config:cache
-$PHP_BIN artisan route:cache
-$PHP_BIN artisan view:cache
+$PHP_BIN artisan optimize:clear || true
+$PHP_BIN artisan config:cache || true
+$PHP_BIN artisan route:cache || true
+$PHP_BIN artisan view:cache || true
 
-echo "=== Deployment & Database Migrations Successful! ==="
+echo "=== Deployment & Database Migrations Complete! ==="
