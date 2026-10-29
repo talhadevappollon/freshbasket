@@ -1,0 +1,14 @@
+---
+deployment:
+  tasks:
+    - echo "=== Starting cPanel Automated Deployment ==="
+    # 1. Clear cached configurations
+    - cd backend && /usr/local/bin/php artisan config:clear
+    - cd backend && /usr/local/bin/php artisan cache:clear
+    # 2. Run Database Migrations automatically in production with --force flag
+    - cd backend && /usr/local/bin/php artisan migrate --force
+    # 3. Cache routes and configuration for maximum speed
+    - cd backend && /usr/local/bin/php artisan config:cache
+    - cd backend && /usr/local/bin/php artisan route:cache
+    - cd backend && /usr/local/bin/php artisan view:cache
+    - echo "=== cPanel Deployment & Migrations Complete ==="
