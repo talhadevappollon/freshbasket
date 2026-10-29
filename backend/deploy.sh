@@ -3,6 +3,11 @@ set -e
 
 echo "=== Fresh Basket cPanel Automated Deployment ==="
 
+# Set environment home variables for cPanel / LiteSpeed web process
+export HOME=/home2/aneetako
+export COMPOSER_HOME=/home2/aneetako/.composer
+export PATH=/usr/local/bin:/usr/bin:/bin:$PATH
+
 # Go to backend directory
 cd "$(dirname "$0")"
 
