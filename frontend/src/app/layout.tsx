@@ -18,6 +18,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
+  // Absolute base so Open Graph / icon URLs resolve to the real site instead of localhost
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://freshbasket.aneetakomal.com'),
   title: 'Fresh Basket Pakistan — Fresh Produce, Organic Grocery & Supermarket',
   description:
     'Order fresh organic fruits, vegetables, imported dairy, bakery, beverages and pantry staples online in Karachi with same-day express delivery and Cash on Delivery.',
