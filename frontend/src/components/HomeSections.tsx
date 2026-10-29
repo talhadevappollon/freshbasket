@@ -96,14 +96,14 @@ const BENTO_TILES: BentoTile[] = [
     slug: AISLES.dairy.slug,
     title: 'Dairy & cheese',
     blurb: 'Milk, yogurt, butter and imported cheeses.',
-    gradient: 'from-sky-800 to-indigo-900',
+    gradient: 'from-fresh-700 to-fresh-900',
     Icon: Milk,
   },
   {
     slug: AISLES.bakery.slug,
     title: 'Bakery',
     blurb: 'Breads, rolls and croissants.',
-    gradient: 'from-amber-800 to-orange-900',
+    gradient: 'from-brand-700 to-brand-900',
     Icon: Croissant,
   },
   {
@@ -193,10 +193,10 @@ export function DealOfTheDay({ product }: { product?: Product | null }) {
     <Reveal as="section" className="max-w-7xl mx-auto px-4 py-10">
       <div
         data-surface="dark"
-        className="grid lg:grid-cols-2 overflow-hidden rounded-3xl bg-gradient-to-br from-fresh-950 via-fresh-900 to-[#0b3d22] text-white"
+        className="grid lg:grid-cols-2 overflow-hidden rounded-3xl bg-gradient-to-br from-fresh-950 via-fresh-900 to-[#173216] text-white"
       >
         <div className="p-7 sm:p-10 flex flex-col justify-center">
-          <span className="inline-flex items-center gap-1.5 self-start h-8 px-3 rounded-full bg-amber-400 text-slate-950 text-sm font-bold">
+          <span className="inline-flex items-center gap-1.5 self-start h-8 px-3 rounded-full bg-brand-600 text-white text-sm font-bold">
             <Timer className="w-4 h-4" />
             Featured pick
           </span>
@@ -291,7 +291,7 @@ export function DualPromo() {
 
               <div className="mt-6 max-w-sm" aria-hidden="true">
                 <div className="h-2.5 rounded-full bg-white/20 overflow-hidden">
-                  <div className="h-full w-[70%] rounded-full bg-amber-300" />
+                  <div className="h-full w-[70%] rounded-full bg-white" />
                 </div>
                 <p className="mt-2 text-sm text-emerald-50/90">Example basket: PKR 1,750, with PKR 750 to go.</p>
               </div>
@@ -309,7 +309,7 @@ export function DualPromo() {
         <Reveal variant="right" delay={100}>
           <div
             data-surface="dark"
-            className="group relative h-full overflow-hidden rounded-3xl bg-gradient-to-br from-amber-700 via-orange-700 to-orange-800 p-7 sm:p-9 text-white"
+            className="group relative h-full overflow-hidden rounded-3xl bg-gradient-to-br from-brand-600 via-brand-700 to-brand-800 p-7 sm:p-9 text-white"
           >
             <span className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/0 to-white/10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" aria-hidden="true" />
             <Gift className="pointer-events-none absolute -right-6 -bottom-6 w-44 h-44 text-white/10" aria-hidden="true" />
@@ -605,7 +605,7 @@ export function NewsletterBanner() {
     <Reveal as="section" className="max-w-7xl mx-auto px-4 py-10">
       <div
         data-surface="dark"
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-fresh-950 via-fresh-900 to-[#0b3d22] px-6 py-10 sm:px-12 sm:py-14 text-white"
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-fresh-950 via-fresh-900 to-[#173216] px-6 py-10 sm:px-12 sm:py-14 text-white"
       >
         <div className="absolute -right-20 -bottom-20 w-72 h-72 rounded-full bg-fresh-400/15 blur-3xl animate-blob" aria-hidden="true" />
         <div className="relative grid lg:grid-cols-2 gap-8 items-center">
@@ -618,7 +618,7 @@ export function NewsletterBanner() {
 
           <div className="flex flex-col sm:flex-row lg:justify-end gap-3">
             <div className="flex items-center justify-between gap-4 h-12 pl-5 pr-1.5 rounded-xl bg-white/10 border border-dashed border-white/40 sm:min-w-[260px]">
-              <span className="text-lg font-black tracking-widest text-amber-300">FRESH10</span>
+              <span className="text-lg font-black tracking-widest text-white">FRESH10</span>
               <button
                 type="button"
                 onClick={copy}
@@ -638,7 +638,7 @@ export function NewsletterBanner() {
             </div>
             <Link
               href="/#products-section"
-              className="h-12 px-6 rounded-xl bg-amber-400 hover:bg-amber-300 active:bg-amber-500 text-slate-950 text-sm font-bold flex items-center justify-center transition-colors duration-200"
+              className="h-12 px-6 rounded-xl bg-brand-600 hover:bg-brand-500 active:bg-brand-700 text-white text-sm font-bold flex items-center justify-center transition-colors duration-200"
             >
               Start shopping
             </Link>

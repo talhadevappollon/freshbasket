@@ -208,7 +208,7 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
           {/* Category banner */}
           <section
             data-surface="dark"
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-fresh-950 via-fresh-900 to-[#0b3d22] text-white p-7 sm:p-10 animate-fade-in-up"
+            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-fresh-950 via-fresh-900 to-[#173216] text-white p-7 sm:p-10 animate-fade-in-up"
           >
             <div className="absolute -right-16 -top-16 w-72 h-72 rounded-full bg-fresh-400/15 blur-3xl animate-blob" aria-hidden="true" />
             <div className="absolute right-6 bottom-0 text-[9rem] leading-none opacity-[0.07] select-none font-black tracking-tighter hidden sm:block" aria-hidden="true">

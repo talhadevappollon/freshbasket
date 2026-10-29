@@ -104,7 +104,7 @@ export default function Home() {
         {/* Flash sale strip – only shown when real discounted products exist */}
         {flashDeals.length > 0 && (
           <Reveal as="section" className="max-w-7xl mx-auto px-4 pt-6 pb-2">
-            <div className="bg-gradient-to-r from-rose-950 via-rose-900 to-amber-950 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden" data-surface="dark">
+            <div className="bg-gradient-to-r from-rose-950 via-rose-900 to-brand-900 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden" data-surface="dark">
               <div className="flex items-center gap-3 mb-4">
                 <span className="w-11 h-11 bg-rose-500 rounded-xl text-white flex items-center justify-center">
                   <Flame className="w-5 h-5" />

@@ -28,19 +28,20 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_PK',
     siteName: 'Fresh Basket Pakistan',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Fresh House' }],
   },
   icons: {
     icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon.ico' },
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon-512.png', type: 'image/png', sizes: '512x512' },
     ],
-    shortcut: '/favicon.svg',
-    apple: '/favicon.svg',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: '#052e16',
+  themeColor: '#10240f',
   width: 'device-width',
   initialScale: 1,
 };

@@ -39,7 +39,7 @@ export default function ScrollUI() {
         className="fixed top-0 left-0 right-0 h-[3px] z-[60] pointer-events-none"
       >
         <div
-          className="h-full origin-left bg-gradient-to-r from-fresh-400 via-emerald-400 to-amber-300"
+          className="h-full origin-left bg-gradient-to-r from-fresh-400 via-emerald-400 to-brand-400"
           style={{ transform: `scaleX(${progress})`, transition: 'transform 80ms linear' }}
         />
       </div>

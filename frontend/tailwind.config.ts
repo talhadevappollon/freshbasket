@@ -1,5 +1,14 @@
 import type { Config } from "tailwindcss";
 
+const FRESH_SCALE = {
+  50: '#f3f7f3', 100: '#e7efe6', 200: '#cde0cc', 300: '#a5cca4', 400: '#6db26c', 500: '#478f45',
+  600: '#3a7538', 700: '#2e5d2d', 800: '#254724', 900: '#1d361c', 950: '#101e10',
+};
+const BRAND_SCALE = {
+  50: '#fdf2f1', 100: '#fce4e4', 200: '#f9c9c8', 300: '#f69a98', 400: '#f44d48', 500: '#d4261e',
+  600: '#b20f0b', 700: '#950d09', 800: '#750d0a', 900: '#570c0a', 950: '#2e0605',
+};
+
 const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -20,19 +29,18 @@ const config: Config = {
         mono: ['var(--font-geist-mono)', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
       },
       colors: {
-        fresh: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
-          950: '#052e16',
-        },
+        // Brand palette, sampled from the Fresh House logo: leaf green #478f45 and apple red #b20f0b.
+        // `fresh` is the primary green. 500 is the exact logo green (icons, large shapes); 600+ pass AA
+        // contrast under white text, so buttons use 600/700.
+        fresh: FRESH_SCALE,
+        // `brand` is the accent red (600 is the exact logo red): sale badges, basket count, key highlights.
+        brand: BRAND_SCALE,
+        star: '#f5b014', // review stars keep a conventional gold
+        // The storefront was built with a rainbow of default Tailwind hues. Pointing those families at the
+        // two brand colours re-themes every existing class at once: cool/green hues -> logo green,
+        // warm/purple hues -> logo red. (amber/yellow -> green too; stars use the dedicated `star` gold.)
+        emerald: FRESH_SCALE, green: FRESH_SCALE, amber: FRESH_SCALE, yellow: FRESH_SCALE, teal: FRESH_SCALE, sky: FRESH_SCALE, blue: FRESH_SCALE, cyan: FRESH_SCALE, lime: FRESH_SCALE,
+        rose: BRAND_SCALE, red: BRAND_SCALE, pink: BRAND_SCALE, fuchsia: BRAND_SCALE, purple: BRAND_SCALE, violet: BRAND_SCALE, indigo: BRAND_SCALE, orange: BRAND_SCALE,
       },
       // Tailwind v3 has no xs / 2xs shadows (they were added in v4) – the codebase uses both.
       boxShadow: {

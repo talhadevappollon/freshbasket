@@ -20,28 +20,20 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-gradient-to-b from-[#041d0e] via-[#062914] to-[#03150a] text-white mt-16 border-t border-emerald-900/80">
+    <footer className="bg-gradient-to-b from-[#0a170a] via-[#0f210e] to-[#071107] text-white mt-16 border-t border-emerald-900/80">
       <div className="max-w-7xl mx-auto px-4 py-12 sm:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Brand Info */}
           <div className="space-y-4">
             <Link
               href="/"
-              className="inline-flex items-center space-x-2.5 group hover:scale-[1.03] transition-transform duration-200"
+              className="inline-flex items-center group"
             >
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-fresh-500 to-fresh-700 flex items-center justify-center text-white shadow-md shadow-fresh-600/30 group-hover:scale-105 transition transform">
-                <ShoppingBag className="w-5 h-5" />
-              </div>
-              <div>
-                <span className="text-xl font-black tracking-tight text-white group-hover:text-fresh-300 transition-colors">
-                  FRESH
-                </span>
-                <span className="text-xl font-black tracking-tight text-fresh-400 group-hover:text-white transition-colors">
-                  BASKET
-                </span>
-              </div>
+              <span className="inline-flex items-center bg-white rounded-2xl px-4 py-2.5 shadow-lg shadow-black/20 group-hover:shadow-xl transition-shadow">
+                <img src="/logo.png" alt="Fresh House" width={156} height={35} loading="lazy" className="h-9 w-auto" />
+              </span>
             </Link>
-            <p className="text-xs text-emerald-200/70 leading-relaxed">
+            <p className="text-sm text-emerald-100/75 leading-relaxed">
               Karachi&apos;s leading online fresh supermarket. Sourcing pristine fruits, daily vegetables, bakery essentials, and imported provisions with express doorstep delivery.
             </p>
             <div className="flex items-center space-x-2 text-xs text-fresh-400 font-semibold group cursor-default">

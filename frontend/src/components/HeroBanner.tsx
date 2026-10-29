@@ -51,7 +51,7 @@ const BANNER_SLIDES: BannerSlide[] = [
     highlightText: 'Delivered To Your Door.',
     description:
       'Karachi\'s favorite destination for handpicked organic fruits, farm-fresh vegetables, pure dairy, imported bakery, and premium household essentials.',
-    bgGradient: 'from-[#042111] via-[#094121] to-[#031d0e]',
+    bgGradient: 'from-[#0b1a0b] via-[#173416] to-[#0a1709]',
     primaryBtnText: 'Shop Fresh Aisles',
     primaryBtnLink: '#products-section',
     secondaryPill1Icon: Banknote,
@@ -69,7 +69,7 @@ const BANNER_SLIDES: BannerSlide[] = [
     highlightText: 'Up to 40% OFF Selected Items.',
     description:
       'Indulge in artisanal Yayycheese cheddar, Belgian chocolates, organic pure honey, and imported pantry delicacies at exclusive warehouse prices.',
-    bgGradient: 'from-[#2b0c3f] via-[#1d1245] to-[#0a1e16]',
+    bgGradient: 'from-[#3b1110] via-[#411716] to-[#1c0807]',
     primaryBtnText: 'Explore Flash Deals',
     primaryBtnLink: '#products-section',
     secondaryPill1Icon: Tag,
@@ -87,7 +87,7 @@ const BANNER_SLIDES: BannerSlide[] = [
     highlightText: 'Breakfast Made Exceptional.',
     description:
       'Freshly baked European baguettes, wholemeal tortillas, crisp waffles, and farm-fresh organic dairy delivered warm to your breakfast table.',
-    bgGradient: 'from-[#3d1804] via-[#2a1708] to-[#041d0e]',
+    bgGradient: 'from-[#3a0907] via-[#2c0a09] to-[#150504]',
     primaryBtnText: 'Browse Bakery Aisle',
     primaryBtnLink: '#products-section',
     secondaryPill1Icon: ShoppingBag,
@@ -105,7 +105,7 @@ const BANNER_SLIDES: BannerSlide[] = [
     highlightText: 'Free Delivery Over PKR 2,500.',
     description:
       'Join our PERQ loyalty program to collect points on every grocery order in Karachi, unlock first-order cash bonuses, and redeem points at checkout.',
-    bgGradient: 'from-[#032311] via-[#094723] to-[#02150a]',
+    bgGradient: 'from-[#0c1b0b] via-[#183917] to-[#071007]',
     primaryBtnText: 'Join PERQ & Save Now',
     primaryBtnLink: '#products-section',
     secondaryPill1Icon: ShieldCheck,
@@ -200,7 +200,7 @@ export default function HeroBanner() {
             {/* Headline */}
             <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
               {slide.title}{' '}
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-fresh-400 via-emerald-200 to-amber-300">
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-fresh-400 via-emerald-200 to-brand-300">
                 {slide.highlightText}
               </span>
             </h1>
@@ -270,7 +270,7 @@ export default function HeroBanner() {
               <div className="relative w-72 h-72 flex items-center justify-center">
                 <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-2xl"></div>
                 <div className="relative z-10 text-center space-y-3 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl animate-float">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center mx-auto shadow-lg text-2xl">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center mx-auto shadow-lg text-2xl">
                     <Croissant className="w-8 h-8" />
                   </div>
                   <h3 className="font-black text-lg text-white">Artisan Oven Bake</h3>
@@ -291,7 +291,7 @@ export default function HeroBanner() {
                   </div>
                   <h3 className="font-black text-lg text-white">PERQ Rewards Club</h3>
                   <p className="text-xs text-emerald-200/90 leading-snug">Earn points on every order & unlock special member discounts.</p>
-                  <span className="inline-block bg-amber-400 text-slate-900 text-xs font-black px-3 py-1 rounded-full tracking-wide">
+                  <span className="inline-block bg-brand-600 text-white text-xs font-black px-3 py-1 rounded-full tracking-wide">
                     Free To Join
                   </span>
                 </div>

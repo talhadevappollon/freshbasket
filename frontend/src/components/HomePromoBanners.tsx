@@ -87,7 +87,7 @@ export default function HomePromoBanners() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Banner A: Organic Baby Food & Infant Nutrition */}
-          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#0c2e1f] via-[#093c25] to-[#041c10] text-white p-7 sm:p-8 shadow-xl border border-emerald-800/40 hover:border-emerald-500 transition-all duration-300 flex flex-col justify-between min-h-[320px] group">
+          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#142614] via-[#153114] to-[#0a1709] text-white p-7 sm:p-8 shadow-xl border border-emerald-800/40 hover:border-emerald-500 transition-all duration-300 flex flex-col justify-between min-h-[320px] group">
             {/* Background Illustration & Glow */}
             <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none group-hover:bg-emerald-400/20 transition-all"></div>
             <div className="absolute right-4 bottom-4 text-7xl opacity-20 group-hover:opacity-35 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300 pointer-events-none select-none">
@@ -153,7 +153,7 @@ export default function HomePromoBanners() {
           </div>
 
           {/* Banner B: Karachi Chilled Hydration & Smoothie Bar */}
-          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#041a2f] via-[#093247] to-[#041824] text-white p-7 sm:p-8 shadow-xl border border-sky-800/40 hover:border-sky-500 transition-all duration-300 flex flex-col justify-between min-h-[320px] group">
+          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#102310] via-[#1a3719] to-[#0d1c0c] text-white p-7 sm:p-8 shadow-xl border border-sky-800/40 hover:border-sky-500 transition-all duration-300 flex flex-col justify-between min-h-[320px] group">
             {/* Background Illustration & Glow */}
             <div className="absolute top-0 right-0 -mr-10 -mt-10 w-48 h-48 bg-sky-400/10 rounded-full blur-3xl pointer-events-none group-hover:bg-sky-400/20 transition-all"></div>
             <div className="absolute right-4 bottom-4 text-7xl opacity-20 group-hover:opacity-35 group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300 pointer-events-none select-none">
@@ -386,7 +386,7 @@ export default function HomePromoBanners() {
       </Reveal>
 
       {/* SECTION 4: WhatsApp Personal Concierge & Instant Order Banner */}
-      <Reveal as="section" className="rounded-3xl overflow-hidden bg-gradient-to-r from-[#032314] via-[#05381f] to-[#02180d] text-white p-7 sm:p-9 shadow-2xl border border-emerald-800/60 relative">
+      <Reveal as="section" className="rounded-3xl overflow-hidden bg-gradient-to-r from-[#0c1b0b] via-[#132b12] to-[#081208] text-white p-7 sm:p-9 shadow-2xl border border-emerald-800/60 relative">
         <div className="absolute top-0 right-0 -mr-12 -mt-12 w-64 h-64 bg-emerald-400/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
@@ -445,9 +445,9 @@ export default function HomePromoBanners() {
       {/* SECTION 5: Verified Karachi Shopper Reviews & Social Proof */}
       <Reveal as="section" className="bg-slate-100/70 rounded-3xl p-6 sm:p-8 border border-slate-200/70">
         <div className="text-center max-w-xl mx-auto mb-8">
-          <div className="inline-flex items-center gap-1 text-amber-500 mb-1">
+          <div className="inline-flex items-center gap-1 text-star mb-1">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+              <Star key={i} className="w-4 h-4 fill-star text-star" />
             ))}
           </div>
           <h3 className="text-xl sm:text-2xl font-black text-slate-900">
@@ -460,9 +460,9 @@ export default function HomePromoBanners() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
-            <div className="flex items-center gap-1 text-amber-400">
+            <div className="flex items-center gap-1 text-star">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
+                <Star key={i} className="w-3.5 h-3.5 fill-star" />
               ))}
             </div>
             <p className="text-xs text-slate-600 leading-relaxed italic">
@@ -475,9 +475,9 @@ export default function HomePromoBanners() {
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
-            <div className="flex items-center gap-1 text-amber-400">
+            <div className="flex items-center gap-1 text-star">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
+                <Star key={i} className="w-3.5 h-3.5 fill-star" />
               ))}
             </div>
             <p className="text-xs text-slate-600 leading-relaxed italic">
@@ -490,9 +490,9 @@ export default function HomePromoBanners() {
           </div>
 
           <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
-            <div className="flex items-center gap-1 text-amber-400">
+            <div className="flex items-center gap-1 text-star">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
+                <Star key={i} className="w-3.5 h-3.5 fill-star" />
               ))}
             </div>
             <p className="text-xs text-slate-600 leading-relaxed italic">

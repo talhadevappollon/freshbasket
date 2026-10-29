@@ -65,7 +65,7 @@ export default function MidPageBanners() {
         {/* Banner 1: Organic Farm Harvest */}
         <div
           {...linkProps('fresh-produce')}
-          className="group relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#052613] via-[#094824] to-[#041a0d] text-white p-6 sm:p-7 shadow-xl hover:shadow-2xl hover:-translate-y-2 border border-emerald-800/40 hover:border-fresh-400 transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[300px]"
+          className="group relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#0d1f0c] via-[#193a17] to-[#091509] text-white p-6 sm:p-7 shadow-xl hover:shadow-2xl hover:-translate-y-2 border border-emerald-800/40 hover:border-fresh-400 transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[300px]"
         >
           {/* Subtle Background Glow & Floating Fruit Emoji */}
           <div className="absolute -right-6 -bottom-6 w-36 h-36 bg-fresh-500/20 rounded-full blur-2xl group-hover:bg-fresh-500/30 transition-all pointer-events-none"></div>
@@ -104,7 +104,7 @@ export default function MidPageBanners() {
         {/* Banner 2: Gourmet Imported Dairy & Cheeses */}
         <div
           {...linkProps('dairy-cheese')}
-          className="group relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#260a36] via-[#181147] to-[#072117] text-white p-6 sm:p-7 shadow-xl hover:shadow-2xl hover:-translate-y-2 border border-purple-800/40 hover:border-purple-400 transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[300px]"
+          className="group relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#4a100d] via-[#3a0e0c] to-[#1c0807] text-white p-6 sm:p-7 shadow-xl hover:shadow-2xl hover:-translate-y-2 border border-purple-800/40 hover:border-purple-400 transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[300px]"
         >
           {/* Subtle Background Glow & Floating Cheese Emoji */}
           <div className="absolute -right-6 -bottom-6 w-36 h-36 bg-purple-500/20 rounded-full blur-2xl group-hover:bg-purple-500/30 transition-all pointer-events-none"></div>
@@ -133,7 +133,7 @@ export default function MidPageBanners() {
               <span>Up to 40% OFF</span>
             </div>
 
-            <span className="inline-flex items-center gap-1.5 bg-white group-hover:bg-amber-400 text-slate-950 px-4 py-2 rounded-xl text-xs font-black shadow-md group-hover:scale-105 transition-all duration-200">
+            <span className="inline-flex items-center gap-1.5 bg-white group-hover:bg-fresh-200 text-slate-950 px-4 py-2 rounded-xl text-xs font-black shadow-md group-hover:scale-105 transition-all duration-200">
               <span>View Cheeses</span>
               <ArrowRight className="w-3.5 h-3.5 text-slate-900 group-hover:translate-x-1 transition-transform" />
             </span>
@@ -143,7 +143,7 @@ export default function MidPageBanners() {
         {/* Banner 3: Oven-Fresh Bakery & Breakfast Club */}
         <div
           {...linkProps('bakery-breakfast')}
-          className="group relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#3d1805] via-[#291708] to-[#062011] text-white p-6 sm:p-7 shadow-xl hover:shadow-2xl hover:-translate-y-2 border border-amber-800/40 hover:border-amber-400 transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[300px]"
+          className="group relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#1c3c1b] via-[#142614] to-[#0a170a] text-white p-6 sm:p-7 shadow-xl hover:shadow-2xl hover:-translate-y-2 border border-amber-800/40 hover:border-amber-400 transition-all duration-300 flex flex-col justify-between cursor-pointer min-h-[300px]"
         >
           {/* Subtle Background Glow & Floating Bread Emoji */}
           <div className="absolute -right-6 -bottom-6 w-36 h-36 bg-amber-500/20 rounded-full blur-2xl group-hover:bg-amber-500/30 transition-all pointer-events-none"></div>
@@ -172,7 +172,7 @@ export default function MidPageBanners() {
               <span>Same-Day Freshness</span>
             </div>
 
-            <span className="inline-flex items-center gap-1.5 bg-white group-hover:bg-amber-300 text-slate-950 px-4 py-2 rounded-xl text-xs font-black shadow-md group-hover:scale-105 transition-all duration-200">
+            <span className="inline-flex items-center gap-1.5 bg-white group-hover:bg-fresh-200 text-slate-950 px-4 py-2 rounded-xl text-xs font-black shadow-md group-hover:scale-105 transition-all duration-200">
               <span>Order Bakery</span>
               <ArrowRight className="w-3.5 h-3.5 text-slate-900 group-hover:translate-x-1 transition-transform" />
             </span>
@@ -181,14 +181,14 @@ export default function MidPageBanners() {
       </div>
 
       {/* Panoramic Weekend Mega Restock & Family Savings Banner */}
-      <div className="mt-8 rounded-3xl overflow-hidden bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 border border-emerald-800/50 shadow-2xl relative text-white p-6 sm:p-8">
+      <div className="mt-8 rounded-3xl overflow-hidden bg-gradient-to-r from-fresh-950 via-fresh-900 to-fresh-950 border border-emerald-800/50 shadow-2xl relative text-white p-6 sm:p-8">
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-64 h-64 bg-fresh-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black px-3 py-1 rounded-full text-xs tracking-wide shadow-sm">
+              <span className="inline-flex items-center gap-1.5 bg-brand-600 text-white font-black px-3 py-1 rounded-full text-xs tracking-wide shadow-sm">
                 <Flame className="w-3.5 h-3.5 text-rose-700 animate-bounce" />
                 <span>Karachi Weekend Mega Restock</span>
               </span>

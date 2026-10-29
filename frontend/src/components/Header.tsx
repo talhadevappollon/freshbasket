@@ -523,28 +523,16 @@ export default function Header({ categories }: HeaderProps) {
                 }
               }}
               className="order-2 flex items-center gap-2.5 group shrink-0 mr-auto md:mr-0"
-              aria-label="Fresh Basket – home"
+              aria-label="Fresh House – home"
             >
-              <span
-                className={`rounded-xl bg-gradient-to-br from-fresh-500 to-fresh-700 flex items-center justify-center text-white shadow-md shadow-fresh-600/25 group-hover:rotate-[-6deg] transition-all duration-300 ease-spring ${
-                  scrolled ? 'w-9 h-9' : 'w-10 h-10'
-                }`}
-              >
-                <ShoppingBag className="w-5 h-5" />
-              </span>
-              <span className="leading-none">
-                <span className="flex items-baseline gap-1 text-xl font-black tracking-tight">
-                  <span className="text-slate-900">FRESH</span>
-                  <span className="text-fresh-600">BASKET</span>
-                </span>
-                <span
-                  className={`block text-[11px] text-slate-500 font-medium mt-0.5 transition-all duration-300 overflow-hidden ${
-                    scrolled ? 'max-h-0 opacity-0' : 'max-h-5 opacity-100'
-                  }`}
-                >
-                  Organic &amp; grocery, Karachi
-                </span>
-              </span>
+              <img
+                src="/logo.png"
+                alt="Fresh House"
+                width={177}
+                height={40}
+                decoding="async"
+                className={`w-auto transition-all duration-300 ease-out-expo group-hover:scale-[1.03] ${scrolled ? 'h-8' : 'h-10'}`}
+              />
             </Link>
 
             <div className="order-4 md:order-3 w-full md:w-auto md:flex-1 md:max-w-2xl md:mx-auto">
@@ -562,7 +550,7 @@ export default function Header({ categories }: HeaderProps) {
                 {totalItems > 0 && (
                   <span
                     key={bumpKey}
-                    className="absolute -top-2 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-amber-400 text-slate-900 text-[11px] font-black flex items-center justify-center animate-bump"
+                    className="absolute -top-2 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-brand-600 text-white ring-2 ring-fresh-700 text-[11px] font-black flex items-center justify-center animate-bump"
                   >
                     {totalItems}
                   </span>
@@ -615,7 +603,7 @@ export default function Header({ categories }: HeaderProps) {
             </ul>
 
             <span className="ml-auto hidden xl:flex items-center gap-1.5 text-sm text-slate-600">
-              <Gift className="w-4 h-4 text-amber-500" />
+              <Gift className="w-4 h-4 text-brand-600" />
               Code <strong className="text-slate-900">FRESH10</strong> takes 10% off your first order
             </span>
           </div>

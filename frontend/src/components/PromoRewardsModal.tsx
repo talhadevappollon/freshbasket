@@ -99,7 +99,7 @@ export default function PromoRewardsModal({
     >
       {/* Modal Card */}
       <div
-        className="relative w-full max-w-[420px] bg-gradient-to-b from-[#18994e] via-[#148342] to-[#0e6331] text-white rounded-[28px] sm:rounded-[32px] p-5 sm:p-8 shadow-2xl border border-white/20 overflow-x-hidden overflow-y-auto overscroll-contain animate-menu-in max-h-[calc(100dvh-2rem)] flex flex-col"
+        className="relative w-full max-w-[420px] bg-gradient-to-b from-[#377c35] via-[#2f6a2d] to-[#235021] text-white rounded-[28px] sm:rounded-[32px] p-5 sm:p-8 shadow-2xl border border-white/20 overflow-x-hidden overflow-y-auto overscroll-contain animate-menu-in max-h-[calc(100dvh-2rem)] flex flex-col"
         data-surface="dark"
         onClick={e => e.stopPropagation()}
         style={{
@@ -116,10 +116,9 @@ export default function PromoRewardsModal({
         <div className="flex items-center justify-between relative z-10">
           {/* Brand Mark */}
           <div className="flex items-center space-x-1.5">
-            <span className="font-extrabold text-base tracking-tight text-white lowercase">
-              fresh basket
+            <span className="inline-flex items-center bg-white rounded-full px-3 py-1.5 shadow-md">
+              <img src="/logo-sm.png" alt="Fresh House" width={96} height={22} className="h-5 w-auto" />
             </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-300"></span>
           </div>
 
           {/* Close Button with Playful Accent Doodles */}
@@ -248,12 +247,12 @@ export default function PromoRewardsModal({
             <div className="absolute bottom-16 right-3 w-40 flex items-end justify-center gap-0.5 z-0">
               {/* Fresh Crusty Baguette */}
               <div
-                className="w-6 h-20 bg-gradient-to-t from-amber-700 via-amber-500 to-amber-300 rounded-t-full transform -rotate-12 shadow-sm border border-amber-800/20"
+                className="w-6 h-20 bg-gradient-to-t from-[#b45309] via-[#f59e0b] to-[#fcd34d] rounded-t-full transform -rotate-12 shadow-sm border border-[#92400e]/20"
                 title="Fresh French Baguette"
               >
-                <div className="w-full h-1 bg-amber-800/30 my-3 transform -rotate-45"></div>
-                <div className="w-full h-1 bg-amber-800/30 my-3 transform -rotate-45"></div>
-                <div className="w-full h-1 bg-amber-800/30 my-3 transform -rotate-45"></div>
+                <div className="w-full h-1 bg-[#92400e]/30 my-3 transform -rotate-45"></div>
+                <div className="w-full h-1 bg-[#92400e]/30 my-3 transform -rotate-45"></div>
+                <div className="w-full h-1 bg-[#92400e]/30 my-3 transform -rotate-45"></div>
               </div>
 
               {/* Crisp Red Apple */}
@@ -261,12 +260,12 @@ export default function PromoRewardsModal({
                 className="w-9 h-9 bg-gradient-to-br from-red-500 to-rose-700 rounded-full shadow-md transform -translate-x-1"
                 title="Organic Red Apple"
               >
-                <div className="w-1 h-2 bg-amber-900 mx-auto -mt-1 rounded-full"></div>
+                <div className="w-1 h-2 bg-[#78350f] mx-auto -mt-1 rounded-full"></div>
               </div>
 
               {/* Ripe Bananas */}
               <div
-                className="w-10 h-16 bg-gradient-to-br from-yellow-300 to-amber-400 rounded-tl-3xl rounded-br-2xl transform rotate-12 shadow-md border-r-2 border-amber-500/40"
+                className="w-10 h-16 bg-gradient-to-br from-[#fde047] to-[#fbbf24] rounded-tl-3xl rounded-br-2xl transform rotate-12 shadow-md border-r-2 border-[#f59e0b]/40"
                 title="Fresh Farm Bananas"
               >
                 <div className="w-1.5 h-2 bg-emerald-800 rounded-t-full"></div>
@@ -288,9 +287,9 @@ export default function PromoRewardsModal({
             </div>
 
             {/* The Green Canvas Tote Bag */}
-            <div className="relative z-10 w-36 h-24 bg-gradient-to-b from-[#19753c] to-[#0d4a23] rounded-b-2xl rounded-t-lg shadow-xl border-t-2 border-[#289250] flex flex-col items-center justify-center p-2">
+            <div className="relative z-10 w-36 h-24 bg-gradient-to-b from-[#2f602e] to-[#1c3c1b] rounded-b-2xl rounded-t-lg shadow-xl border-t-2 border-[#427a40] flex flex-col items-center justify-center p-2">
               {/* Bag Handles */}
-              <div className="absolute -top-6 w-16 h-8 border-3 border-[#19753c] rounded-t-full shadow-xs"></div>
+              <div className="absolute -top-6 w-16 h-8 border-3 border-[#2f602e] rounded-t-full shadow-xs"></div>
 
               {/* Canvas texture weave lines */}
               <div className="w-full flex flex-col items-center justify-center space-y-0.5 text-center mt-2">
