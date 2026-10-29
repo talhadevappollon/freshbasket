@@ -482,60 +482,59 @@ export default function Header({ categories }: HeaderProps) {
 
   return (
     <>
+      {/* Announcement bar: ordinary page content above the sticky header, so it scrolls away by itself.
+          (Collapsing it inside the sticky header changed the page height mid-scroll and made the header flicker.) */}
+      <div
+        data-surface="dark"
+        className="bg-fresh-950 text-white"
+      >
+        <div className="max-w-7xl mx-auto px-4 h-9 flex items-center justify-between gap-4 text-xs">
+          <div className="relative h-5 flex-1 min-w-0 overflow-hidden" role="status" aria-live="off">
+            {ANNOUNCEMENTS.map((text, i) => (
+              <p
+                key={text}
+                className={`absolute inset-0 flex items-center gap-2 font-medium text-emerald-50 transition-all duration-500 ease-out-expo ${
+                  i === announceIdx ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3 pointer-events-none'
+                }`}
+              >
+                <Truck className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
+                <span className="truncate">{text}</span>
+              </p>
+            ))}
+          </div>
+
+          <div className="hidden md:flex items-center gap-5 text-emerald-100/90 shrink-0">
+            <span className="flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-emerald-300" />
+              8 AM – 11 PM daily
+            </span>
+            <a href="tel:+9221111373742" className="flex items-center gap-1.5 h-9 hover:text-white transition-colors">
+              <Phone className="w-3.5 h-3.5 text-emerald-300" />
+              +92 21 111-373-742
+            </a>
+            <Link href="/track" className="flex items-center gap-1.5 h-9 hover:text-white transition-colors">
+              <PackageSearch className="w-3.5 h-3.5 text-emerald-300" />
+              Track order
+            </Link>
+            <a href="/admin" className="flex items-center gap-1.5 h-9 text-emerald-200/70 hover:text-white transition-colors">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Staff login
+            </a>
+          </div>
+        </div>
+      </div>
+
       <header
         ref={headerRef}
-        className={`sticky top-0 z-40 border-b transition-[background-color,box-shadow,border-color] duration-300 ${
+        data-tucked={searchTucked && !searchFocused ? 'true' : 'false'}
+        className={`header-tuck sticky top-0 z-40 border-b transition-[background-color,box-shadow,border-color] duration-300 ${
           scrolled ? 'bg-white/90 backdrop-blur-xl border-slate-200 shadow-card' : 'bg-white border-slate-100'
         }`}
         onMouseLeave={closeMega}
         onMouseEnter={() => hoverTimer.current && clearTimeout(hoverTimer.current)}
       >
-        {/* Announcement bar – collapses once the page is scrolled */}
-        <div
-          data-surface="dark"
-          className={`bg-fresh-950 text-white overflow-hidden transition-[max-height,opacity] duration-300 ease-out-expo ${
-            scrolled ? 'max-h-0 opacity-0' : 'max-h-10 opacity-100'
-          }`}
-          aria-hidden={scrolled}
-        >
-          <div className="max-w-7xl mx-auto px-4 h-9 flex items-center justify-between gap-4 text-xs">
-            <div className="relative h-5 flex-1 min-w-0 overflow-hidden" role="status" aria-live="off">
-              {ANNOUNCEMENTS.map((text, i) => (
-                <p
-                  key={text}
-                  className={`absolute inset-0 flex items-center gap-2 font-medium text-emerald-50 transition-all duration-500 ease-out-expo ${
-                    i === announceIdx ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3 pointer-events-none'
-                  }`}
-                >
-                  <Truck className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
-                  <span className="truncate">{text}</span>
-                </p>
-              ))}
-            </div>
-
-            <div className="hidden md:flex items-center gap-5 text-emerald-100/90 shrink-0">
-              <span className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-emerald-300" />
-                8 AM – 11 PM daily
-              </span>
-              <a href="tel:+9221111373742" className="flex items-center gap-1.5 h-9 hover:text-white transition-colors">
-                <Phone className="w-3.5 h-3.5 text-emerald-300" />
-                +92 21 111-373-742
-              </a>
-              <Link href="/track" className="flex items-center gap-1.5 h-9 hover:text-white transition-colors">
-                <PackageSearch className="w-3.5 h-3.5 text-emerald-300" />
-                Track order
-              </Link>
-              <a href="/admin" className="flex items-center gap-1.5 h-9 text-emerald-200/70 hover:text-white transition-colors">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Staff login
-              </a>
-            </div>
-          </div>
-        </div>
-
         {/* Main bar */}
-        <div className={`max-w-7xl mx-auto px-4 transition-[padding] duration-300 ${scrolled ? 'py-2' : 'py-3'}`}>
+        <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2.5 md:gap-6">
             <button
               type="button"
@@ -564,15 +563,15 @@ export default function Header({ categories }: HeaderProps) {
                 width={177}
                 height={40}
                 decoding="async"
-                className={`w-auto transition-all duration-300 ease-out-expo group-hover:scale-[1.03] ${scrolled ? 'h-8' : 'h-10'}`}
+                className="w-auto h-10 transition-transform duration-300 ease-out-expo group-hover:scale-[1.03]"
               />
             </Link>
 
             <div
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
-              className={`order-4 md:order-3 w-full md:w-auto md:flex-1 md:max-w-2xl md:mx-auto max-md:transition-[max-height,opacity,margin,visibility] max-md:duration-300 ${
-                searchTucked && !searchFocused ? 'max-md:max-h-0 max-md:opacity-0 max-md:-mt-2.5 max-md:invisible max-md:overflow-hidden' : 'max-md:max-h-16'
+              className={`order-4 md:order-3 w-full md:w-auto md:flex-1 md:max-w-2xl md:mx-auto max-md:transition-[opacity,transform,visibility] max-md:duration-300 ${
+                searchTucked && !searchFocused ? 'max-md:opacity-0 max-md:-translate-y-2 max-md:invisible max-md:pointer-events-none' : ''
               }`}
             >
               <SearchBox inputRef={searchInputRef} />

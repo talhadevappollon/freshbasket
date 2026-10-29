@@ -11,6 +11,7 @@ import CheckoutModal from '@/components/CheckoutModal';
 import OrderSuccessModal from '@/components/OrderSuccessModal';
 import ProductCard from '@/components/ProductCard';
 import QuantityStepper from '@/components/QuantityStepper';
+import ProductImageViewer from '@/components/ProductImageViewer';
 import { useCart } from '@/context/CartContext';
 import { fetchCategories, fetchProductBySlug } from '@/lib/api';
 import { Product, Category } from '@/types';
@@ -144,18 +145,19 @@ export default function ProductDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
             {/* Left Column: Image Gallery */}
             <div className="space-y-4">
-              <div className="relative bg-slate-50 rounded-3xl border border-gray-100 p-8 flex items-center justify-center h-64 sm:h-96 overflow-hidden group">
-                {discount && (
-                  <span className="absolute top-4 left-4 bg-rose-500 text-white text-xs font-black px-3 py-1 rounded-full shadow-md z-10">
-                    SAVE {discount}%
-                  </span>
-                )}
-                <img
-                  src={activeImage || product.primary_image || PLACEHOLDER_IMG}
-                  alt={product.name}
-                  className="max-h-72 max-w-full object-contain group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
+              <ProductImageViewer
+                images={galleryImages}
+                activeImage={activeImage}
+                onSelect={setActiveImage}
+                alt={product.name}
+                badge={
+                  discount ? (
+                    <span className="absolute top-4 left-4 bg-rose-500 text-white text-xs font-black px-3 py-1 rounded-full shadow-md z-10">
+                      SAVE {discount}%
+                    </span>
+                  ) : null
+                }
+              />
 
               {/* Thumbnails */}
               {galleryImages.length > 1 && (

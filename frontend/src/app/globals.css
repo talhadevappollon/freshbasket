@@ -249,3 +249,33 @@ h1, h2, h3 {
     transform: none;
   }
 }
+
+/* Phones: while reading down the page the header's search row is tucked away. It is clipped, not collapsed,
+   so the header keeps its height and nothing below it shifts (a height change made the page jump and flicker).
+   58px = search row (44) + gap (10) + bottom padding minus the breathing room kept under the logo row. */
+@media (max-width: 767px) {
+  .header-tuck {
+    clip-path: inset(0 0 -600px 0);
+    transition: clip-path 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
+  }
+  .header-tuck[data-tucked='true'] {
+    clip-path: inset(0 0 58px 0);
+    border-bottom-color: transparent;
+    box-shadow: none;
+  }
+  .header-tuck::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 58px;
+    height: 1px;
+    background: rgb(226 232 240);
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .header-tuck[data-tucked='true']::after {
+    opacity: 1;
+  }
+}
