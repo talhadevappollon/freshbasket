@@ -16,3 +16,4 @@ class Rider extends Model
         'is_active' => 'boolean',
     ];
 }
+

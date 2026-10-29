@@ -16,3 +16,4 @@ class Branch extends Model
         'pos_terminals_count' => 'integer',
     ];
 }
+

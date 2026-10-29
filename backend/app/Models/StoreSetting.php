@@ -25,3 +25,4 @@ class StoreSetting extends Model
         );
     }
 }
+

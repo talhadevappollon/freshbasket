@@ -20,3 +20,4 @@ class Coupon extends Model
         'max_discount' => 'float',
     ];
 }
+

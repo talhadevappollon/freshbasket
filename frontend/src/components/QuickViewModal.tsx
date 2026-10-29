@@ -130,3 +130,4 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
     </div>
   );
 }
+
