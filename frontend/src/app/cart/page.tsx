@@ -64,7 +64,7 @@ export default function CartPage() {
     setCouponError('');
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/v1/coupons/validate', {
+      const res = await fetch('/api/v1/coupons/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ code: codeToApply.trim(), subtotal: subtotal }),
@@ -110,7 +110,7 @@ export default function CartPage() {
         onSelectCategory={() => {}}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:py-8 pb-20 sm:pb-8">
         {/* Checkout Stepper Progress */}
         <div className="max-w-xl mx-auto mb-8">
           <div className="flex items-center justify-between text-xs font-bold text-slate-400">

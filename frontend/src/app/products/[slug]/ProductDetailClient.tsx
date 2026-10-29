@@ -120,7 +120,7 @@ export default function ProductDetailPage() {
         onSelectCategory={() => {}}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:py-8 pb-20 sm:pb-8">
         {/* Breadcrumb */}
         <div className="flex items-center space-x-2 text-xs text-gray-400 mb-6 font-medium">
           <Link href="/" className="hover:text-fresh-600 transition flex items-center gap-1">
@@ -133,11 +133,11 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Product Showcase Grid */}
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-6 sm:p-10 mb-12">
+        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-4 sm:p-10 mb-8 sm:mb-12">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
             {/* Left Column: Image Gallery */}
             <div className="space-y-4">
-              <div className="relative bg-slate-50 rounded-3xl border border-gray-100 p-8 flex items-center justify-center h-80 sm:h-96 overflow-hidden group">
+              <div className="relative bg-slate-50 rounded-3xl border border-gray-100 p-8 flex items-center justify-center h-64 sm:h-96 overflow-hidden group">
                 {discount && (
                   <span className="absolute top-4 left-4 bg-rose-500 text-white text-xs font-black px-3 py-1 rounded-full shadow-md z-10">
                     SAVE {discount}%

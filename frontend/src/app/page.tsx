@@ -86,7 +86,7 @@ export default function Home() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1">
+      <main className="flex-1 pb-16 sm:pb-8">
         {/* Hero Section */}
         <HeroBanner />
 
@@ -111,7 +111,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
                 {flashDeals.map(deal => (
                   <div key={deal.id} className="bg-white/10 backdrop-blur-md border border-white/15 p-3 rounded-2xl flex items-center space-x-3">
                     <img src={deal.primary_image || 'https://via.placeholder.com/60'} alt={deal.name} className="w-12 h-12 object-contain rounded-xl bg-white p-1 shrink-0" />
@@ -177,7 +177,7 @@ export default function Home() {
             </div>
           ) : products.length > 0 ? (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4 sm:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-2.5 sm:gap-6">
                 {products.map(product => (
                   <ProductCard
                     key={product.id}
