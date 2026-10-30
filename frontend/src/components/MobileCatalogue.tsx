@@ -2,15 +2,15 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowDown, ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import ProductCard from '@/components/ProductCard';
 import { fetchProducts } from '@/lib/api';
 import { Category, Product } from '@/types';
-import { blurbFor, buildCatalogueGroups, CatalogueGroup, emojiFor, lastSegment } from '@/data/homeCatalogue';
+import { buildCatalogueGroups, CatalogueGroup } from '@/data/homeCatalogue';
 
 /** Phone home page: every category with its products, so shoppers never have to leave the page. */
 
-const STEP = 6; // products revealed per tap of "Load more"
+const ROW_SIZE = 4; // products shown per category on the home page; the category page has the rest
 const FETCH_SIZE = 12; // products per request (the store's smallest page)
 
 /** Up to three pictures for a group: the store's own product photos, falling back to category images. */
@@ -137,9 +137,10 @@ function TileRows({ groups, onJump }: { groups: CatalogueGroup[]; onJump: (key: 
 // One category: heading card, sub-category chips, products, load more
 // ---------------------------------------------------------------------------------------------
 
-function CardSkeleton() {
+/** Card-sized placeholder while a row is loading. */
+function RailSkeleton() {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 p-2.5" aria-hidden="true">
+    <div className="bg-white rounded-2xl border border-slate-200/80 p-2.5 w-[44vw] max-w-[190px] shrink-0" aria-hidden="true">
       <div className="skeleton h-36 rounded-2xl" />
       <div className="skeleton h-3 w-1/3 rounded mt-3" />
       <div className="skeleton h-3.5 w-5/6 rounded mt-2" />
@@ -152,20 +153,15 @@ function CardSkeleton() {
 }
 
 function CategorySection({ group }: { group: CatalogueGroup }) {
-  const firstSlug = (group.parent ?? group.children[0]).slug;
-  const [slug, setSlug] = useState(firstSlug);
+  const category = group.parent ?? group.children[0];
   const [armed, setArmed] = useState(false); // becomes true shortly before the section scrolls into view
   const [items, setItems] = useState<Product[]>([]);
   const [total, setTotal] = useState(group.total);
-  const [visible, setVisible] = useState(STEP);
   const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const pageRef = useRef(1);
   const rootRef = useRef<HTMLElement>(null);
 
-  const images = useMemo(() => groupImages(group), [group]);
-  const selected = [group.parent, ...group.children].find(c => c?.slug === slug) ?? group.parent ?? group.children[0];
-  const subChips = group.parent ? [group.parent, ...group.children] : group.children;
+  // "View all" opens the category's own page
+  const seeAllHref = `/category/${category.slug}`;
 
   // Products are only requested once the section is close to the screen: 18 aisles, one request each, on demand
   useEffect(() => {
@@ -191,197 +187,92 @@ function CategorySection({ group }: { group: CatalogueGroup }) {
   useEffect(() => {
     if (!armed) return;
     let cancelled = false;
-    setLoading(true);
-    setItems([]);
-    setVisible(STEP);
-    pageRef.current = 1;
-    fetchProducts({ category: slug, per_page: FETCH_SIZE }).then(res => {
+    fetchProducts({ category: category.slug, per_page: FETCH_SIZE }).then(res => {
       if (cancelled) return;
-      setItems(res.data);
+      setItems(res.data.slice(0, ROW_SIZE));
       setTotal(res.total);
       setLoading(false);
     });
     return () => {
       cancelled = true;
     };
-  }, [armed, slug]);
-
-  const loadMore = async () => {
-    if (loadingMore) return;
-    const next = visible + STEP;
-    // everything needed is already fetched (or there is nothing more to fetch)
-    if (next <= items.length || items.length >= total) {
-      setVisible(next);
-      return;
-    }
-    setLoadingMore(true);
-    const page = pageRef.current + 1;
-    const res = await fetchProducts({ category: slug, per_page: FETCH_SIZE, page });
-    pageRef.current = page;
-    setItems(prev => {
-      const seen = new Set(prev.map(p => p.id));
-      return [...prev, ...res.data.filter(p => !seen.has(p.id))];
-    });
-    setVisible(next);
-    setLoadingMore(false);
-  };
-
-  const shown = items.slice(0, visible);
-  const shownCount = Math.min(shown.length, total);
-  const pct = total > 0 ? Math.min(100, Math.round((shownCount / total) * 100)) : 0;
-  const remaining = Math.max(0, total - shownCount);
-  const seeAllHref = `/category/${selected?.slug ?? firstSlug}`;
+  }, [armed, category.slug]);
 
   return (
     <section id={`cat-${group.key}`} data-cat={group.key} ref={rootRef} aria-labelledby={`cat-title-${group.key}`}>
-      {/* Heading card */}
-      <div className={`relative overflow-hidden rounded-[1.75rem] bg-gradient-to-br text-white p-4 min-h-[138px] shadow-lg shadow-black/10 ${group.tone.header}`} data-surface="dark">
-        <span aria-hidden="true" className="absolute -right-10 -top-12 w-44 h-44 rounded-full bg-white/10" />
-        <span aria-hidden="true" className="absolute -left-10 -bottom-16 w-40 h-40 rounded-full bg-black/10" />
-        <span aria-hidden="true" className="absolute right-2 -bottom-1 text-[6rem] leading-none opacity-[0.13] select-none">
+      {/* Slim heading */}
+      <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br text-white pl-3 pr-3 py-3 flex items-center gap-3 shadow-md shadow-black/10 ${group.tone.header}`} data-surface="dark">
+        <span aria-hidden="true" className="absolute -right-8 -top-10 w-32 h-32 rounded-full bg-white/10" />
+        <span aria-hidden="true" className="absolute -left-8 -bottom-12 w-28 h-28 rounded-full bg-black/10" />
+        <span aria-hidden="true" className="absolute right-20 -bottom-3 text-[4.5rem] leading-none opacity-[0.12] select-none">
           {group.emoji}
         </span>
 
-        <div className="relative flex items-start justify-between gap-2">
-          <div className="min-w-0 flex-1">
-            <span className="inline-flex items-center gap-1.5 h-7 pl-1 pr-2.5 rounded-full bg-white/15 border border-white/25 text-[11px] font-bold tracking-wide">
-              <span className="w-5 h-5 rounded-full bg-white flex items-center justify-center text-[12px]" aria-hidden="true">
-                {group.emoji}
-              </span>
-              {group.total} products
-            </span>
-            <h2 id={`cat-title-${group.key}`} className="mt-2 text-[1.45rem] leading-tight font-black tracking-tight break-words">
-              {group.name}
-            </h2>
-            <p className="mt-0.5 text-[12.5px] leading-snug text-white/80 max-w-[11.5rem]">{blurbFor(group.name)}</p>
-            <Link
-              href={seeAllHref}
-              className="mt-3 inline-flex items-center gap-1 h-10 pl-4 pr-3 rounded-full bg-white text-slate-900 text-[13px] font-bold shadow-lg shadow-black/20 active:scale-95 transition-transform"
-            >
-              See all
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
+        <span aria-hidden="true" className="relative w-12 h-12 shrink-0 rounded-2xl bg-white/95 shadow-lg shadow-black/15 flex items-center justify-center text-[1.6rem]">
+          {group.emoji}
+        </span>
 
-          {/* Product photos fanned out on the right */}
-          <div className="relative shrink-0 w-[112px] h-[112px] mt-1" aria-hidden="true">
-            {images.length > 0 ? (
-              images.map((src, i) => (
-                <span
-                  key={src}
-                  className="absolute w-[64px] h-[64px] rounded-2xl bg-white shadow-xl shadow-black/25 p-1 overflow-hidden"
-                  style={{
-                    left: [0, 40, 14][i],
-                    top: [22, 0, 48][i],
-                    transform: `rotate(${[-9, 8, -2][i]}deg)`,
-                    zIndex: [2, 1, 3][i],
-                  }}
-                >
-                  <img src={src} alt="" loading="lazy" decoding="async" onError={hideBrokenImage} className="w-full h-full object-contain" />
-                </span>
-              ))
-            ) : (
-              <span className="absolute inset-0 flex items-center justify-center text-6xl">{group.emoji}</span>
-            )}
-          </div>
+        <div className="relative min-w-0 flex-1">
+          <h2 id={`cat-title-${group.key}`} className="text-[1.1rem] leading-tight font-black tracking-tight line-clamp-2 break-words">
+            {group.name}
+          </h2>
+          <p className="text-[12px] font-semibold text-white/80 mt-0.5">{total} products</p>
         </div>
+
+        <Link
+          href={seeAllHref}
+          className="relative shrink-0 inline-flex items-center gap-1 h-10 pl-3.5 pr-2.5 rounded-full bg-white text-slate-900 text-[13px] font-bold shadow-lg shadow-black/20 active:scale-95 transition-transform"
+        >
+          View all
+          <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
 
-      {/* Sub-categories */}
-      {subChips.length > 1 && (
-        <div className="mt-3 -mx-4 px-4 overflow-x-auto no-scrollbar">
-          <ul className="flex items-center gap-2 w-max pr-4" aria-label={`${group.name} sub-categories`}>
-            {subChips.map(c => {
-              const isAll = c === group.parent;
-              const on = c.slug === slug;
-              const thumb = c.image_url || c.preview_images?.[0];
-              return (
-                <li key={c.id}>
-                  <button
-                    type="button"
-                    onClick={() => setSlug(c.slug)}
-                    aria-pressed={on}
-                    className={`inline-flex items-center gap-2 h-11 pl-1.5 pr-4 rounded-full border text-[13px] font-bold whitespace-nowrap cursor-pointer transition-colors duration-200 active:scale-95 ${
-                      on ? 'bg-fresh-700 border-fresh-700 text-white shadow-md shadow-fresh-700/25' : 'bg-white border-slate-200 text-slate-700'
-                    }`}
-                  >
-                    <span className="w-8 h-8 rounded-full bg-white border border-slate-100 flex items-center justify-center overflow-hidden shrink-0 text-[15px]">
-                      {!isAll && thumb ? (
-                        <img src={thumb} alt="" width={32} height={32} loading="lazy" decoding="async" onError={hideBrokenImage} className="w-full h-full object-cover" />
-                      ) : (
-                        <span aria-hidden="true">{isAll ? group.emoji : emojiFor(c.name)}</span>
-                      )}
-                    </span>
-                    {isAll ? `All ${group.name}` : lastSegment(c.name)}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      )}
-
-      {/* Products */}
-      <div className="mt-3 min-h-[200px]">
+      {/* One row, four products, then a View all card. Swipe sideways. */}
+      <div className="mt-3 -mx-4 px-4 overflow-x-auto no-scrollbar snap-x snap-proximity scroll-px-4">
         {loading ? (
-          <div className="grid grid-cols-2 gap-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <CardSkeleton key={i} />
+          <div className="flex gap-3 w-max pr-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <RailSkeleton key={i} />
             ))}
           </div>
-        ) : shown.length > 0 ? (
-          <div className="grid grid-cols-2 gap-3">
-            {shown.map((product, i) => (
-              <div key={product.id} className="animate-card-entrance" style={{ animationDelay: `${(i % STEP) * 45}ms` }}>
+        ) : items.length > 0 ? (
+          <ul className="flex gap-3 w-max pr-4" aria-label={`${group.name} products`}>
+            {items.map((product, i) => (
+              <li key={product.id} className="snap-start shrink-0 w-[44vw] max-w-[190px] animate-card-entrance" style={{ animationDelay: `${i * 45}ms` }}>
                 <ProductCard product={product} imageBg={group.tone.imageBg} />
-              </div>
+              </li>
             ))}
-          </div>
+            <li className="snap-start shrink-0 w-[34vw] max-w-[150px]">
+              <Link
+                href={seeAllHref}
+                aria-label={`View all ${total} products in ${group.name}`}
+                className={`h-full min-h-[240px] rounded-2xl bg-gradient-to-br text-white flex flex-col items-center justify-center gap-2.5 p-3 text-center shadow-md shadow-black/10 active:scale-95 transition-transform ${group.tone.header}`}
+                data-surface="dark"
+              >
+                <span aria-hidden="true" className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-2xl">
+                  {group.emoji}
+                </span>
+                <span className="text-[13.5px] font-black leading-tight">
+                  View all
+                  <span className="block text-[12px] font-semibold text-white/80">{total} products</span>
+                </span>
+                <span aria-hidden="true" className="w-9 h-9 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-md">
+                  <ArrowRight className="w-4 h-4" />
+                </span>
+              </Link>
+            </li>
+          </ul>
         ) : (
-          <div className="text-center rounded-2xl bg-white border border-slate-200 px-5 py-10">
-            <span className="text-4xl" aria-hidden="true">
+          <div className="text-center rounded-2xl bg-white border border-slate-200 px-5 py-8">
+            <span className="text-3xl" aria-hidden="true">
               {group.emoji}
             </span>
-            <p className="mt-2 text-sm font-bold text-slate-900">Fresh stock is on its way</p>
-            <p className="text-xs text-slate-500 mt-0.5">Nothing in {selected ? lastSegment(selected.name) : group.name} right now.</p>
+            <p className="mt-1.5 text-sm font-bold text-slate-900">Fresh stock is on its way</p>
+            <p className="text-xs text-slate-500 mt-0.5">Nothing in {group.name} right now.</p>
           </div>
         )}
       </div>
-
-      {/* Load more */}
-      {!loading && total > 0 && shown.length > 0 && (
-        <div className="mt-3 rounded-2xl bg-white border border-slate-200/80 p-3.5 shadow-xs">
-          <div className="flex items-center justify-between text-[12px] font-semibold text-slate-500">
-            <span>
-              Showing <strong className="text-slate-900">{shownCount}</strong> of <strong className="text-slate-900">{total}</strong>
-            </span>
-            <span className="tabular-nums">{pct}%</span>
-          </div>
-          <div className="mt-2 h-1.5 rounded-full bg-slate-100 overflow-hidden" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={`${group.name} products shown`}>
-            <div className="h-full rounded-full bg-gradient-to-r from-fresh-500 to-fresh-700 transition-[width] duration-500" style={{ width: `${pct}%` }} />
-          </div>
-
-          {remaining > 0 ? (
-            <button
-              type="button"
-              onClick={loadMore}
-              disabled={loadingMore}
-              className="mt-3 w-full h-12 rounded-xl bg-fresh-700 hover:bg-fresh-800 active:bg-fresh-900 active:scale-[0.99] disabled:opacity-70 text-white text-sm font-bold flex items-center justify-center gap-2 cursor-pointer transition"
-            >
-              {loadingMore ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowDown className="w-4 h-4" />}
-              {loadingMore ? 'Loading…' : `Load ${Math.min(STEP, remaining)} more · ${remaining} left`}
-            </button>
-          ) : (
-            <Link
-              href={seeAllHref}
-              className="mt-3 w-full h-12 rounded-xl border border-fresh-200 bg-fresh-50 text-fresh-800 text-sm font-bold flex items-center justify-center gap-1.5 active:scale-[0.99] transition"
-            >
-              That&apos;s everything in {selected ? lastSegment(selected.name) : group.name}
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          )}
-        </div>
-      )}
     </section>
   );
 }
@@ -483,7 +374,7 @@ export default function MobileCatalogue({ categories }: { categories: Category[]
             </div>
           </nav>
 
-          <div className="mt-5 space-y-10">
+          <div className="mt-5 space-y-7">
             {groups.map(g => (
               <CategorySection key={g.key} group={g} />
             ))}

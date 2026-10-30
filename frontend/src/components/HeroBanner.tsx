@@ -371,7 +371,7 @@ export default function HeroBanner() {
       </div>
 
       {/* Trust Badges Strip (with Smooth Hover Effects) */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mt-4 sm:mt-6">
+      <div className="max-sm:hidden grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mt-4 sm:mt-6">
         <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-100 hover:border-fresh-300 shadow-2xs hover:shadow-md hover:-translate-y-0.5 flex items-center space-x-2.5 sm:space-x-3 transition-all duration-200 group cursor-default">
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-fresh-50 text-fresh-600 group-hover:bg-fresh-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors duration-200 shadow-2xs">
             <Truck className="w-4 h-4 sm:w-5 sm:h-5" />
