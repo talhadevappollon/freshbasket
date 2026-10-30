@@ -7,6 +7,7 @@ import { useCart } from '@/context/CartContext';
 import { Product, Category } from '@/types';
 import { fetchProducts } from '@/lib/api';
 import { PLACEHOLDER_IMG } from '@/lib/placeholder';
+import AccountButton from '@/components/AccountButton';
 import { FEATURED_AISLES, resolveCategory } from '@/data/aisles';
 import {
   ShoppingBag,
@@ -216,7 +217,7 @@ function SearchBox({ inputRef }: SearchBoxProps) {
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
           placeholder="Search groceries…"
-          className="w-full h-11 bg-slate-100/80 hover:bg-slate-100 focus:bg-white border border-transparent focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 pl-11 pr-11 md:pr-20 rounded-xl text-sm text-slate-900 placeholder-slate-500 outline-none transition-all duration-200 [&::-webkit-search-cancel-button]:hidden"
+          className="w-full h-10 sm:h-11 bg-slate-100/80 hover:bg-slate-100 focus:bg-white border border-transparent focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 pl-11 pr-11 md:pr-20 rounded-xl text-sm text-slate-900 placeholder-slate-500 outline-none transition-all duration-200 [&::-webkit-search-cancel-button]:hidden"
         />
         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
           {loading && <Loader2 className="w-4 h-4 text-fresh-600 animate-spin" aria-hidden="true" />}
@@ -420,7 +421,7 @@ export default function Header({ categories }: HeaderProps) {
     const apply = () => {
       const phone = window.matchMedia('(max-width: 767px)').matches;
       const tucked = phone && searchTucked && !searchFocused;
-      document.documentElement.style.setProperty('--header-visible', `${el.offsetHeight - (tucked ? 58 : 0)}px`);
+      document.documentElement.style.setProperty('--header-visible', `${el.offsetHeight - (tucked ? 48 : 0)}px`);
     };
     apply();
     window.addEventListener('resize', apply);
@@ -559,8 +560,8 @@ export default function Header({ categories }: HeaderProps) {
         onMouseEnter={() => hoverTimer.current && clearTimeout(hoverTimer.current)}
       >
         {/* Main bar */}
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2.5 md:gap-6">
+        <div className="max-w-7xl mx-auto px-4 py-2 sm:py-3">
+          <div className="flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2 md:gap-6">
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}
@@ -588,7 +589,7 @@ export default function Header({ categories }: HeaderProps) {
                 width={177}
                 height={40}
                 decoding="async"
-                className="w-auto h-10 transition-transform duration-300 ease-out-expo group-hover:scale-[1.03]"
+                className="w-auto h-7 sm:h-10 transition-transform duration-300 ease-out-expo group-hover:scale-[1.03]"
               />
             </Link>
 
@@ -602,28 +603,31 @@ export default function Header({ categories }: HeaderProps) {
               <SearchBox inputRef={searchInputRef} />
             </div>
 
-            <button
-              type="button"
-              onClick={() => setIsCartOpen(true)}
-              aria-label={`Open basket, ${totalItems} item${totalItems === 1 ? '' : 's'}, PKR ${subtotal.toLocaleString()}`}
-              className="order-3 md:order-4 flex items-center gap-3 h-11 px-3 sm:px-4 rounded-xl bg-fresh-700 hover:bg-fresh-800 active:scale-[0.97] text-white shadow-lg shadow-fresh-700/20 transition-all duration-200 cursor-pointer sheen"
-            >
-              <span className="relative">
-                <ShoppingBag className="w-5 h-5" />
-                {totalItems > 0 && (
-                  <span
-                    key={bumpKey}
-                    className="absolute -top-2 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-brand-600 text-white ring-2 ring-fresh-700 text-[11px] font-black flex items-center justify-center animate-bump"
-                  >
-                    {totalItems}
-                  </span>
-                )}
-              </span>
-              <span className="hidden sm:block text-left leading-tight">
-                <span className="block text-[11px] text-emerald-200 font-medium">My basket</span>
-                <span className="block text-sm font-bold tabular-nums">PKR {subtotal.toLocaleString()}</span>
-              </span>
-            </button>
+            <div className="order-3 md:order-4 flex items-center gap-2">
+              <AccountButton />
+              <button
+                type="button"
+                onClick={() => setIsCartOpen(true)}
+                aria-label={`Open basket, ${totalItems} item${totalItems === 1 ? '' : 's'}, PKR ${subtotal.toLocaleString()}`}
+                className="flex items-center gap-3 h-11 px-3 sm:px-4 rounded-xl bg-fresh-700 hover:bg-fresh-800 active:scale-[0.97] text-white shadow-lg shadow-fresh-700/20 transition-all duration-200 cursor-pointer sheen"
+              >
+                <span className="relative">
+                  <ShoppingBag className="w-5 h-5" />
+                  {totalItems > 0 && (
+                    <span
+                      key={bumpKey}
+                      className="absolute -top-2 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-brand-600 text-white ring-2 ring-fresh-700 text-[11px] font-black flex items-center justify-center animate-bump"
+                    >
+                      {totalItems}
+                    </span>
+                  )}
+                </span>
+                <span className="hidden sm:block text-left leading-tight">
+                  <span className="block text-[11px] text-emerald-200 font-medium">My basket</span>
+                  <span className="block text-sm font-bold tabular-nums">PKR {subtotal.toLocaleString()}</span>
+                </span>
+              </button>
+            </div>
           </div>
         </div>
 

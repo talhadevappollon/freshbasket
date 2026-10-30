@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PosController;
 use App\Http\Controllers\Api\CrmController;
+use App\Http\Controllers\Api\AccountController;
 
 Route::prefix('v1')->group(function () {
     // Products
@@ -70,6 +71,17 @@ Route::prefix('v1')->group(function () {
 
     // Order Tracking
     Route::get('/orders/{orderNumber}', [OrderController::class, 'show'])->middleware('throttle:20,1');
+
+    // Shopper accounts (token based). Sign-in and sign-up are throttled.
+    Route::prefix('account')->group(function () {
+        Route::post('/register', [AccountController::class, 'register'])->middleware('throttle:10,1');
+        Route::post('/login', [AccountController::class, 'login'])->middleware('throttle:10,1');
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::get('/me', [AccountController::class, 'me']);
+            Route::post('/logout', [AccountController::class, 'logout']);
+            Route::get('/orders', [AccountController::class, 'orders']);
+        });
+    });
 
     // CRM / Support Leads
     Route::post('/crm/inquiries', [CrmController::class, 'storeInquiry']);

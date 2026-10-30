@@ -44,8 +44,8 @@ function CategoryTile({ group, index, onJump }: { group: CatalogueGroup; index: 
         style={{ animationDelay: `${Math.min(Math.floor(index / 2), 6) * 50}ms` }}
       >
         <span className={`relative block w-full aspect-square rounded-2xl overflow-hidden border bg-gradient-to-br shadow-xs ${group.tone.tile}`}>
-          <span aria-hidden="true" className="absolute -right-3 -top-3 w-11 h-11 rounded-full bg-white/55" />
-          <span aria-hidden="true" className="absolute -left-3 -bottom-4 w-10 h-10 rounded-full bg-white/40" />
+          <span aria-hidden="true" className="absolute -right-3 -top-3 w-9 h-9 rounded-full bg-white/55" />
+          <span aria-hidden="true" className="absolute -left-3 -bottom-4 w-8 h-8 rounded-full bg-white/40" />
           {img ? (
             <img
               src={img}
@@ -55,28 +55,28 @@ function CategoryTile({ group, index, onJump }: { group: CatalogueGroup; index: 
               loading="lazy"
               decoding="async"
               onError={hideBrokenImage}
-              className="absolute inset-0 w-full h-full object-contain p-2 mix-blend-multiply transition-transform duration-300 group-active:scale-110"
+              className="absolute inset-0 w-full h-full object-contain p-1.5 mix-blend-multiply transition-transform duration-300 group-active:scale-110"
             />
           ) : (
             <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl">
               {group.emoji}
             </span>
           )}
-          <span aria-hidden="true" className="absolute left-1 top-1 w-5 h-5 rounded-full bg-white/95 shadow-xs flex items-center justify-center text-[11px]">
+          <span aria-hidden="true" className="absolute left-0.5 top-0.5 w-[18px] h-[18px] rounded-full bg-white/95 shadow-xs flex items-center justify-center text-[10px]">
             {group.emoji}
           </span>
-          <span aria-hidden="true" className="absolute right-1 bottom-1 h-4 min-w-4 px-1 rounded-full bg-white/95 shadow-xs flex items-center justify-center text-[9px] font-black text-slate-700 tabular-nums">
+          <span aria-hidden="true" className="absolute right-0.5 bottom-0.5 h-[15px] min-w-[15px] px-1 rounded-full bg-white/95 shadow-xs flex items-center justify-center text-[8.5px] font-black text-slate-700 tabular-nums">
             {group.total}
           </span>
         </span>
-        <span className="block text-[11px] font-bold leading-[1.15] text-slate-800 line-clamp-2 min-h-[2.3em]">{group.name}</span>
+        <span className="block text-[10.5px] font-bold leading-[1.15] text-slate-800 line-clamp-2 min-h-[2.3em]">{group.name}</span>
       </button>
     </li>
   );
 }
 
 /** Two rows that scroll sideways: every category is one swipe away without a tall grid. */
-const TILE_GRID = 'grid grid-rows-2 grid-flow-col auto-cols-[74px] gap-x-2.5 gap-y-2.5 w-max pr-4';
+const TILE_GRID = 'grid grid-rows-2 grid-flow-col auto-cols-[64px] gap-x-2 gap-y-2 w-max pr-4';
 
 function TileSkeleton() {
   return (
@@ -140,8 +140,8 @@ function TileRows({ groups, onJump }: { groups: CatalogueGroup[]; onJump: (key: 
 /** Card-sized placeholder while a row is loading. */
 function RailSkeleton() {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200/80 p-2.5 w-[44vw] max-w-[190px] shrink-0" aria-hidden="true">
-      <div className="skeleton h-36 rounded-2xl" />
+    <div className="bg-white rounded-2xl border border-slate-200/80 p-2.5 w-[40vw] max-w-[170px] shrink-0" aria-hidden="true">
+      <div className="skeleton h-28 rounded-2xl" />
       <div className="skeleton h-3 w-1/3 rounded mt-3" />
       <div className="skeleton h-3.5 w-5/6 rounded mt-2" />
       <div className="flex items-center justify-between mt-4">
@@ -201,19 +201,19 @@ function CategorySection({ group }: { group: CatalogueGroup }) {
   return (
     <section id={`cat-${group.key}`} data-cat={group.key} ref={rootRef} aria-labelledby={`cat-title-${group.key}`}>
       {/* Slim heading */}
-      <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br text-white pl-3 pr-3 py-3 flex items-center gap-3 shadow-md shadow-black/10 ${group.tone.header}`} data-surface="dark">
+      <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br text-white pl-2.5 pr-2.5 py-2.5 flex items-center gap-2.5 shadow-md shadow-black/10 ${group.tone.header}`} data-surface="dark">
         <span aria-hidden="true" className="absolute -right-8 -top-10 w-32 h-32 rounded-full bg-white/10" />
         <span aria-hidden="true" className="absolute -left-8 -bottom-12 w-28 h-28 rounded-full bg-black/10" />
         <span aria-hidden="true" className="absolute right-20 -bottom-3 text-[4.5rem] leading-none opacity-[0.12] select-none">
           {group.emoji}
         </span>
 
-        <span aria-hidden="true" className="relative w-12 h-12 shrink-0 rounded-2xl bg-white/95 shadow-lg shadow-black/15 flex items-center justify-center text-[1.6rem]">
+        <span aria-hidden="true" className="relative w-10 h-10 shrink-0 rounded-xl bg-white/95 shadow-lg shadow-black/15 flex items-center justify-center text-[1.3rem]">
           {group.emoji}
         </span>
 
         <div className="relative min-w-0 flex-1">
-          <h2 id={`cat-title-${group.key}`} className="text-[1.1rem] leading-tight font-black tracking-tight line-clamp-2 break-words">
+          <h2 id={`cat-title-${group.key}`} className="text-base leading-tight font-black tracking-tight line-clamp-2 break-words">
             {group.name}
           </h2>
           <p className="text-[12px] font-semibold text-white/80 mt-0.5">{total} products</p>
@@ -221,7 +221,7 @@ function CategorySection({ group }: { group: CatalogueGroup }) {
 
         <Link
           href={seeAllHref}
-          className="relative shrink-0 inline-flex items-center gap-1 h-10 pl-3.5 pr-2.5 rounded-full bg-white text-slate-900 text-[13px] font-bold shadow-lg shadow-black/20 active:scale-95 transition-transform"
+          className="relative shrink-0 inline-flex items-center gap-1 h-10 pl-3 pr-2 rounded-full bg-white text-slate-900 text-[12.5px] font-bold shadow-lg shadow-black/20 active:scale-95 transition-transform"
         >
           View all
           <ArrowRight className="w-4 h-4" />
@@ -239,15 +239,15 @@ function CategorySection({ group }: { group: CatalogueGroup }) {
         ) : items.length > 0 ? (
           <ul className="flex gap-3 w-max pr-4" aria-label={`${group.name} products`}>
             {items.map((product, i) => (
-              <li key={product.id} className="snap-start shrink-0 w-[44vw] max-w-[190px] animate-card-entrance" style={{ animationDelay: `${i * 45}ms` }}>
+              <li key={product.id} className="snap-start shrink-0 w-[40vw] max-w-[170px] animate-card-entrance" style={{ animationDelay: `${i * 45}ms` }}>
                 <ProductCard product={product} imageBg={group.tone.imageBg} />
               </li>
             ))}
-            <li className="snap-start shrink-0 w-[34vw] max-w-[150px]">
+            <li className="snap-start shrink-0 w-[28vw] max-w-[130px]">
               <Link
                 href={seeAllHref}
                 aria-label={`View all ${total} products in ${group.name}`}
-                className={`h-full min-h-[240px] rounded-2xl bg-gradient-to-br text-white flex flex-col items-center justify-center gap-2.5 p-3 text-center shadow-md shadow-black/10 active:scale-95 transition-transform ${group.tone.header}`}
+                className={`h-full min-h-[200px] rounded-2xl bg-gradient-to-br text-white flex flex-col items-center justify-center gap-2.5 p-3 text-center shadow-md shadow-black/10 active:scale-95 transition-transform ${group.tone.header}`}
                 data-surface="dark"
               >
                 <span aria-hidden="true" className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center text-2xl">
@@ -327,10 +327,10 @@ export default function MobileCatalogue({ categories }: { categories: Category[]
   }, []);
 
   return (
-    <section id="products-section-m" className="md:hidden px-4 pt-6 pb-4" aria-labelledby="shop-by-category">
-      <div className="flex items-end justify-between gap-3 mb-4">
+    <section id="products-section-m" className="md:hidden px-4 pt-4 pb-3" aria-labelledby="shop-by-category">
+      <div className="flex items-end justify-between gap-3 mb-3">
         <div className="min-w-0">
-          <h2 id="shop-by-category" className="text-[1.4rem] leading-tight font-black tracking-tight text-slate-900">
+          <h2 id="shop-by-category" className="text-xl leading-tight font-black tracking-tight text-slate-900">
             Shop by category
           </h2>
           <p className="text-[13px] text-slate-600 mt-0.5">Swipe for more, tap to jump</p>
@@ -349,7 +349,7 @@ export default function MobileCatalogue({ categories }: { categories: Category[]
       {groups.length > 0 && (
         <>
           {/* Sticky jump bar */}
-          <nav aria-label="Jump to a category" className="catnav sticky z-30 -mx-4 mt-6 px-4 py-2 bg-white/90 backdrop-blur-xl border-b border-slate-200/70">
+          <nav aria-label="Jump to a category" className="catnav sticky z-30 -mx-4 mt-4 px-4 py-1.5 bg-white/90 backdrop-blur-xl border-b border-slate-200/70">
             <div ref={railRef} className="flex items-center gap-2 overflow-x-auto no-scrollbar">
               {groups.map(g => {
                 const on = g.key === activeKey;
@@ -360,7 +360,7 @@ export default function MobileCatalogue({ categories }: { categories: Category[]
                     data-chip={g.key}
                     onClick={() => jumpTo(g.key)}
                     aria-current={on ? 'true' : undefined}
-                    className={`shrink-0 inline-flex items-center gap-1.5 h-10 pl-2.5 pr-3.5 rounded-full border text-[13px] font-bold whitespace-nowrap cursor-pointer transition-colors duration-200 active:scale-95 ${
+                    className={`shrink-0 inline-flex items-center gap-1.5 h-9 pl-2.5 pr-3 rounded-full border text-[12.5px] font-bold whitespace-nowrap cursor-pointer transition-colors duration-200 active:scale-95 ${
                       on ? 'bg-fresh-700 border-fresh-700 text-white shadow-md shadow-fresh-700/25' : 'bg-white border-slate-200 text-slate-700'
                     }`}
                   >
@@ -374,7 +374,7 @@ export default function MobileCatalogue({ categories }: { categories: Category[]
             </div>
           </nav>
 
-          <div className="mt-5 space-y-7">
+          <div className="mt-4 space-y-5">
             {groups.map(g => (
               <CategorySection key={g.key} group={g} />
             ))}

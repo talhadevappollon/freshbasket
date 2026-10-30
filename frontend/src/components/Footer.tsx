@@ -29,8 +29,8 @@ export default function Footer() {
               href="/"
               className="inline-flex items-center group"
             >
-              <span className="inline-flex items-center bg-white rounded-2xl px-4 py-2.5 shadow-lg shadow-black/20 group-hover:shadow-xl transition-shadow">
-                <img src="/logo.png" alt="Fresh House" width={156} height={35} loading="lazy" className="h-9 w-auto" />
+              <span className="inline-flex items-center bg-white rounded-xl sm:rounded-2xl px-3 py-1.5 sm:px-4 sm:py-2.5 shadow-lg shadow-black/20 group-hover:shadow-xl transition-shadow">
+                <img src="/logo.png" alt="Fresh House" width={156} height={35} loading="lazy" className="h-6 sm:h-9 w-auto" />
               </span>
             </Link>
             <p className="text-sm text-emerald-100/75 leading-relaxed">

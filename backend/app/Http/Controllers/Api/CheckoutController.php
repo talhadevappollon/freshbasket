@@ -40,8 +40,9 @@ class CheckoutController extends Controller
 
         // Orders still save if this release is live before its migration has run
         $hasSlotColumns = Schema::hasColumn('orders', 'delivery_window');
+        $account = Schema::hasColumn('orders', 'customer_account_id') ? $request->user('sanctum') : null; // signed-in shopper, if any
 
-        return DB::transaction(function () use ($validated, $request, $hasSlotColumns) {
+        return DB::transaction(function () use ($validated, $request, $hasSlotColumns, $account) {
             // 1. Sync / Find Customer (CRM 360)
             $customer = Customer::firstOrCreate(
                 ['phone' => $validated['customer_phone']],
@@ -129,7 +130,7 @@ class CheckoutController extends Controller
                 'order_status' => 'pending',
                 'order_source' => 'online',
                 'order_notes' => $validated['order_notes'] ?? null,
-            ] + ($hasSlotColumns ? [
+            ] + ($account ? ['customer_account_id' => $account->id] : []) + ($hasSlotColumns ? [
                 'delivery_date' => $validated['delivery_date'] ?? null,
                 'delivery_window' => $validated['delivery_window'] ?? null,
             ] : []));
@@ -139,6 +140,13 @@ class CheckoutController extends Controller
                 $itemData['order_id'] = $order->id;
                 OrderItem::create($itemData);
             }
+
+            // Remember the delivery details on the account so the next checkout is pre-filled
+            $account?->update([
+                'delivery_city' => $validated['delivery_city'],
+                'delivery_area' => $validated['delivery_area'] ?? null,
+                'delivery_address' => $validated['delivery_address'],
+            ]);
 
             // Update customer totals
             $customer->orders_count = $customer->orders()->count();

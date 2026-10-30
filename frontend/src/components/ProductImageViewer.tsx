@@ -32,7 +32,7 @@ export default function ProductImageViewer({ images, activeImage, onSelect, alt,
 
   return (
     <>
-      <div className="relative bg-slate-50 rounded-3xl border border-gray-100 flex items-center justify-center h-64 sm:h-96 overflow-hidden group">
+      <div className="relative bg-slate-50 rounded-3xl border border-gray-100 flex items-center justify-center h-52 sm:h-96 overflow-hidden group">
         {badge}
 
         <button
@@ -45,12 +45,12 @@ export default function ProductImageViewer({ images, activeImage, onSelect, alt,
           }}
           onPointerLeave={() => setHover(null)}
           aria-label={`Zoom in on ${alt}`}
-          className="absolute inset-0 w-full h-full flex items-center justify-center p-8 cursor-zoom-in focus-visible:outline-offset-[-4px]"
+          className="absolute inset-0 w-full h-full flex items-center justify-center p-5 sm:p-8 cursor-zoom-in focus-visible:outline-offset-[-4px]"
         >
           <img
             src={src}
             alt={alt}
-            className="max-h-72 max-w-full object-contain transition-transform duration-200 ease-out will-change-transform"
+            className="max-h-44 sm:max-h-72 max-w-full object-contain transition-transform duration-200 ease-out will-change-transform"
             style={hover ? { transform: `scale(${HOVER_SCALE})`, transformOrigin: `${hover.x}% ${hover.y}%` } : undefined}
             draggable={false}
             onError={e => {

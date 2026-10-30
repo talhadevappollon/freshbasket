@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import { CartProvider } from '@/context/CartContext';
+import { AuthProvider } from '@/context/AuthContext';
+import AuthModal from '@/components/AuthModal';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -61,7 +63,10 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           Skip to main content
         </a>
-        <CartProvider>{children}</CartProvider>
+        <AuthProvider>
+          <CartProvider>{children}</CartProvider>
+          <AuthModal />
+        </AuthProvider>
       </body>
     </html>
   );

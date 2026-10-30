@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
+import { useAuth } from '@/context/AuthContext';
 import { submitCheckout } from '@/lib/api';
 import { OrderCustomer } from '@/types';
 import DeliverySlotPicker from '@/components/DeliverySlotPicker';
@@ -62,6 +63,7 @@ export default function CheckoutModal() {
     delivery_window: 'asap',
   });
 
+  const { account, refreshAccount } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -80,6 +82,20 @@ export default function CheckoutModal() {
       window.removeEventListener('keydown', onKey);
     };
   }, [isCheckoutOpen, isSubmitting, setIsCheckoutOpen]);
+
+  // A signed-in shopper starts with their saved details (anything already typed is kept)
+  useEffect(() => {
+    if (!isCheckoutOpen || !account) return;
+    setFormData(f => ({
+      ...f,
+      customer_name: f.customer_name || account.name,
+      customer_phone: f.customer_phone || account.phone,
+      customer_email: f.customer_email || account.email || '',
+      delivery_city: account.delivery_city || f.delivery_city,
+      delivery_area: account.delivery_area || f.delivery_area,
+      delivery_address: f.delivery_address || account.delivery_address || '',
+    }));
+  }, [isCheckoutOpen, account]);
 
   // A tab left open overnight must not offer yesterday's slot
   useEffect(() => {
@@ -108,6 +124,7 @@ export default function CheckoutModal() {
           localStorage.setItem('fb_last_order', JSON.stringify({ n: res.order.order_number, p: formData.customer_phone }));
         } catch {}
         clearCart();
+        if (account) refreshAccount(); // the store saved this delivery address on the account
         setIsCheckoutOpen(false);
         setCompletedOrder(res.order);
       } else {

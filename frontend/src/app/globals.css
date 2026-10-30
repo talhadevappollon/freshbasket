@@ -252,14 +252,14 @@ h1, h2, h3 {
 
 /* Phones: while reading down the page the header's search row is tucked away. It is clipped, not collapsed,
    so the header keeps its height and nothing below it shifts (a height change made the page jump and flicker).
-   58px = search row (44) + gap (10) + bottom padding minus the breathing room kept under the logo row. */
+   48px = search row (40) + gap (8) + bottom padding minus the breathing room kept under the logo row. */
 @media (max-width: 767px) {
   .header-tuck {
     clip-path: inset(0 0 -600px 0);
     transition: clip-path 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
   }
   .header-tuck[data-tucked='true'] {
-    clip-path: inset(0 0 58px 0);
+    clip-path: inset(0 0 48px 0);
     border-bottom-color: transparent;
     box-shadow: none;
   }
@@ -268,7 +268,7 @@ h1, h2, h3 {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 58px;
+    bottom: 48px;
     height: 1px;
     background: rgb(226 232 240);
     opacity: 0;
@@ -283,6 +283,6 @@ h1, h2, h3 {
 /* Phone home page: the category jump bar sticks directly below the visible part of the header
    (--header-visible is kept up to date by Header.tsx as the search row tucks away and returns). */
 .catnav {
-  top: var(--header-visible, 123px);
+  top: var(--header-visible, 109px);
   transition: top 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }

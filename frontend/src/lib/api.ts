@@ -1,7 +1,7 @@
 import { Product, Category, OrderResponse, TrackedOrder, OrderCustomer, CartItem } from '@/types';
 import fallbackData from '@/data/initialCatalog.json';
 
-const API_BASE =
+export const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ||
   (typeof window !== 'undefined' ? '/api/v1' : 'http://127.0.0.1:8000/api/v1');
 
@@ -206,6 +206,15 @@ export async function fetchProductBySlug(slug: string): Promise<{ product: Produ
   return { product, related };
 }
 
+function authHeader(): Record<string, string> {
+  try {
+    const token = localStorage.getItem('fb_token');
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  } catch {
+    return {};
+  }
+}
+
 export async function submitCheckout(
   customer: OrderCustomer,
   items: CartItem[]
@@ -224,6 +233,8 @@ export async function submitCheckout(
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        // a signed-in shopper's order is attached to their account
+        ...authHeader(),
       },
       body: JSON.stringify(payload),
     });
