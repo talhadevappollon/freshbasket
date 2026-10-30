@@ -1,117 +1,39 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import Link from 'next/link';
-import {
-  Truck,
-  ShieldCheck,
-  Banknote,
-  Sparkles,
-  ChevronLeft,
-  ChevronRight,
-  Flame,
-  ArrowRight,
-  Gift,
-  Tag,
-  Clock,
-  ShoppingBag,
-  Leaf,
-  Percent,
-  Croissant,
-  Pause,
-  Play,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 
+/**
+ * Home page slider. Every slide is one banner image, so its height is fixed by the picture:
+ * the shape never jumps between slides, and phones simply show the whole banner smaller.
+ *
+ * To add a banner: export it at 2496 x 1200 px, save a 2496-wide and a 1248-wide WebP in public/banners,
+ * and add a line below.
+ */
 interface BannerSlide {
   id: string;
-  badgeIcon: any;
-  badgeText: string;
-  badgeColor: string;
-  title: string;
-  highlightText: string;
-  description: string;
-  bgGradient: string;
-  primaryBtnText: string;
-  primaryBtnLink: string;
-  secondaryPill1Icon: any;
-  secondaryPill1Text: string;
-  secondaryPill2Icon: any;
-  secondaryPill2Text: string;
-  visualType: 'produce' | 'flash' | 'bakery' | 'perq';
+  alt: string;
+  /** 1248 px wide (phones, standard screens) */
+  small: string;
+  /** 2496 px wide (large and high-density screens) */
+  large: string;
 }
+
+const BANNER_WIDTH = 2496;
+const BANNER_HEIGHT = 1200;
 
 const BANNER_SLIDES: BannerSlide[] = [
   {
-    id: 'slide-1',
-    badgeIcon: Sparkles,
-    badgeText: 'Farm-Fresh Supermarket Delivered',
-    badgeColor: 'bg-fresh-500/20 text-fresh-300 border-fresh-400/30',
-    title: 'Freshness You Can Taste.',
-    highlightText: 'Delivered To Your Door.',
-    description:
-      'Karachi\'s favorite destination for handpicked organic fruits, farm-fresh vegetables, pure dairy, imported bakery, and premium household essentials.',
-    bgGradient: 'from-[#0b1a0b] via-[#173416] to-[#0a1709]',
-    primaryBtnText: 'Shop Fresh Categories',
-    primaryBtnLink: '#products-section',
-    secondaryPill1Icon: Banknote,
-    secondaryPill1Text: 'Cash on Delivery (COD)',
-    secondaryPill2Icon: Truck,
-    secondaryPill2Text: 'Express 2-Hour Karachi Slot',
-    visualType: 'produce',
+    id: 'coming-soon-bag',
+    alt: 'Fresh House is coming soon: a paper bag overflowing with fresh vegetables and fruit.',
+    small: '/banners/coming-soon-bag-1248.webp',
+    large: '/banners/coming-soon-bag-2496.webp',
   },
   {
-    id: 'slide-2',
-    badgeIcon: Flame,
-    badgeText: 'Weekend Flash Deals & Gourmet',
-    badgeColor: 'bg-rose-500/25 text-rose-300 border-rose-400/40',
-    title: 'Imported Cheeses & Gourmet Treats.',
-    highlightText: 'Up to 40% OFF Selected Items.',
-    description:
-      'Indulge in artisanal Yayycheese cheddar, Belgian chocolates, organic pure honey, and imported pantry delicacies at exclusive warehouse prices.',
-    bgGradient: 'from-[#3b1110] via-[#411716] to-[#1c0807]',
-    primaryBtnText: 'Explore Flash Deals',
-    primaryBtnLink: '#products-section',
-    secondaryPill1Icon: Tag,
-    secondaryPill1Text: 'Use Code FRESH10 (10% OFF)',
-    secondaryPill2Icon: Clock,
-    secondaryPill2Text: 'Limited Daily Stock',
-    visualType: 'flash',
-  },
-  {
-    id: 'slide-3',
-    badgeIcon: Sparkles,
-    badgeText: 'Daily 8:00 AM Fresh Oven',
-    badgeColor: 'bg-amber-500/25 text-amber-300 border-amber-400/40',
-    title: 'Golden Artisan Breads & Tortillas.',
-    highlightText: 'Breakfast Made Exceptional.',
-    description:
-      'Freshly baked European baguettes, wholemeal tortillas, crisp waffles, and farm-fresh organic dairy delivered warm to your breakfast table.',
-    bgGradient: 'from-[#3a0907] via-[#2c0a09] to-[#150504]',
-    primaryBtnText: 'Browse Bakery Category',
-    primaryBtnLink: '#products-section',
-    secondaryPill1Icon: ShoppingBag,
-    secondaryPill1Text: '100% Oven Fresh Guarantee',
-    secondaryPill2Icon: Truck,
-    secondaryPill2Text: 'Same-Day Morning Delivery',
-    visualType: 'bakery',
-  },
-  {
-    id: 'slide-4',
-    badgeIcon: Gift,
-    badgeText: 'Fresh House PERQ Rewards',
-    badgeColor: 'bg-emerald-400/25 text-emerald-300 border-emerald-400/40',
-    title: 'Your Groceries Can Give Back.',
-    highlightText: 'Free Delivery Over PKR 2,500.',
-    description:
-      'Join our PERQ loyalty program to collect points on every grocery order in Karachi, unlock first-order cash bonuses, and redeem points at checkout.',
-    bgGradient: 'from-[#0c1b0b] via-[#183917] to-[#071007]',
-    primaryBtnText: 'Join PERQ & Save Now',
-    primaryBtnLink: '#products-section',
-    secondaryPill1Icon: ShieldCheck,
-    secondaryPill1Text: 'Free Delivery Threshold: PKR 2,500',
-    secondaryPill2Icon: Banknote,
-    secondaryPill2Text: 'Instant Savings at Doorstep',
-    visualType: 'perq',
+    id: 'coming-soon-karachi',
+    alt: 'Fresh House, the house of freshness, is coming soon to Karachi. Fresher choices closer to you.',
+    small: '/banners/coming-soon-karachi-1248.webp',
+    large: '/banners/coming-soon-karachi-2496.webp',
   },
 ];
 
@@ -121,6 +43,7 @@ export default function HeroBanner() {
   const [userPaused, setUserPaused] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(true); // safe default until we know
   const touchStartX = useRef<number | null>(null);
+  const count = BANNER_SLIDES.length;
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -132,47 +55,33 @@ export default function HeroBanner() {
 
   // The progress bar's CSS animation *is* the timer: when it ends, advance (see onAnimationEnd below).
   // This keeps the bar and the slide change perfectly in sync and makes pausing trivial.
-  const autoplay = !reduceMotion && !userPaused;
+  const autoplay = !reduceMotion && !userPaused && count > 1;
 
-  const nextSlide = () => {
-    setCurrentSlide(prev => (prev + 1) % BANNER_SLIDES.length);
-  };
+  const nextSlide = () => setCurrentSlide(prev => (prev + 1) % count);
+  const prevSlide = () => setCurrentSlide(prev => (prev - 1 + count) % count);
 
-  const prevSlide = () => {
-    setCurrentSlide(prev => (prev - 1 + BANNER_SLIDES.length) % BANNER_SLIDES.length);
-  };
-
-  // Mobile Touch Gestures
+  // Swipe on touch screens
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
   };
-
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current === null) return;
-    const touchEndX = e.changedTouches[0].clientX;
-    const diff = touchStartX.current - touchEndX;
-
-    if (diff > 50) {
-      nextSlide(); // Swiped left -> next slide
-    } else if (diff < -50) {
-      prevSlide(); // Swiped right -> prev slide
-    }
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (diff > 50) nextSlide();
+    else if (diff < -50) prevSlide();
     touchStartX.current = null;
   };
 
-  const slide = BANNER_SLIDES[currentSlide];
-  const BadgeIcon = slide.badgeIcon;
-  const Sec1Icon = slide.secondaryPill1Icon;
-  const Sec2Icon = slide.secondaryPill2Icon;
+  const arrow =
+    'hidden sm:flex absolute top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/30 hover:bg-black/55 active:scale-95 text-white items-center justify-center backdrop-blur-md border border-white/30 transition-all duration-200 cursor-pointer opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100';
 
   return (
     <div className="max-w-7xl mx-auto px-4 pt-4 sm:pt-6 pb-2">
-      {/* Main Interactive Carousel Banner */}
       <div
-        className={`relative rounded-3xl overflow-hidden bg-gradient-to-r ${slide.bgGradient} text-white shadow-2xl p-3.5 sm:p-12 transition-all duration-700 h-[184px] sm:h-auto sm:min-h-[420px] flex flex-col justify-between group`}
+        className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-fresh-50 shadow-lg sm:shadow-2xl group"
         role="region"
         aria-roledescription="carousel"
-        aria-label="Featured offers"
+        aria-label="Featured banners"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
         onFocus={() => setIsPaused(true)}
@@ -180,193 +89,92 @@ export default function HeroBanner() {
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Dynamic Glow Shapes */}
-        <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-fresh-500/20 blur-3xl pointer-events-none transition-all duration-700"></div>
-        <div className="absolute left-1/3 -top-20 w-80 h-80 rounded-full bg-emerald-400/10 blur-3xl pointer-events-none transition-all duration-700"></div>
-
-        {/* Carousel Content */}
-        <div key={slide.id} className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch sm:items-center flex-1 min-h-0" aria-live={autoplay && !isPaused ? 'off' : 'polite'}>
-          {/* Left Text & Actions (7 Cols) */}
-          <div className="lg:col-span-8 max-w-2xl max-sm:h-full max-sm:flex max-sm:flex-col max-sm:items-start space-y-2 sm:space-y-4 [&>*]:animate-fade-in-up [&>*:nth-child(2)]:[animation-delay:80ms] [&>*:nth-child(3)]:[animation-delay:160ms] [&>*:nth-child(4)]:[animation-delay:240ms]">
-            {/* Top Pill Badge */}
-            <div
-              className={`max-sm:hidden inline-flex items-center space-x-1.5 sm:space-x-2 border px-3 py-1 rounded-full text-xs font-semibold tracking-wide shadow-sm transition-all duration-300 ${slide.badgeColor}`}
-            >
-              <BadgeIcon className="w-3.5 h-3.5" />
-              <span>{slide.badgeText}</span>
-            </div>
-
-            {/* Headline */}
-            <h1 className="text-base max-[359px]:text-[15px] sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
-              {slide.title}{' '}
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-fresh-400 via-emerald-200 to-brand-300">
-                {slide.highlightText}
-              </span>
-            </h1>
-
-            {/* Description */}
-            <p className="hidden sm:block text-emerald-50/90 text-sm sm:text-base sm:leading-relaxed max-w-xl">
-              {slide.description}
-            </p>
-
-            {/* Action Buttons & Trust Tags */}
-            <div className="pt-2 max-sm:pt-0 max-sm:!mt-auto flex flex-wrap items-center gap-2.5 sm:gap-4">
-              <a
-                href={slide.primaryBtnLink}
-                className="bg-white hover:bg-emerald-50 active:scale-95 text-slate-950 font-black text-xs sm:text-sm px-5 py-2.5 sm:px-6 sm:py-3 rounded-full shadow-lg shadow-black/20 hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center gap-2 cursor-pointer group"
+        {/* All slides share one grid cell, so the box is as tall as the picture and the slides cross-fade in place */}
+        <div className="grid" aria-live={autoplay && !isPaused ? 'off' : 'polite'}>
+          {BANNER_SLIDES.map((s, i) => {
+            const active = i === currentSlide;
+            return (
+              <div
+                key={s.id}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`${i + 1} of ${count}`}
+                aria-hidden={!active}
+                className={`col-start-1 row-start-1 transition-opacity duration-700 ease-out ${active ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
               >
-                <span>{slide.primaryBtnText}</span>
-                <ArrowRight className="w-3.5 h-3.5 text-fresh-700 group-hover:translate-x-1 transition-transform" />
-              </a>
-
-              <div className="hidden sm:flex bg-white/10 backdrop-blur-md border border-white/15 hover:border-white/30 px-3 py-2 rounded-2xl items-center space-x-2 text-xs sm:text-xs font-semibold transition cursor-default">
-                <Sec1Icon className="w-3.5 h-3.5 text-fresh-400" />
-                <span>{slide.secondaryPill1Text}</span>
+                <img
+                  src={s.small}
+                  srcSet={`${s.small} 1248w, ${s.large} 2496w`}
+                  sizes="(min-width: 1344px) 1248px, calc(100vw - 32px)"
+                  width={BANNER_WIDTH}
+                  height={BANNER_HEIGHT}
+                  alt={s.alt}
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  fetchPriority={i === 0 ? 'high' : 'auto'}
+                  decoding="async"
+                  draggable={false}
+                  className="block w-full h-auto select-none"
+                />
               </div>
-
-              <div className="hidden sm:flex bg-white/10 backdrop-blur-md border border-white/15 hover:border-white/30 px-3 py-2 rounded-2xl items-center space-x-2 text-xs sm:text-xs font-semibold transition cursor-default">
-                <Sec2Icon className="w-3.5 h-3.5 text-emerald-300" />
-                <span>{slide.secondaryPill2Text}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Visual Artwork Composition (4 Cols) */}
-          <div className="hidden lg:flex lg:col-span-4 items-center justify-center select-none pointer-events-none animate-slide-in-right">
-            {slide.visualType === 'produce' && (
-              <div className="relative w-72 h-72 flex items-center justify-center">
-                <div className="absolute inset-0 bg-fresh-500/20 rounded-full blur-2xl"></div>
-                <div className="relative z-10 text-center space-y-3 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl animate-float">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-fresh-400 to-fresh-600 text-white flex items-center justify-center mx-auto shadow-lg text-2xl">
-                    <Leaf className="w-8 h-8" />
-                  </div>
-                  <h3 className="font-black text-lg text-white">Daily Farm Harvest</h3>
-                  <p className="text-xs text-emerald-200/90 leading-snug">Inspected, chilled and dispatched within 2 hours across Karachi.</p>
-                  <span className="inline-block bg-fresh-500 text-white text-xs font-black px-3 py-1 rounded-full tracking-wide">
-                    100% Certified
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {slide.visualType === 'flash' && (
-              <div className="relative w-72 h-72 flex items-center justify-center">
-                <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-2xl"></div>
-                <div className="relative z-10 text-center space-y-3 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl animate-float">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center mx-auto shadow-lg text-2xl">
-                    <Percent className="w-8 h-8" />
-                  </div>
-                  <h3 className="font-black text-lg text-white">Imported Delicacies</h3>
-                  <p className="text-xs text-purple-200/90 leading-snug">Gourmet Belgian chocolates, imported butter, and aged cheeses.</p>
-                  <span className="inline-block bg-rose-500 text-white text-xs font-black px-3 py-1 rounded-full tracking-wide">
-                    Up to 40% OFF
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {slide.visualType === 'bakery' && (
-              <div className="relative w-72 h-72 flex items-center justify-center">
-                <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-2xl"></div>
-                <div className="relative z-10 text-center space-y-3 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl animate-float">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center mx-auto shadow-lg text-2xl">
-                    <Croissant className="w-8 h-8" />
-                  </div>
-                  <h3 className="font-black text-lg text-white">Artisan Oven Bake</h3>
-                  <p className="text-xs text-amber-200/90 leading-snug">Golden sourdoughs, crusty baguettes, and fresh wholemeal rolls.</p>
-                  <span className="inline-block bg-amber-500 text-white text-xs font-black px-3 py-1 rounded-full tracking-wide">
-                    Morning Batch
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {slide.visualType === 'perq' && (
-              <div className="relative w-72 h-72 flex items-center justify-center">
-                <div className="absolute inset-0 bg-emerald-400/20 rounded-full blur-2xl"></div>
-                <div className="relative z-10 text-center space-y-3 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl animate-float">
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-fresh-600 text-white flex items-center justify-center mx-auto shadow-lg text-2xl">
-                    <Gift className="w-8 h-8" />
-                  </div>
-                  <h3 className="font-black text-lg text-white">PERQ Rewards Club</h3>
-                  <p className="text-xs text-emerald-200/90 leading-snug">Earn points on every order & unlock special member discounts.</p>
-                  <span className="inline-block bg-brand-600 text-white text-xs font-black px-3 py-1 rounded-full tracking-wide">
-                    Free To Join
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
+            );
+          })}
         </div>
 
-        {/* Navigation Arrows & Bottom Indicator Strip */}
-        <div className="relative z-20 mt-2 sm:mt-6 pt-2 sm:pt-4 border-t border-white/10 flex items-center justify-between">
-          {/* Indicator pills – the active one fills while the slide is playing */}
-          <div className="flex items-center gap-1 sm:gap-2">
-            {BANNER_SLIDES.map((s, idx) => {
-              const isActive = currentSlide === idx;
-              return (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => setCurrentSlide(idx)}
-                  aria-label={`Go to slide ${idx + 1}`}
-                  aria-current={isActive ? 'true' : undefined}
-                  className="relative h-9 sm:h-11 min-w-6 flex items-center justify-center cursor-pointer group/dot"
-                >
-                  <span
-                    className={`relative block h-2 rounded-full overflow-hidden transition-all duration-300 ${
-                      isActive ? 'w-10 bg-white/25' : 'w-2.5 bg-white/40 group-hover/dot:bg-white/70'
-                    }`}
+        {count > 1 && (
+          <>
+            <button type="button" onClick={prevSlide} aria-label="Previous banner" className={`${arrow} left-3 sm:left-4`}>
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button type="button" onClick={nextSlide} aria-label="Next banner" className={`${arrow} right-3 sm:right-4`}>
+              <ChevronRight className="w-5 h-5" />
+            </button>
+
+            {/* Slide dots + pause, tucked into the bottom edge so they never hide the artwork text */}
+            <div className="absolute bottom-1.5 right-2 sm:right-auto sm:bottom-3 sm:left-1/2 sm:-translate-x-1/2 flex items-center gap-0.5 sm:gap-1 rounded-full bg-black/35 backdrop-blur-md px-1.5 py-0.5 sm:px-2.5 sm:py-1">
+              {BANNER_SLIDES.map((s, idx) => {
+                const isActive = currentSlide === idx;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setCurrentSlide(idx)}
+                    aria-label={`Go to banner ${idx + 1}`}
+                    aria-current={isActive ? 'true' : undefined}
+                    className="relative h-6 min-w-5 sm:h-7 sm:min-w-6 flex items-center justify-center cursor-pointer group/dot"
                   >
-                    {isActive && (
-                      <span
-                        key={`${s.id}-${autoplay}`}
-                        className={`absolute inset-0 origin-left rounded-full bg-emerald-300 ${autoplay ? 'animate-slide-progress' : ''}`}
-                        style={{
-                          animationPlayState: isPaused ? 'paused' : 'running',
-                          transform: autoplay ? undefined : 'scaleX(1)',
-                        }}
-                        onAnimationEnd={() => autoplay && nextSlide()}
-                      />
-                    )}
-                  </span>
+                    <span
+                      className={`relative block h-1.5 rounded-full overflow-hidden transition-all duration-300 ${
+                        isActive ? 'w-7 sm:w-9 bg-white/35' : 'w-1.5 sm:w-2 bg-white/70 group-hover/dot:bg-white'
+                      }`}
+                    >
+                      {isActive && (
+                        <span
+                          key={`${s.id}-${autoplay}`}
+                          className={`absolute inset-0 origin-left rounded-full bg-white ${autoplay ? 'animate-slide-progress' : ''}`}
+                          style={{
+                            animationPlayState: isPaused ? 'paused' : 'running',
+                            transform: autoplay ? undefined : 'scaleX(1)',
+                          }}
+                          onAnimationEnd={() => autoplay && nextSlide()}
+                        />
+                      )}
+                    </span>
+                  </button>
+                );
+              })}
+              {!reduceMotion && (
+                <button
+                  type="button"
+                  onClick={() => setUserPaused(p => !p)}
+                  aria-label={userPaused ? 'Play banners' : 'Pause banners'}
+                  className="ml-0.5 w-6 h-6 sm:w-7 sm:h-7 rounded-full text-white hover:bg-white/25 active:scale-95 flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  {userPaused ? <Play className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <Pause className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
                 </button>
-              );
-            })}
-            <span className="hidden sm:inline text-xs text-emerald-100/70 tabular-nums ml-2 whitespace-nowrap" aria-hidden="true">
-              {currentSlide + 1} / {BANNER_SLIDES.length}
-            </span>
-          </div>
-
-          {/* Left/Right Carousel Controls */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            {!reduceMotion && (
-              <button
-                type="button"
-                onClick={() => setUserPaused(p => !p)}
-                className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
-                aria-label={userPaused ? 'Play carousel' : 'Pause carousel'}
-              >
-                {userPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-              </button>
-            )}
-            <button
-              onClick={prevSlide}
-              className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
-              aria-label="Previous Banner"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={nextSlide}
-              className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
-              aria-label="Next Banner"
-            >
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

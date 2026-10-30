@@ -641,7 +641,7 @@ export default function Header({ categories }: HeaderProps) {
               aria-controls="mega-panel"
               onClick={() => setMegaOpen(o => !o)}
               onMouseEnter={openMega}
-              className={`h-10 px-4 rounded-lg flex items-center gap-2 text-sm font-bold cursor-pointer transition-colors duration-200 ${
+              className={`h-10 px-4 rounded-lg flex items-center gap-2 whitespace-nowrap shrink-0 text-sm font-bold cursor-pointer transition-colors duration-200 ${
                 megaOpen ? 'bg-slate-900 text-white' : 'bg-fresh-50 text-fresh-800 hover:bg-fresh-100'
               }`}
             >
@@ -669,7 +669,7 @@ export default function Header({ categories }: HeaderProps) {
               })}
             </ul>
 
-            <span className="ml-auto hidden xl:flex items-center gap-1.5 text-sm text-slate-600">
+            <span className="ml-auto hidden xl:flex items-center gap-1.5 whitespace-nowrap shrink-0 text-sm text-slate-600">
               <Gift className="w-4 h-4 text-brand-600" />
               Code <strong className="text-slate-900">FRESH10</strong> takes 10% off your first order
             </span>
