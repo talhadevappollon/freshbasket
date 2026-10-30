@@ -14,6 +14,8 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    // class names live in data helpers too (e.g. the category tones in src/data/homeCatalogue.ts)
+    "./src/data/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {

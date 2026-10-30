@@ -170,7 +170,7 @@ export default function HeroBanner() {
     <div className="max-w-7xl mx-auto px-4 pt-4 sm:pt-6 pb-2">
       {/* Main Interactive Carousel Banner */}
       <div
-        className={`relative rounded-3xl overflow-hidden bg-gradient-to-r ${slide.bgGradient} text-white shadow-2xl p-6 sm:p-12 transition-all duration-700 min-h-[380px] sm:min-h-[420px] flex flex-col justify-between group`}
+        className={`relative rounded-3xl overflow-hidden bg-gradient-to-r ${slide.bgGradient} text-white shadow-2xl p-5 sm:p-12 transition-all duration-700 min-h-[270px] sm:min-h-[420px] flex flex-col justify-between group`}
         role="region"
         aria-roledescription="carousel"
         aria-label="Featured offers"
@@ -206,7 +206,7 @@ export default function HeroBanner() {
             </h1>
 
             {/* Description */}
-            <p className="text-emerald-50/90 text-sm sm:text-base sm:leading-relaxed max-w-xl">
+            <p className="hidden sm:block text-emerald-50/90 text-sm sm:text-base sm:leading-relaxed max-w-xl">
               {slide.description}
             </p>
 
@@ -220,7 +220,7 @@ export default function HeroBanner() {
                 <ArrowRight className="w-3.5 h-3.5 text-fresh-700 group-hover:translate-x-1 transition-transform" />
               </a>
 
-              <div className="bg-white/10 backdrop-blur-md border border-white/15 hover:border-white/30 px-3 py-2 rounded-2xl flex items-center space-x-2 text-xs sm:text-xs font-semibold transition cursor-default">
+              <div className="hidden sm:flex bg-white/10 backdrop-blur-md border border-white/15 hover:border-white/30 px-3 py-2 rounded-2xl items-center space-x-2 text-xs sm:text-xs font-semibold transition cursor-default">
                 <Sec1Icon className="w-3.5 h-3.5 text-fresh-400" />
                 <span>{slide.secondaryPill1Text}</span>
               </div>
@@ -301,7 +301,7 @@ export default function HeroBanner() {
         </div>
 
         {/* Navigation Arrows & Bottom Indicator Strip */}
-        <div className="relative z-20 mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
+        <div className="relative z-20 mt-3 sm:mt-6 pt-2 sm:pt-4 border-t border-white/10 flex items-center justify-between">
           {/* Indicator pills – the active one fills while the slide is playing */}
           <div className="flex items-center gap-1 sm:gap-2">
             {BANNER_SLIDES.map((s, idx) => {

@@ -10,9 +10,11 @@ import { Plus, Minus, Sparkles, Eye, Check } from 'lucide-react';
 interface ProductCardProps {
   product: Product;
   onQuickView?: (product: Product) => void;
+  /** Classes for the picture area (a soft tint). Phones get a neutral one by default. */
+  imageBg?: string;
 }
 
-export default function ProductCard({ product, onQuickView }: ProductCardProps) {
+export default function ProductCard({ product, onQuickView, imageBg }: ProductCardProps) {
   const { items, addToCart, updateQuantity } = useCart();
   const cartItem = items.find(it => it.product.id === product.id);
   const [justAdded, setJustAdded] = useState(false);
@@ -54,7 +56,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
       </div>
 
       {/* Image with link and quick-view */}
-      <div className="relative pt-8 sm:pt-3 pb-1 flex items-center justify-center overflow-hidden h-36 sm:h-44">
+      <div className={`relative pt-8 sm:pt-3 pb-1 flex items-center justify-center overflow-hidden h-36 sm:h-44 ${imageBg ?? "max-sm:rounded-2xl max-sm:bg-gradient-to-b max-sm:from-slate-50 max-sm:to-slate-100/70"}`}>
         <Link
           href={`/products/${product.slug}`}
           className="w-full h-full flex items-center justify-center"
@@ -66,7 +68,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
             alt={product.name}
             width={160}
             height={160}
-            className="max-h-28 sm:max-h-40 max-w-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out-expo"
+            className="max-h-28 sm:max-h-40 max-w-full object-contain max-sm:mix-blend-multiply group-hover:scale-105 transition-transform duration-500 ease-out-expo"
             loading="lazy"
             decoding="async"
             onError={e => {

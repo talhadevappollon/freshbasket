@@ -279,3 +279,10 @@ h1, h2, h3 {
     opacity: 1;
   }
 }
+
+/* Phone home page: the category jump bar sticks directly below the visible part of the header
+   (--header-visible is kept up to date by Header.tsx as the search row tucks away and returns). */
+.catnav {
+  top: var(--header-visible, 123px);
+  transition: top 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}

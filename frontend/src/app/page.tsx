@@ -27,6 +27,7 @@ import {
   FaqSection,
   NewsletterBanner,
 } from '@/components/HomeSections';
+import MobileCatalogue from '@/components/MobileCatalogue';
 import Footer from '@/components/Footer';
 import { fetchCategories, fetchProducts } from '@/lib/api';
 import { Category, Product } from '@/types';
@@ -59,15 +60,45 @@ export default function Home() {
   const [totalProducts, setTotalProducts] = useState<number>(0);
   const [page, setPage] = useState<number>(1);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  // null until measured. Phones show the all-categories catalogue instead of the rails and grid below.
+  const [isPhone, setIsPhone] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const update = () => setIsPhone(mq.matches);
+    update();
+    mq.addEventListener('change', update);
+    return () => mq.removeEventListener('change', update);
+  }, []);
 
   useEffect(() => {
     fetchCategories().then(setCategories);
+  }, []);
+
+  useEffect(() => {
+    if (isPhone !== false) return;
     fetchProducts({ featured: true, per_page: 12 }).then(res => setBestSellers(res.data));
     fetchProducts({ category: 'dairy', per_page: 12 }).then(res => setDairyPicks(res.data));
-  }, []);
+  }, [isPhone]);
+
+  // "#products-section" links (hero button, menu, promo popup) must land on whichever catalogue this screen shows
+  useEffect(() => {
+    if (isPhone !== true) return;
+    const goCatalogue = () => document.getElementById('products-section-m')?.scrollIntoView({ behavior: 'smooth' });
+    const onClick = (e: MouseEvent) => {
+      const a = (e.target as Element | null)?.closest?.('a[href$="#products-section"]');
+      if (!a) return;
+      e.preventDefault();
+      goCatalogue();
+    };
+    document.addEventListener('click', onClick, true);
+    if (window.location.hash === '#products-section') setTimeout(goCatalogue, 250);
+    return () => document.removeEventListener('click', onClick, true);
+  }, [isPhone]);
 
   // Main grid: 2 rows by default, re-fetched when the sort changes
   useEffect(() => {
+    if (isPhone !== false) return;
     let cancelled = false;
     setIsLoading(true);
     fetchProducts({ sort: sortBy, per_page: INITIAL_ROWS_COUNT }).then(res => {
@@ -80,7 +111,7 @@ export default function Home() {
     return () => {
       cancelled = true;
     };
-  }, [sortBy]);
+  }, [sortBy, isPhone]);
 
   const handleLoadMore = async () => {
     const nextPage = page + 1;
@@ -101,9 +132,12 @@ export default function Home() {
         <HeroBanner />
         <TrustMarquee />
 
+        {/* Phones: every category with its products, in place */}
+        <MobileCatalogue categories={categories} />
+
         {/* Flash sale strip – only shown when real discounted products exist */}
         {flashDeals.length > 0 && (
-          <Reveal as="section" className="max-w-7xl mx-auto px-4 pt-6 pb-2">
+          <Reveal as="section" className="max-md:hidden max-w-7xl mx-auto px-4 pt-6 pb-2">
             <div className="bg-gradient-to-r from-rose-950 via-rose-900 to-brand-900 rounded-3xl p-6 text-white shadow-lg relative overflow-hidden" data-surface="dark">
               <div className="flex items-center gap-3 mb-4">
                 <span className="w-11 h-11 bg-rose-500 rounded-xl text-white flex items-center justify-center">
@@ -144,31 +178,33 @@ export default function Home() {
           </Reveal>
         )}
 
-        <CategorySlider categories={categories} />
-        <BentoAisles />
+        <div className="max-md:hidden">
+          <CategorySlider categories={categories} />
+          <BentoAisles />
 
-        <ProductRail
-          title="Best sellers"
-          subtitle="What Karachi is adding to basket this week"
-          products={bestSellers}
-          viewAllHref="/category/karachi-best-selling"
-          onQuickView={setQuickViewProduct}
-        />
+          <ProductRail
+            title="Best sellers"
+            subtitle="What Karachi is adding to basket this week"
+            products={bestSellers}
+            viewAllHref="/category/karachi-best-selling"
+            onQuickView={setQuickViewProduct}
+          />
 
-        <MidPageBanners />
+          <MidPageBanners />
 
-        {featuredPick && <DealOfTheDay product={featuredPick} />}
+          {featuredPick && <DealOfTheDay product={featuredPick} />}
 
-        <ProductRail
-          title="Dairy and cheese favourites"
-          subtitle="Cold-chain delivered milk, yogurt and imported cheeses"
-          products={dairyPicks}
-          viewAllHref="/category/dairy"
-          onQuickView={setQuickViewProduct}
-        />
+          <ProductRail
+            title="Dairy and cheese favourites"
+            subtitle="Cold-chain delivered milk, yogurt and imported cheeses"
+            products={dairyPicks}
+            viewAllHref="/category/dairy"
+            onQuickView={setQuickViewProduct}
+          />
+        </div>
 
         {/* Products catalogue grid */}
-        <section id="products-section" className="max-w-7xl mx-auto px-4 py-8">
+        <section id="products-section" className="max-md:hidden max-w-7xl mx-auto px-4 py-8">
           <Reveal className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-slate-200/80 gap-4 mb-8">
             <div>
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">All fresh supermarket essentials</h2>
@@ -246,13 +282,15 @@ export default function Home() {
           )}
         </section>
 
-        <DualPromo />
-        <HomePromoBanners />
-        <StatsBand />
-        <HowItWorks />
+        <div className="max-md:hidden">
+          <DualPromo />
+          <HomePromoBanners />
+          <StatsBand />
+          <HowItWorks />
+        </div>
 
         {/* Why choose Fresh House */}
-        <section className="bg-white border-y border-slate-200/80 py-12 px-4 mt-8">
+        <section className="max-md:hidden bg-white border-y border-slate-200/80 py-12 px-4 mt-8">
           <div className="max-w-7xl mx-auto">
             <Reveal className="text-center max-w-xl mx-auto mb-10">
               <h2 className="text-2xl font-black text-slate-900 tracking-tight">Why thousands in Karachi trust us daily</h2>

@@ -333,6 +333,7 @@ export default function Header({ categories }: HeaderProps) {
   // Phones: the search row tucks away while reading down the page and returns on the way back up
   const [searchTucked, setSearchTucked] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const tuckLock = useRef(0); // scroll events before this time (ms, performance.now) must not change the tucked state
 
   const headerRef = useRef<HTMLElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -363,7 +364,8 @@ export default function Header({ categories }: HeaderProps) {
     setMegaOpen(false);
     setDrawerOpen(false);
     if (pathname === '/') {
-      document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
+      const phone = window.matchMedia('(max-width: 767px)').matches;
+      document.getElementById(phone ? 'products-section-m' : 'products-section')?.scrollIntoView({ behavior: 'smooth' });
     } else {
       router.push('/#products-section');
     }
@@ -373,7 +375,6 @@ export default function Header({ categories }: HeaderProps) {
   useEffect(() => {
     let lastY = window.scrollY;
     let travel = 0; // signed distance scrolled since the direction last changed
-    let lockUntil = 0;
     const onScroll = () => {
       const y = window.scrollY;
       setScrolled(y > 24);
@@ -385,22 +386,46 @@ export default function Header({ categories }: HeaderProps) {
         return;
       }
       // Collapsing the row shifts the page a little; ignore that and only react to a deliberate 40px swipe
-      if (performance.now() < lockUntil) return;
+      if (performance.now() < tuckLock.current) return;
       travel = Math.sign(dy) === Math.sign(travel) ? travel + dy : dy;
       if (travel > 40) {
         setSearchTucked(true);
         travel = 0;
-        lockUntil = performance.now() + 400;
+        tuckLock.current = performance.now() + 400;
       } else if (travel < -40) {
         setSearchTucked(false);
         travel = 0;
-        lockUntil = performance.now() + 400;
+        tuckLock.current = performance.now() + 400;
       }
+    };
+    // In-page jumps (category chips on the phone home page) tuck the header and hold it there while the page scrolls
+    const onForceTuck = () => {
+      if (window.scrollY < 120) return;
+      setSearchTucked(true);
+      tuckLock.current = performance.now() + 1400;
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    window.addEventListener('fb:header-tuck', onForceTuck);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('fb:header-tuck', onForceTuck);
+    };
   }, []);
+
+  // How much of the header is on screen right now, so sticky bars below it can sit flush against it
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const apply = () => {
+      const phone = window.matchMedia('(max-width: 767px)').matches;
+      const tucked = phone && searchTucked && !searchFocused;
+      document.documentElement.style.setProperty('--header-visible', `${el.offsetHeight - (tucked ? 58 : 0)}px`);
+    };
+    apply();
+    window.addEventListener('resize', apply);
+    return () => window.removeEventListener('resize', apply);
+  }, [searchTucked, searchFocused]);
 
   // Keep anchor scrolling in sync with the real header height
   useEffect(() => {

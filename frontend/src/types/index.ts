@@ -6,6 +6,9 @@ export interface Category {
   icon?: string;
   description?: string;
   products_count?: number;
+  parent_id?: number | null;
+  /** Up to three product photos from this category (added by the categories API) */
+  preview_images?: string[];
 }
 
 export interface Product {
