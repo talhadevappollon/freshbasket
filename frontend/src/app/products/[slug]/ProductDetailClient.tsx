@@ -308,7 +308,7 @@ export default function ProductDetailPage() {
                     : 'border-transparent text-gray-400 hover:text-gray-600'
                 }`}
               >
-                Specifications & POS Data
+                Specifications
               </button>
               <button
                 onClick={() => setActiveTab('delivery')}

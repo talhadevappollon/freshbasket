@@ -11,7 +11,7 @@
                 <span class="text-fresh-700">Warehouses & Outlets</span>
             </div>
             <h2 class="text-2xl font-black text-slate-900 tracking-tight">Supermarket Branches & Warehouse Hubs</h2>
-            <p class="text-xs text-slate-500">Multi-location retail distribution nodes, physical POS terminals allocation, and regional inventory centers</p>
+            <p class="text-xs text-slate-500">Multi-location retail distribution nodes{{ config('features.pos') ? ', physical POS terminals allocation,' : '' }} and regional inventory centers</p>
         </div>
 
         <div class="flex items-center space-x-3">
@@ -37,6 +37,7 @@
             </div>
         </div>
 
+@if(config('features.pos'))
         <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs flex items-center justify-between">
             <div>
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Allocated POS Counters</span>
@@ -57,6 +58,7 @@
             </div>
         </div>
     </div>
+@endif
 
     <!-- Branches Cards Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -92,18 +94,22 @@
                         <span class="text-slate-400 block text-[10px] font-bold uppercase">Direct Phone</span>
                         <span class="font-mono font-bold text-slate-800">{{ $branch->phone }}</span>
                     </div>
+@if(config('features.pos'))
                     <div>
                         <span class="text-slate-400 block text-[10px] font-bold uppercase">POS Cash Desks</span>
                         <span class="font-bold text-emerald-800">{{ $branch->pos_terminals_count }} Active Counters</span>
                     </div>
+@endif
                 </div>
             </div>
 
             <div class="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between">
+@if(config('features.pos'))
                 <a href="{{ route('admin.pos') }}" class="text-xs font-bold text-fresh-700 hover:text-fresh-800 flex items-center gap-1">
                     <i class="fa-solid fa-cash-register"></i>
                     <span>Launch Branch POS</span>
                 </a>
+@endif
 
                 <button onclick="editBranch({{ $branch->toJson() }})" class="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs transition" title="Edit Hub">
                     <i class="fa-solid fa-pen-to-square"></i>
@@ -149,10 +155,14 @@
                     <input type="text" name="area" id="modalBranchArea" required placeholder="e.g. DHA Phase 6" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs focus:border-fresh-500 focus:outline-none">
                 </div>
 
+@if(config('features.pos'))
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">POS Counters Count</label>
                     <input type="number" name="pos_terminals_count" id="modalBranchPos" value="3" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold focus:border-fresh-500 focus:outline-none">
                 </div>
+@else
+<input type="hidden" name="pos_terminals_count" id="modalBranchPos" value="3">
+@endif
             </div>
 
             <div>

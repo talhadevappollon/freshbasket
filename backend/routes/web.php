@@ -34,7 +34,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/categories/save/{id?}', [AdminController::class, 'saveCategory'])->name('categories.save');
 
     // Interactive POS Terminal Cashier
-    Route::get('/pos', [AdminController::class, 'posTerminal'])->name('pos');
+    Route::get('/pos', [AdminController::class, 'posTerminal'])->name('pos')->middleware('pos.enabled');
 
     // Coupons & Discount Vouchers
     Route::get('/coupons', [AdminController::class, 'coupons'])->name('coupons');

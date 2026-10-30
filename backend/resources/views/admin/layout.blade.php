@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fresh House — Admin CRM &amp; POS</title>
+    <title>Fresh House — Admin CRM{{ config('features.pos') ? ' &amp; POS' : '' }}</title>
     <!-- Favicon -->
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/png" href="/icon-512.png">
@@ -136,7 +136,7 @@
                     </span>
                     <span class="flex items-center gap-1.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-fresh-400 animate-pulse"></span>
-                        <span class="text-[10px] text-fresh-300 font-bold tracking-widest uppercase">Admin CRM &amp; POS</span>
+                        <span class="text-[10px] text-fresh-300 font-bold tracking-widest uppercase">Admin CRM{{ config('features.pos') ? ' &amp; POS' : '' }}</span>
                     </span>
                 </a>
                 <button onclick="toggleSidebar()" aria-label="Close menu" class="lg:hidden text-emerald-400/80 hover:text-white w-11 h-11 flex items-center justify-center rounded-xl hover:bg-white/10 transition">
@@ -144,6 +144,7 @@
                 </button>
             </div>
 
+            @if(config('features.pos'))
             <!-- Fast Action Badge Strip -->
             <div class="px-5 pt-4 pb-2">
                 <div class="bg-white/5 border border-white/10 rounded-2xl p-2.5 flex items-center justify-between text-xs">
@@ -154,6 +155,7 @@
                     <span class="text-[10px] font-mono text-emerald-300 bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-800">MariaDB 3307</span>
                 </div>
             </div>
+            @endif
 
             <!-- Navigation Menu -->
             <nav class="flex-1 px-4 py-3 space-y-6 overflow-y-auto">
@@ -185,6 +187,7 @@
                             <span class="text-[10px] text-emerald-300 font-mono">Fleet</span>
                         </a>
 
+@if(config('features.pos'))
                         <a href="{{ route('admin.pos') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.pos') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/20' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-cash-register w-4 text-center text-amber-300"></i>
@@ -192,6 +195,7 @@
                             </div>
                             <span class="bg-emerald-400 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-black animate-pulse">Store</span>
                         </a>
+@endif
                     </div>
                 </div>
 
@@ -226,7 +230,7 @@
                         <a href="{{ route('admin.inventory_logs') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.inventory_logs') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-clock-rotate-left w-4 text-center"></i>
-                                <span>POS & Stock Audit Trail</span>
+                                <span>{{ config('features.pos') ? 'POS & ' : '' }}Stock Audit Trail</span>
                             </div>
                             <i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i>
                         </a>
@@ -310,7 +314,7 @@
                         </span>
                         <span class="text-[10px] font-mono text-emerald-300">v2.4 Active</span>
                     </div>
-                    <p class="text-[11px] text-emerald-200/70 leading-snug">Online cart and offline POS cashier shared real-time database.</p>
+                    <p class="text-[11px] text-emerald-200/70 leading-snug">{{ config('features.pos') ? 'Online cart and offline POS cashier shared real-time database.' : 'Orders and stock update in real time.' }}</p>
                 </div>
             </div>
         </aside>
@@ -365,7 +369,8 @@
                         <span class="hidden sm:inline">Add SKU</span>
                     </button>
 
-                    <!-- POS Terminal Shortcut -->
+                    {{-- POS Terminal Shortcut --}}
+@if(config('features.pos'))
                     <a
                         href="{{ route('admin.pos') }}"
                         class="bg-gradient-to-r from-fresh-900 to-fresh-950 hover:from-fresh-800 hover:to-fresh-900 text-white px-3.5 h-10 whitespace-nowrap rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5 transition"
@@ -373,6 +378,7 @@
                         <i class="fa-solid fa-cash-register text-amber-400"></i>
                         <span class="hidden sm:inline">POS Counter</span>
                     </a>
+@endif
 
                     <!-- View Storefront -->
                     <a
@@ -426,7 +432,7 @@
             <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
                 <div>
                     <h3 class="font-black text-gray-900 text-lg">Add New Fresh House Product</h3>
-                    <p class="text-xs text-gray-500">Item will be synced across Online Storefront & POS Counter</p>
+                    <p class="text-xs text-gray-500">Item will be synced across the Online Storefront{{ config('features.pos') ? ' & POS Counter' : '' }}</p>
                 </div>
                 <button
                     onclick="document.getElementById('quickAddProductModal').classList.add('hidden'); document.getElementById('quickAddProductModal').classList.remove('flex');"
@@ -513,7 +519,7 @@
             <div class="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
                 <div class="flex items-center space-x-2 text-slate-800">
                     <i class="fa-solid fa-magnifying-glass text-fresh-600"></i>
-                    <h3 class="font-black text-base">Global Storefront & POS Search</h3>
+                    <h3 class="font-black text-base">Global {{ config('features.pos') ? 'Storefront & POS ' : '' }}Search</h3>
                 </div>
                 <button onclick="closeGlobalSearch()" aria-label="Close search" class="w-11 h-11 flex items-center justify-center rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -539,7 +545,7 @@
 
             <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
                 <span>Press <kbd class="font-mono bg-slate-100 px-1 py-0.5 rounded border border-slate-200">ESC</kbd> to close</span>
-                <span class="text-fresh-700 font-bold">Fast POS & Online Indexed</span>
+                <span class="text-fresh-700 font-bold">{{ config('features.pos') ? 'Fast POS & Online Indexed' : 'Fast, indexed search' }}</span>
             </div>
         </div>
     </div>

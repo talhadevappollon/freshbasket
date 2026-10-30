@@ -5,7 +5,7 @@
     <!-- Header with Breadcrumb -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <h2 class="text-2xl font-black text-gray-900 tracking-tight">Products & POS Inventory Matrix</h2>
+            <h2 class="text-2xl font-black text-gray-900 tracking-tight">Products &{{ config('features.pos') ? ' POS' : '' }} Inventory Matrix</h2>
             <p class="text-xs text-gray-500">Real-time inventory levels, barcode indexes, supplier cost prices, and retail markups</p>
         </div>
 
@@ -18,10 +18,12 @@
                 <span>Add Product</span>
             </button>
 
+@if(config('features.pos'))
             <a href="{{ route('admin.pos') }}" class="bg-emerald-950 hover:bg-black text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 transition">
                 <i class="fa-solid fa-barcode text-fresh-400"></i>
                 <span>Barcode Terminal</span>
             </a>
+@endif
         </div>
     </div>
 

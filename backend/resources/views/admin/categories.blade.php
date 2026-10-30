@@ -11,7 +11,7 @@
                 <span class="text-fresh-700">Categories</span>
             </div>
             <h2 class="text-2xl font-black text-slate-900 tracking-tight">Supermarket Category Management</h2>
-            <p class="text-xs text-slate-500">Configure catalog departments, department banners, and product taxonomy across Online Store and POS</p>
+            <p class="text-xs text-slate-500">Configure catalog departments, department banners, and product taxonomy across the Online Store{{ config('features.pos') ? ' and POS' : '' }}</p>
         </div>
 
         <div class="flex items-center space-x-3">
@@ -129,7 +129,7 @@
 <div id="categoryModal" class="fixed inset-0 bg-black/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
     <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl">
         <h3 class="font-black text-slate-900 text-lg mb-1" id="categoryModalTitle">Add Department</h3>
-        <p class="text-xs text-slate-500 mb-4">Syncs with online storefront navigation and POS department breakdown</p>
+        <p class="text-xs text-slate-500 mb-4">Syncs with online storefront navigation{{ config('features.pos') ? ' and POS department breakdown' : '' }}</p>
 
         <form id="categoryModalForm" method="POST" action="{{ route('admin.categories.save') }}" class="space-y-4">
             @csrf

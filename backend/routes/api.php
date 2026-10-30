@@ -87,7 +87,7 @@ Route::prefix('v1')->group(function () {
     Route::post('/crm/inquiries', [CrmController::class, 'storeInquiry']);
 
     // POS Integration Endpoints (For future physical store counter)
-    Route::prefix('pos')->group(function () {
+    Route::prefix('pos')->middleware('pos.enabled')->group(function () {
         Route::get('/barcode/{code}', [PosController::class, 'scanBarcode']);
         Route::post('/checkout', [PosController::class, 'posCheckout']);
         Route::get('/sync', [PosController::class, 'syncInventory']);

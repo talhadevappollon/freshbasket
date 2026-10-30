@@ -20,10 +20,12 @@
                 <span>Export Manifest (CSV)</span>
             </a>
 
+@if(config('features.pos'))
             <a href="{{ route('admin.pos') }}" class="bg-slate-900 hover:bg-black text-white px-4 py-2.5 rounded-xl text-xs font-bold shadow-sm flex items-center gap-1.5 transition">
                 <i class="fa-solid fa-cash-register text-amber-400"></i>
                 <span>POS Cash Counter</span>
             </a>
+@endif
         </div>
     </div>
 

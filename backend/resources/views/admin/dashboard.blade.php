@@ -10,10 +10,10 @@
                 <span>Fresh House Executive Operations Hub</span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-black tracking-tight leading-tight">
-                Karachi Central Warehouse & POS Command
+                Karachi Central Warehouse{{ config('features.pos') ? ' & POS' : '' }} Command
             </h1>
             <p class="text-xs sm:text-sm text-emerald-100/80 mt-2 leading-relaxed">
-                Centralized ERP controlling 745+ grocery items, Cash on Delivery logistics, rider dispatches, customer loyalty, and real-time physical store POS counter.
+                Centralized ERP controlling 745+ grocery items, Cash on Delivery logistics, rider dispatches, customer loyalty{{ config('features.pos') ? ', and real-time physical store POS counter' : '' }}.
             </p>
         </div>
 
@@ -22,10 +22,12 @@
                 <i class="fa-solid fa-truck-fast"></i>
                 <span>Deliveries ({{ $pendingOrders }} Pending)</span>
             </a>
+@if(config('features.pos'))
             <a href="{{ route('admin.pos') }}" class="bg-amber-400 hover:bg-amber-500 text-slate-950 px-5 py-3 rounded-2xl text-xs font-black shadow-lg shadow-amber-400/20 flex items-center space-x-2 transition transform hover:-translate-y-0.5">
                 <i class="fa-solid fa-cash-register"></i>
                 <span>Open POS Terminal</span>
             </a>
+@endif
             <a href="{{ route('admin.products.barcode_sheet') }}" target="_blank" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-4 py-3 rounded-2xl text-xs font-bold backdrop-blur-md flex items-center space-x-2 transition">
                 <i class="fa-solid fa-barcode text-fresh-300"></i>
                 <span class="hidden sm:inline">Shelf Labels</span>
@@ -48,7 +50,7 @@
             </h3>
             <div class="flex items-center space-x-1.5 text-xs text-fresh-700 font-bold mt-2">
                 <i class="fa-solid fa-circle-check text-fresh-500"></i>
-                <span>Combined Store POS + Online Orders</span>
+                <span>{{ config('features.pos') ? 'Combined Store POS + Online Orders' : 'All online orders' }}</span>
             </div>
         </div>
 
@@ -107,6 +109,7 @@
         </div>
     </div>
 
+    @if(config('features.pos'))
     <!-- Quick Barcode Instant Lookup / Restock Box -->
     <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -142,6 +145,7 @@
 
         <div id="barcodeAuditResult" class="hidden mt-4 pt-4 border-t border-slate-100"></div>
     </div>
+    @endif
 
     <!-- Charts Section: Revenue Analytics & Order Doughnut -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -469,6 +473,7 @@
         });
     });
 
+    @if(config('features.pos'))
     function checkBarcodeOnDashboard() {
         const input = document.getElementById('dashboardBarcodeInput');
         const code = input.value.trim();
@@ -511,5 +516,6 @@
                 resDiv.innerHTML = '<div class="text-xs text-rose-600 font-bold">Error querying barcode.</div>';
             });
     }
+    @endif
 </script>
 @endsection

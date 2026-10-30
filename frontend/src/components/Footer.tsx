@@ -152,7 +152,7 @@ export default function Footer() {
           <div className="flex items-center justify-center flex-wrap gap-x-1 text-center">
             <span>Crafted with</span>
             <Heart className="w-3.5 h-3.5 text-rose-500 inline fill-rose-500 animate-pulse" aria-label="love" />
-            <span>for seamless grocery delivery & POS integration.</span>
+            <span>for seamless grocery delivery.</span>
           </div>
         </div>
       </div>

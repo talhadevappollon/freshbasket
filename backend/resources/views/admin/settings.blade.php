@@ -10,7 +10,7 @@
                 <i class="fa-solid fa-chevron-right text-[10px]"></i>
                 <span class="text-fresh-700">Settings & Configuration</span>
             </div>
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Storefront, Logistics & POS Configuration</h2>
+            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Storefront, Logistics{{ config('features.pos') ? ' & POS' : '' }} Configuration</h2>
             <p class="text-xs text-slate-500">Configure delivery rules, Karachi customer helplines, WhatsApp support numbers, and store operational parameters</p>
         </div>
     </div>

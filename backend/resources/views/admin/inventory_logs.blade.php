@@ -5,15 +5,17 @@
     <!-- Header with Breadcrumb -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <h2 class="text-2xl font-black text-gray-900 tracking-tight">POS & Multi-Channel Inventory Audit Trail</h2>
-            <p class="text-xs text-gray-500">Real-time ledger recording every single stock movement across Online Storefront and Store POS Counter</p>
+            <h2 class="text-2xl font-black text-gray-900 tracking-tight">{{ config('features.pos') ? 'POS & ' : '' }}Multi-Channel Inventory Audit Trail</h2>
+            <p class="text-xs text-gray-500">Real-time ledger recording every single stock movement across the Online Storefront{{ config('features.pos') ? ' and Store POS Counter' : '' }}</p>
         </div>
 
         <div class="flex items-center space-x-3">
+@if(config('features.pos'))
             <a href="{{ route('admin.pos') }}" class="bg-emerald-950 hover:bg-black text-white px-4 py-2 rounded-xl text-xs font-bold shadow-xs flex items-center gap-1.5 transition">
                 <i class="fa-solid fa-cash-register text-fresh-400"></i>
                 <span>Open POS Terminal</span>
             </a>
+@endif
         </div>
     </div>
 
@@ -39,6 +41,7 @@
             </div>
         </div>
 
+@if(config('features.pos'))
         <div class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm flex items-center justify-between">
             <div>
                 <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Store POS Walk-in Sales</span>
@@ -49,6 +52,7 @@
             </div>
         </div>
     </div>
+@endif
 
     <!-- Movement Logs Table -->
     <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
