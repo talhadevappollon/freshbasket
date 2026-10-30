@@ -7,7 +7,6 @@ import {
   ShieldCheck,
   Banknote,
   Sparkles,
-  HeartHandshake,
   ChevronLeft,
   ChevronRight,
   Flame,
@@ -366,49 +365,6 @@ export default function HeroBanner() {
             >
               <ChevronRight className="w-4 h-4" />
             </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Trust Badges Strip (with Smooth Hover Effects) */}
-      <div className="max-sm:hidden grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4 mt-4 sm:mt-6">
-        <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-100 hover:border-fresh-300 shadow-2xs hover:shadow-md hover:-translate-y-0.5 flex items-center space-x-2.5 sm:space-x-3 transition-all duration-200 group cursor-default">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-fresh-50 text-fresh-600 group-hover:bg-fresh-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors duration-200 shadow-2xs">
-            <Truck className="w-4 h-4 sm:w-5 sm:h-5" />
-          </div>
-          <div className="overflow-hidden">
-            <h4 className="text-xs font-bold text-slate-900 group-hover:text-fresh-700 transition-colors truncate">Free Delivery</h4>
-            <p className="text-xs sm:text-xs text-slate-400 truncate">Over PKR 2,500</p>
-          </div>
-        </div>
-
-        <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-100 hover:border-emerald-300 shadow-2xs hover:shadow-md hover:-translate-y-0.5 flex items-center space-x-2.5 sm:space-x-3 transition-all duration-200 group cursor-default">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors duration-200 shadow-2xs">
-            <Banknote className="w-4 h-4 sm:w-5 sm:h-5" />
-          </div>
-          <div className="overflow-hidden">
-            <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors truncate">Cash On Delivery</h4>
-            <p className="text-xs sm:text-xs text-slate-400 truncate">Pay at door in Karachi</p>
-          </div>
-        </div>
-
-        <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-100 hover:border-amber-300 shadow-2xs hover:shadow-md hover:-translate-y-0.5 flex items-center space-x-2.5 sm:space-x-3 transition-all duration-200 group cursor-default">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-50 text-amber-600 group-hover:bg-amber-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors duration-200 shadow-2xs">
-            <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
-          </div>
-          <div className="overflow-hidden">
-            <h4 className="text-xs font-bold text-slate-900 group-hover:text-amber-700 transition-colors truncate">100% Quality</h4>
-            <p className="text-xs sm:text-xs text-slate-400 truncate">Handpicked & inspected</p>
-          </div>
-        </div>
-
-        <div className="bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-slate-100 hover:border-purple-300 shadow-2xs hover:shadow-md hover:-translate-y-0.5 flex items-center space-x-2.5 sm:space-x-3 transition-all duration-200 group cursor-default">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-purple-50 text-purple-600 group-hover:bg-purple-600 group-hover:text-white flex items-center justify-center shrink-0 transition-colors duration-200 shadow-2xs">
-            <HeartHandshake className="w-4 h-4 sm:w-5 sm:h-5" />
-          </div>
-          <div className="overflow-hidden">
-            <h4 className="text-xs font-bold text-slate-900 group-hover:text-purple-700 transition-colors truncate">WhatsApp Orders</h4>
-            <p className="text-xs sm:text-xs text-slate-400 truncate">+92 21 111-373-742</p>
           </div>
         </div>
       </div>

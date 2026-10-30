@@ -18,7 +18,6 @@ import HomePromoBanners from '@/components/HomePromoBanners';
 import Reveal from '@/components/Reveal';
 import ScrollUI from '@/components/ScrollUI';
 import {
-  TrustMarquee,
   BentoAisles,
   DealOfTheDay,
   DualPromo,
@@ -130,7 +129,6 @@ export default function Home() {
 
       <main id="main-content" className="flex-1 pb-16 sm:pb-8">
         <HeroBanner />
-        <TrustMarquee />
 
         {/* Phones: every category with its products, in place */}
         <MobileCatalogue categories={categories} />

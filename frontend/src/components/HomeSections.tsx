@@ -5,7 +5,6 @@ import Link from 'next/link';
 import {
   Truck,
   Banknote,
-  Leaf,
   Clock,
   ShieldCheck,
   Sparkles,
@@ -27,48 +26,6 @@ import { AISLES } from '@/data/aisles';
 import { useCart } from '@/context/CartContext';
 import { PLACEHOLDER_IMG } from '@/lib/placeholder';
 import { Product } from '@/types';
-
-/* ------------------------------------------------------------------ */
-/* TrustMarquee                                                         */
-/* ------------------------------------------------------------------ */
-
-const MARQUEE_ITEMS = [
-  'Free delivery over PKR 2,500',
-  'Cash on delivery',
-  '2-hour express slots',
-  'Farm-fresh quality checks',
-  'Almarai',
-  'Gerber',
-  'Yayycheese',
-  'Al-Shifa honey',
-];
-
-export function TrustMarquee() {
-  const half = (hidden: boolean) => (
-    <ul className="flex items-center gap-10 pr-10 shrink-0" aria-hidden={hidden || undefined}>
-      {MARQUEE_ITEMS.map(item => (
-        <li key={item} className="flex items-center gap-10 text-sm font-semibold text-slate-700 whitespace-nowrap">
-          <span>{item}</span>
-          <Leaf className="w-4 h-4 text-fresh-500" aria-hidden="true" />
-        </li>
-      ))}
-    </ul>
-  );
-
-  return (
-    <Reveal as="section" className="py-4" variant="zoom">
-      <div
-        className="marquee-track overflow-hidden border-y border-slate-200 bg-white py-3.5 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)] [-webkit-mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]"
-        aria-label="Why shop with Fresh House"
-      >
-        <div className="marquee-inner flex w-max animate-marquee">
-          {half(false)}
-          {half(true)}
-        </div>
-      </div>
-    </Reveal>
-  );
-}
 
 /* ------------------------------------------------------------------ */
 /* BentoAisles                                                          */
