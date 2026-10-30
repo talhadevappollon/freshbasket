@@ -51,7 +51,7 @@ export default function MidPageBanners() {
           </span>
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-start gap-2">
             <Sparkles className="w-5 h-5 mt-1 shrink-0 text-fresh-600 animate-pulse" />
-            <span>Seasonal Fresh Picks & Special Aisle Banners</span>
+            <span>Seasonal Fresh Picks & Special Category Banners</span>
           </h2>
         </div>
         <span className="hidden sm:inline-flex items-center gap-1 text-xs text-slate-400 font-medium">
@@ -95,7 +95,7 @@ export default function MidPageBanners() {
             </div>
 
             <span className="inline-flex items-center gap-1.5 bg-white group-hover:bg-fresh-400 text-slate-950 px-4 py-2 rounded-xl text-xs font-black shadow-md group-hover:scale-105 transition-all duration-200">
-              <span>Shop Aisle</span>
+              <span>Shop Category</span>
               <ArrowRight className="w-3.5 h-3.5 text-fresh-800 group-hover:translate-x-1 transition-transform" />
             </span>
           </div>

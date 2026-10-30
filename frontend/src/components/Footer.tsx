@@ -46,7 +46,7 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-sm text-white mb-4 tracking-wide uppercase text-[11px] text-fresh-400 flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              <span>Popular Aisles</span>
+              <span>Popular Categories</span>
             </h4>
             <ul className="space-y-2.5 text-xs text-emerald-200/80">
               {aisles.map(aisle => (

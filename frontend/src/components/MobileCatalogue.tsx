@@ -336,7 +336,7 @@ export default function MobileCatalogue({ categories }: { categories: Category[]
           <p className="text-[13px] text-slate-600 mt-0.5">Swipe for more, tap to jump</p>
         </div>
         {groups.length > 0 && (
-          <span className="shrink-0 text-xs font-black text-fresh-800 bg-fresh-100 border border-fresh-200 rounded-full px-3 py-1.5">{groups.length} aisles</span>
+          <span className="shrink-0 text-xs font-black text-fresh-800 bg-fresh-100 border border-fresh-200 rounded-full px-3 py-1.5">{groups.length} categories</span>
         )}
       </div>
 

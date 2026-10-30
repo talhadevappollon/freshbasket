@@ -38,7 +38,7 @@ const findCategory = (slug: string) =>
 
 export function generateMetadata({ params }: Params): Metadata {
   const cat = findCategory(params.slug);
-  const name = cat ? String(cat.name).split('/').pop()!.trim() : 'Shop by aisle';
+  const name = cat ? String(cat.name).split('/').pop()!.trim() : 'Shop by category';
   return {
     title: `${name} — Fresh House`,
     description: `Shop ${name} online in Karachi with same-day express delivery and Cash on Delivery from Fresh House.`,

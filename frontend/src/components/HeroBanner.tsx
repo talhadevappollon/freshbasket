@@ -51,7 +51,7 @@ const BANNER_SLIDES: BannerSlide[] = [
     description:
       'Karachi\'s favorite destination for handpicked organic fruits, farm-fresh vegetables, pure dairy, imported bakery, and premium household essentials.',
     bgGradient: 'from-[#0b1a0b] via-[#173416] to-[#0a1709]',
-    primaryBtnText: 'Shop Fresh Aisles',
+    primaryBtnText: 'Shop Fresh Categories',
     primaryBtnLink: '#products-section',
     secondaryPill1Icon: Banknote,
     secondaryPill1Text: 'Cash on Delivery (COD)',
@@ -87,7 +87,7 @@ const BANNER_SLIDES: BannerSlide[] = [
     description:
       'Freshly baked European baguettes, wholemeal tortillas, crisp waffles, and farm-fresh organic dairy delivered warm to your breakfast table.',
     bgGradient: 'from-[#3a0907] via-[#2c0a09] to-[#150504]',
-    primaryBtnText: 'Browse Bakery Aisle',
+    primaryBtnText: 'Browse Bakery Category',
     primaryBtnLink: '#products-section',
     secondaryPill1Icon: ShoppingBag,
     secondaryPill1Text: '100% Oven Fresh Guarantee',
@@ -166,10 +166,10 @@ export default function HeroBanner() {
   const Sec2Icon = slide.secondaryPill2Icon;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 pt-4 sm:pt-5 pb-1">
+    <div className="max-w-7xl mx-auto px-4 pt-4 sm:pt-6 pb-2">
       {/* Main Interactive Carousel Banner */}
       <div
-        className={`relative rounded-3xl overflow-hidden bg-gradient-to-r ${slide.bgGradient} text-white shadow-2xl p-4 sm:p-7 transition-all duration-700 min-h-[200px] sm:min-h-[270px] flex flex-col justify-between group`}
+        className={`relative rounded-3xl overflow-hidden bg-gradient-to-r ${slide.bgGradient} text-white shadow-2xl p-3.5 sm:p-12 transition-all duration-700 h-[184px] sm:h-auto sm:min-h-[420px] flex flex-col justify-between group`}
         role="region"
         aria-roledescription="carousel"
         aria-label="Featured offers"
@@ -185,19 +185,19 @@ export default function HeroBanner() {
         <div className="absolute left-1/3 -top-20 w-80 h-80 rounded-full bg-emerald-400/10 blur-3xl pointer-events-none transition-all duration-700"></div>
 
         {/* Carousel Content */}
-        <div key={slide.id} className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center flex-1" aria-live={autoplay && !isPaused ? 'off' : 'polite'}>
+        <div key={slide.id} className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch sm:items-center flex-1 min-h-0" aria-live={autoplay && !isPaused ? 'off' : 'polite'}>
           {/* Left Text & Actions (7 Cols) */}
-          <div className="lg:col-span-8 max-w-2xl space-y-2.5 sm:space-y-3 [&>*]:animate-fade-in-up [&>*:nth-child(2)]:[animation-delay:80ms] [&>*:nth-child(3)]:[animation-delay:160ms] [&>*:nth-child(4)]:[animation-delay:240ms]">
+          <div className="lg:col-span-8 max-w-2xl max-sm:h-full max-sm:flex max-sm:flex-col max-sm:items-start space-y-2 sm:space-y-4 [&>*]:animate-fade-in-up [&>*:nth-child(2)]:[animation-delay:80ms] [&>*:nth-child(3)]:[animation-delay:160ms] [&>*:nth-child(4)]:[animation-delay:240ms]">
             {/* Top Pill Badge */}
             <div
-              className={`inline-flex items-center space-x-1.5 sm:space-x-2 border px-3 py-1 rounded-full text-xs font-semibold tracking-wide shadow-sm transition-all duration-300 ${slide.badgeColor}`}
+              className={`max-sm:hidden inline-flex items-center space-x-1.5 sm:space-x-2 border px-3 py-1 rounded-full text-xs font-semibold tracking-wide shadow-sm transition-all duration-300 ${slide.badgeColor}`}
             >
               <BadgeIcon className="w-3.5 h-3.5" />
               <span>{slide.badgeText}</span>
             </div>
 
             {/* Headline */}
-            <h1 className="text-xl sm:text-3xl md:text-[2.15rem] font-black tracking-tight leading-tight">
+            <h1 className="text-base max-[359px]:text-[15px] sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
               {slide.title}{' '}
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-fresh-400 via-emerald-200 to-brand-300">
                 {slide.highlightText}
@@ -210,10 +210,10 @@ export default function HeroBanner() {
             </p>
 
             {/* Action Buttons & Trust Tags */}
-            <div className="pt-2 flex flex-wrap items-center gap-2.5 sm:gap-4">
+            <div className="pt-2 max-sm:pt-0 max-sm:!mt-auto flex flex-wrap items-center gap-2.5 sm:gap-4">
               <a
                 href={slide.primaryBtnLink}
-                className="bg-white hover:bg-emerald-50 active:scale-95 text-slate-950 font-black text-xs sm:text-sm px-6 py-3 rounded-full shadow-lg shadow-black/20 hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center gap-2 cursor-pointer group"
+                className="bg-white hover:bg-emerald-50 active:scale-95 text-slate-950 font-black text-xs sm:text-sm px-5 py-2.5 sm:px-6 sm:py-3 rounded-full shadow-lg shadow-black/20 hover:shadow-xl hover:scale-105 transition-all duration-200 flex items-center gap-2 cursor-pointer group"
               >
                 <span>{slide.primaryBtnText}</span>
                 <ArrowRight className="w-3.5 h-3.5 text-fresh-700 group-hover:translate-x-1 transition-transform" />
@@ -234,14 +234,14 @@ export default function HeroBanner() {
           {/* Right Visual Artwork Composition (4 Cols) */}
           <div className="hidden lg:flex lg:col-span-4 items-center justify-center select-none pointer-events-none animate-slide-in-right">
             {slide.visualType === 'produce' && (
-              <div className="relative w-52 h-52 flex items-center justify-center">
+              <div className="relative w-72 h-72 flex items-center justify-center">
                 <div className="absolute inset-0 bg-fresh-500/20 rounded-full blur-2xl"></div>
-                <div className="relative z-10 text-center space-y-1.5 p-3.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl animate-float">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-fresh-400 to-fresh-600 text-white flex items-center justify-center mx-auto shadow-lg text-2xl">
-                    <Leaf className="w-5 h-5" />
+                <div className="relative z-10 text-center space-y-3 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl animate-float">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-fresh-400 to-fresh-600 text-white flex items-center justify-center mx-auto shadow-lg text-2xl">
+                    <Leaf className="w-8 h-8" />
                   </div>
-                  <h3 className="font-black text-sm text-white">Daily Farm Harvest</h3>
-                  <p className="text-[11px] text-emerald-200/90 leading-snug">Inspected, chilled and dispatched within 2 hours across Karachi.</p>
+                  <h3 className="font-black text-lg text-white">Daily Farm Harvest</h3>
+                  <p className="text-xs text-emerald-200/90 leading-snug">Inspected, chilled and dispatched within 2 hours across Karachi.</p>
                   <span className="inline-block bg-fresh-500 text-white text-xs font-black px-3 py-1 rounded-full tracking-wide">
                     100% Certified
                   </span>
@@ -250,14 +250,14 @@ export default function HeroBanner() {
             )}
 
             {slide.visualType === 'flash' && (
-              <div className="relative w-52 h-52 flex items-center justify-center">
+              <div className="relative w-72 h-72 flex items-center justify-center">
                 <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-2xl"></div>
-                <div className="relative z-10 text-center space-y-1.5 p-3.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl animate-float">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center mx-auto shadow-lg text-2xl">
-                    <Percent className="w-5 h-5" />
+                <div className="relative z-10 text-center space-y-3 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl animate-float">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center mx-auto shadow-lg text-2xl">
+                    <Percent className="w-8 h-8" />
                   </div>
-                  <h3 className="font-black text-sm text-white">Imported Delicacies</h3>
-                  <p className="text-[11px] text-purple-200/90 leading-snug">Gourmet Belgian chocolates, imported butter, and aged cheeses.</p>
+                  <h3 className="font-black text-lg text-white">Imported Delicacies</h3>
+                  <p className="text-xs text-purple-200/90 leading-snug">Gourmet Belgian chocolates, imported butter, and aged cheeses.</p>
                   <span className="inline-block bg-rose-500 text-white text-xs font-black px-3 py-1 rounded-full tracking-wide">
                     Up to 40% OFF
                   </span>
@@ -266,14 +266,14 @@ export default function HeroBanner() {
             )}
 
             {slide.visualType === 'bakery' && (
-              <div className="relative w-52 h-52 flex items-center justify-center">
+              <div className="relative w-72 h-72 flex items-center justify-center">
                 <div className="absolute inset-0 bg-amber-500/20 rounded-full blur-2xl"></div>
-                <div className="relative z-10 text-center space-y-1.5 p-3.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl animate-float">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center mx-auto shadow-lg text-2xl">
-                    <Croissant className="w-5 h-5" />
+                <div className="relative z-10 text-center space-y-3 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl animate-float">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 text-white flex items-center justify-center mx-auto shadow-lg text-2xl">
+                    <Croissant className="w-8 h-8" />
                   </div>
-                  <h3 className="font-black text-sm text-white">Artisan Oven Bake</h3>
-                  <p className="text-[11px] text-amber-200/90 leading-snug">Golden sourdoughs, crusty baguettes, and fresh wholemeal rolls.</p>
+                  <h3 className="font-black text-lg text-white">Artisan Oven Bake</h3>
+                  <p className="text-xs text-amber-200/90 leading-snug">Golden sourdoughs, crusty baguettes, and fresh wholemeal rolls.</p>
                   <span className="inline-block bg-amber-500 text-white text-xs font-black px-3 py-1 rounded-full tracking-wide">
                     Morning Batch
                   </span>
@@ -282,14 +282,14 @@ export default function HeroBanner() {
             )}
 
             {slide.visualType === 'perq' && (
-              <div className="relative w-52 h-52 flex items-center justify-center">
+              <div className="relative w-72 h-72 flex items-center justify-center">
                 <div className="absolute inset-0 bg-emerald-400/20 rounded-full blur-2xl"></div>
-                <div className="relative z-10 text-center space-y-1.5 p-3.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl animate-float">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-400 to-fresh-600 text-white flex items-center justify-center mx-auto shadow-lg text-2xl">
-                    <Gift className="w-5 h-5" />
+                <div className="relative z-10 text-center space-y-3 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl animate-float">
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-fresh-600 text-white flex items-center justify-center mx-auto shadow-lg text-2xl">
+                    <Gift className="w-8 h-8" />
                   </div>
-                  <h3 className="font-black text-sm text-white">PERQ Rewards Club</h3>
-                  <p className="text-[11px] text-emerald-200/90 leading-snug">Earn points on every order & unlock special member discounts.</p>
+                  <h3 className="font-black text-lg text-white">PERQ Rewards Club</h3>
+                  <p className="text-xs text-emerald-200/90 leading-snug">Earn points on every order & unlock special member discounts.</p>
                   <span className="inline-block bg-brand-600 text-white text-xs font-black px-3 py-1 rounded-full tracking-wide">
                     Free To Join
                   </span>
@@ -300,7 +300,7 @@ export default function HeroBanner() {
         </div>
 
         {/* Navigation Arrows & Bottom Indicator Strip */}
-        <div className="relative z-20 mt-2 sm:mt-4 pt-2 sm:pt-3 border-t border-white/10 flex items-center justify-between">
+        <div className="relative z-20 mt-2 sm:mt-6 pt-2 sm:pt-4 border-t border-white/10 flex items-center justify-between">
           {/* Indicator pills – the active one fills while the slide is playing */}
           <div className="flex items-center gap-1 sm:gap-2">
             {BANNER_SLIDES.map((s, idx) => {
@@ -312,7 +312,7 @@ export default function HeroBanner() {
                   onClick={() => setCurrentSlide(idx)}
                   aria-label={`Go to slide ${idx + 1}`}
                   aria-current={isActive ? 'true' : undefined}
-                  className="relative h-11 min-w-6 flex items-center justify-center cursor-pointer group/dot"
+                  className="relative h-9 sm:h-11 min-w-6 flex items-center justify-center cursor-pointer group/dot"
                 >
                   <span
                     className={`relative block h-2 rounded-full overflow-hidden transition-all duration-300 ${
@@ -345,7 +345,7 @@ export default function HeroBanner() {
               <button
                 type="button"
                 onClick={() => setUserPaused(p => !p)}
-                className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
+                className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
                 aria-label={userPaused ? 'Play carousel' : 'Pause carousel'}
               >
                 {userPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
@@ -353,14 +353,14 @@ export default function HeroBanner() {
             )}
             <button
               onClick={prevSlide}
-              className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
+              className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
               aria-label="Previous Banner"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={nextSlide}
-              className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
+              className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-white/10 hover:bg-white/25 active:scale-95 text-white flex items-center justify-center backdrop-blur-md border border-white/20 transition-all cursor-pointer"
               aria-label="Next Banner"
             >
               <ChevronRight className="w-4 h-4" />

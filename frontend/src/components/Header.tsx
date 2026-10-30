@@ -70,7 +70,7 @@ function iconFor(name: string): AisleGroup['Icon'] {
 
 /**
  * Category names look like "Bakery/Bread & Loafs". Group them by the first segment so the
- * menu stays tidy whatever the API returns; standalone categories collect under "More aisles".
+ * menu stays tidy whatever the API returns; standalone categories collect under "More categories".
  */
 function buildGroups(categories: Category[]): AisleGroup[] {
   const map = new Map<string, { parent?: Category; children: Category[] }>();
@@ -93,7 +93,7 @@ function buildGroups(categories: Category[]): AisleGroup[] {
     }
   });
   if (singles.length > 0) {
-    groups.push({ key: '__more', name: 'More aisles', children: singles, Icon: ShoppingBasket });
+    groups.push({ key: '__more', name: 'More categories', children: singles, Icon: ShoppingBasket });
   }
   return groups;
 }
@@ -565,7 +565,7 @@ export default function Header({ categories }: HeaderProps) {
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}
-              aria-label="Open aisle menu"
+              aria-label="Open category menu"
               aria-expanded={drawerOpen}
               className="lg:hidden order-1 w-11 h-11 -ml-2 rounded-xl text-slate-800 hover:bg-slate-100 flex items-center justify-center cursor-pointer transition-colors"
             >
@@ -632,7 +632,7 @@ export default function Header({ categories }: HeaderProps) {
         </div>
 
         {/* Aisle navigation – text links with an animated underline, no pills */}
-        <nav aria-label="Shop by aisle" className="hidden lg:block border-t border-slate-100">
+        <nav aria-label="Shop by category" className="hidden lg:block border-t border-slate-100">
           <div className="max-w-7xl mx-auto px-4 h-12 flex items-center gap-7">
             <button
               ref={megaTriggerRef}
@@ -646,7 +646,7 @@ export default function Header({ categories }: HeaderProps) {
               }`}
             >
               <LayoutGrid className="w-4 h-4" />
-              All aisles
+              All categories
               <ChevronDown className={`w-4 h-4 transition-transform duration-300 ease-out-expo ${megaOpen ? 'rotate-180' : ''}`} />
             </button>
 
@@ -684,7 +684,7 @@ export default function Header({ categories }: HeaderProps) {
           >
             <div className="max-w-7xl mx-auto px-4 py-7 grid grid-cols-12 gap-8 max-h-[calc(100vh-var(--header-offset)-1rem)] overflow-y-auto">
               {/* Groups */}
-              <ul className="col-span-3 space-y-1" role="tablist" aria-label="Aisle groups">
+              <ul className="col-span-3 space-y-1" role="tablist" aria-label="Category groups">
                 {groups.map(g => {
                   const isActive = g.key === activeGroup.key;
                   return (
@@ -802,11 +802,11 @@ export default function Header({ categories }: HeaderProps) {
 
       {/* Mobile / tablet aisle drawer */}
       {drawerOpen && (
-        <div className="lg:hidden fixed inset-0 z-[55]" role="dialog" aria-modal="true" aria-label="Shop by aisle">
+        <div className="lg:hidden fixed inset-0 z-[55]" role="dialog" aria-modal="true" aria-label="Shop by category">
           <div className="absolute inset-0 bg-slate-950/50 backdrop-blur-sm animate-fade-in" onClick={() => setDrawerOpen(false)} />
           <div className="absolute left-0 top-0 bottom-0 w-[86%] max-w-sm bg-white shadow-2xl flex flex-col animate-slide-in-left">
             <div className="flex items-center justify-between px-4 h-16 border-b border-slate-100 shrink-0">
-              <span className="text-lg font-black text-slate-900">Shop by aisle</span>
+              <span className="text-lg font-black text-slate-900">Shop by category</span>
               <button
                 ref={drawerCloseRef}
                 type="button"
@@ -903,7 +903,7 @@ export default function Header({ categories }: HeaderProps) {
       >
         {[
           { label: 'Store', Icon: Home, active: pathname === '/', onClick: goHome },
-          { label: 'Aisles', Icon: LayoutGrid, active: activeSlug !== '', onClick: () => setDrawerOpen(true) },
+          { label: 'Categories', Icon: LayoutGrid, active: activeSlug !== '', onClick: () => setDrawerOpen(true) },
           { label: 'Search', Icon: Search, active: false, onClick: focusSearch },
         ].map(item => (
           <button

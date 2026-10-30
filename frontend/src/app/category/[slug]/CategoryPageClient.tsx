@@ -187,9 +187,9 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
             <div className="w-14 h-14 mx-auto rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center">
               <SearchX className="w-7 h-7" />
             </div>
-            <h1 className="mt-5 text-2xl font-black text-slate-900">We couldn&apos;t find that aisle</h1>
+            <h1 className="mt-5 text-2xl font-black text-slate-900">We couldn&apos;t find that category</h1>
             <p className="mt-2 text-sm text-slate-600">
-              The link may be out of date. Browse the whole store or head to one of our busiest aisles.
+              The link may be out of date. Browse the whole store or head to one of our busiest categories.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               <Link
@@ -237,7 +237,7 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
               </>
             ) : (
               <>
-                <span>Aisles</span>
+                <span>Categories</span>
                 <ChevronRight className="w-4 h-4 text-slate-300" />
               </>
             )}
@@ -436,7 +436,7 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
                   </div>
                   <h2 className="mt-4 text-lg font-black text-slate-900">Nothing in {title} right now</h2>
                   <p className="mt-1 text-sm text-slate-600 max-w-md mx-auto">
-                    This aisle is being restocked. Browse the whole store or jump to one of our busiest aisles.
+                    This category is being restocked. Browse the whole store or jump to one of our busiest categories.
                   </p>
                   <div className="mt-6 flex flex-wrap justify-center gap-2">
                     <Link
@@ -476,7 +476,7 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
                     <span className="mt-3 text-base font-bold text-slate-900 group-hover:text-fresh-700 transition-colors">{a.name}</span>
                     <span className="mt-1 text-sm text-slate-600 leading-snug">{a.blurb}</span>
                     <span className="mt-auto pt-4 inline-flex items-center gap-1 text-sm font-semibold text-fresh-700">
-                      Shop aisle
+                      Shop category
                       <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </span>
                   </Link>

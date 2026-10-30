@@ -210,7 +210,7 @@
                         <a href="{{ route('admin.categories') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.categories') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-layer-group w-4 text-center text-fresh-300"></i>
-                                <span>Categories & Aisle Manager</span>
+                                <span>Categories Manager</span>
                             </div>
                             <span class="text-[10px] text-emerald-300 font-mono">36</span>
                         </a>

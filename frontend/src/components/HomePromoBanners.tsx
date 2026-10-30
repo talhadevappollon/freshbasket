@@ -76,7 +76,7 @@ export default function HomePromoBanners() {
             </span>
             <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-fresh-600 animate-pulse" />
-              <span>Specialty Aisles &amp; Daily Supermarket Deals</span>
+              <span>Specialty Categories &amp; Daily Supermarket Deals</span>
             </h2>
           </div>
           <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-slate-500 font-semibold">

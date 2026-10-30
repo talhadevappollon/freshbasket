@@ -8,9 +8,9 @@
             <div class="flex items-center space-x-2 text-xs font-bold text-slate-400 mb-1">
                 <span>Inventory & Catalog</span>
                 <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                <span class="text-fresh-700">Categories & Aisles</span>
+                <span class="text-fresh-700">Categories</span>
             </div>
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Supermarket Department & Aisle Management</h2>
+            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Supermarket Category Management</h2>
             <p class="text-xs text-slate-500">Configure catalog departments, department banners, and product taxonomy across Online Store and POS</p>
         </div>
 
@@ -49,7 +49,7 @@
 
         <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs flex items-center justify-between">
             <div>
-                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Average Products / Aisle</span>
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Average Products / Category</span>
                 @php
                     $avgPerCat = $totalCategories > 0 ? round($totalProductsCount / $totalCategories) : 0;
                 @endphp
