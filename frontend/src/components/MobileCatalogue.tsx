@@ -40,51 +40,96 @@ function CategoryTile({ group, index, onJump }: { group: CatalogueGroup; index: 
         type="button"
         onClick={() => onJump(group.key)}
         aria-label={`${group.name}, ${group.total} products. Jump to this category`}
-        className="group w-full flex flex-col items-center gap-1.5 text-center cursor-pointer active:scale-95 transition-transform duration-150 animate-card-entrance"
-        style={{ animationDelay: `${Math.min(index, 12) * 35}ms` }}
+        className="group w-full flex flex-col items-center gap-1 text-center cursor-pointer active:scale-95 transition-transform duration-150 animate-card-entrance"
+        style={{ animationDelay: `${Math.min(Math.floor(index / 2), 6) * 50}ms` }}
       >
-        <span className={`relative block w-full aspect-square rounded-[1.4rem] overflow-hidden border bg-gradient-to-br shadow-xs ${group.tone.tile}`}>
-          <span aria-hidden="true" className="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-white/55" />
-          <span aria-hidden="true" className="absolute -left-4 -bottom-6 w-14 h-14 rounded-full bg-white/40" />
+        <span className={`relative block w-full aspect-square rounded-2xl overflow-hidden border bg-gradient-to-br shadow-xs ${group.tone.tile}`}>
+          <span aria-hidden="true" className="absolute -right-3 -top-3 w-11 h-11 rounded-full bg-white/55" />
+          <span aria-hidden="true" className="absolute -left-3 -bottom-4 w-10 h-10 rounded-full bg-white/40" />
           {img ? (
             <img
               src={img}
               alt=""
-              width={96}
-              height={96}
+              width={74}
+              height={74}
               loading="lazy"
               decoding="async"
               onError={hideBrokenImage}
-              className="absolute inset-0 w-full h-full object-contain p-3 mix-blend-multiply transition-transform duration-300 group-active:scale-110"
+              className="absolute inset-0 w-full h-full object-contain p-2 mix-blend-multiply transition-transform duration-300 group-active:scale-110"
             />
           ) : (
-            <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-4xl">
+            <span aria-hidden="true" className="absolute inset-0 flex items-center justify-center text-3xl">
               {group.emoji}
             </span>
           )}
-          <span aria-hidden="true" className="absolute left-1.5 top-1.5 w-6 h-6 rounded-full bg-white/95 shadow-xs flex items-center justify-center text-[13px]">
+          <span aria-hidden="true" className="absolute left-1 top-1 w-5 h-5 rounded-full bg-white/95 shadow-xs flex items-center justify-center text-[11px]">
             {group.emoji}
           </span>
-          <span aria-hidden="true" className="absolute right-1.5 bottom-1.5 h-5 min-w-5 px-1.5 rounded-full bg-white/95 shadow-xs flex items-center justify-center text-[10.5px] font-black text-slate-700 tabular-nums">
+          <span aria-hidden="true" className="absolute right-1 bottom-1 h-4 min-w-4 px-1 rounded-full bg-white/95 shadow-xs flex items-center justify-center text-[9px] font-black text-slate-700 tabular-nums">
             {group.total}
           </span>
         </span>
-        <span className="block text-[12.5px] font-bold leading-tight text-slate-800 line-clamp-2 min-h-[2.1em]">{group.name}</span>
+        <span className="block text-[11px] font-bold leading-[1.15] text-slate-800 line-clamp-2 min-h-[2.3em]">{group.name}</span>
       </button>
     </li>
   );
 }
 
+/** Two rows that scroll sideways: every category is one swipe away without a tall grid. */
+const TILE_GRID = 'grid grid-rows-2 grid-flow-col auto-cols-[74px] gap-x-2.5 gap-y-2.5 w-max pr-4';
+
 function TileSkeleton() {
   return (
-    <ul className="grid grid-cols-3 gap-x-3 gap-y-4" aria-hidden="true">
-      {Array.from({ length: 9 }).map((_, i) => (
-        <li key={i} className="flex flex-col items-center gap-2">
-          <span className="skeleton block w-full aspect-square rounded-[1.4rem]" />
-          <span className="skeleton block h-3 w-4/5 rounded" />
-        </li>
-      ))}
-    </ul>
+    <div className="-mx-4 px-4 overflow-hidden" aria-hidden="true">
+      <ul className={TILE_GRID}>
+        {Array.from({ length: 12 }).map((_, i) => (
+          <li key={i} className="flex flex-col items-center gap-1.5">
+            <span className="skeleton block w-full aspect-square rounded-2xl" />
+            <span className="skeleton block h-2.5 w-4/5 rounded" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function TileRows({ groups, onJump }: { groups: CatalogueGroup[]; onJump: (key: string) => void }) {
+  const scroller = useRef<HTMLDivElement>(null);
+  const [atEnd, setAtEnd] = useState(false);
+
+  const measure = useCallback(() => {
+    const el = scroller.current;
+    if (el) setAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 6);
+  }, []);
+
+  useEffect(() => {
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [measure, groups.length]);
+
+  return (
+    <div className="relative -mx-4">
+      <div
+        ref={scroller}
+        onScroll={measure}
+        role="region"
+        aria-label="Categories. Swipe sideways to see more."
+        tabIndex={0}
+        className="overflow-x-auto no-scrollbar px-4 pb-1 snap-x snap-proximity scroll-px-4"
+      >
+        <ul className={TILE_GRID}>
+          {groups.map((g, i) => (
+            <CategoryTile key={g.key} group={g} index={i} onJump={onJump} />
+          ))}
+        </ul>
+      </div>
+      {/* fade on the right edge says "there is more this way" until the end is reached */}
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none absolute right-0 top-0 bottom-1 w-12 bg-gradient-to-l from-slate-50 to-transparent transition-opacity duration-200 ${atEnd ? 'opacity-0' : 'opacity-100'}`}
+      />
+    </div>
   );
 }
 
@@ -397,7 +442,7 @@ export default function MobileCatalogue({ categories }: { categories: Category[]
           <h2 id="shop-by-category" className="text-[1.4rem] leading-tight font-black tracking-tight text-slate-900">
             Shop by category
           </h2>
-          <p className="text-[13px] text-slate-600 mt-0.5">Tap one to jump straight to its products</p>
+          <p className="text-[13px] text-slate-600 mt-0.5">Swipe for more, tap to jump</p>
         </div>
         {groups.length > 0 && (
           <span className="shrink-0 text-xs font-black text-fresh-800 bg-fresh-100 border border-fresh-200 rounded-full px-3 py-1.5">{groups.length} aisles</span>
@@ -407,11 +452,7 @@ export default function MobileCatalogue({ categories }: { categories: Category[]
       {groups.length === 0 ? (
         <TileSkeleton />
       ) : (
-        <ul className="grid grid-cols-3 gap-x-3 gap-y-4">
-          {groups.map((g, i) => (
-            <CategoryTile key={g.key} group={g} index={i} onJump={jumpTo} />
-          ))}
-        </ul>
+        <TileRows groups={groups} onJump={jumpTo} />
       )}
 
       {groups.length > 0 && (
