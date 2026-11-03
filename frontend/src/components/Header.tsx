@@ -8,6 +8,10 @@ import { Product, Category } from '@/types';
 import { fetchProducts } from '@/lib/api';
 import { PLACEHOLDER_IMG } from '@/lib/placeholder';
 import AccountButton from '@/components/AccountButton';
+import MobileTabBar from '@/components/MobileTabBar';
+import WhatsAppFab from '@/components/WhatsAppFab';
+import { useDelivery } from '@/context/DeliveryContext';
+import { CATEGORY_ICONS } from '@/data/categoryIcons';
 import { FEATURED_AISLES, resolveCategory } from '@/data/aisles';
 import {
   ShoppingBag,
@@ -17,8 +21,6 @@ import {
   X,
   Plus,
   Menu,
-  MessageCircle,
-  Home,
   LayoutGrid,
   ChevronDown,
   ChevronRight,
@@ -29,10 +31,10 @@ import {
   Baby,
   ShoppingBasket,
   Truck,
-  Gift,
   ShieldCheck,
   Loader2,
   PackageSearch,
+  MapPin,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -323,6 +325,7 @@ export default function Header({ categories }: HeaderProps) {
   const { totalItems, subtotal, setIsCartOpen } = useCart();
   const pathname = usePathname() || '/';
   const router = useRouter();
+  const { openDeliver, label: deliverLabel } = useDelivery();
 
   const [scrolled, setScrolled] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
@@ -496,16 +499,6 @@ export default function Header({ categories }: HeaderProps) {
     window.dispatchEvent(new CustomEvent('fb:search', { detail: term }));
   };
 
-  const focusSearch = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    searchInputRef.current?.focus();
-  };
-
-  const goHome = () => {
-    if (pathname === '/') window.scrollTo({ top: 0, behavior: 'smooth' });
-    else router.push('/');
-  };
-
   return (
     <>
       {/* Announcement bar: ordinary page content above the sticky header, so it scrolls away by itself.
@@ -553,15 +546,17 @@ export default function Header({ categories }: HeaderProps) {
       <header
         ref={headerRef}
         data-tucked={searchTucked && !searchFocused ? 'true' : 'false'}
-        className={`header-tuck sticky top-0 z-40 border-b transition-[background-color,box-shadow,border-color] duration-300 ${
-          scrolled ? 'bg-white/90 backdrop-blur-xl border-slate-200 shadow-card' : 'bg-white border-slate-100'
+        className={`header-tuck sticky top-0 z-40 border-b md:border-b-0 md:pt-2.5 transition-[background-color,box-shadow,border-color] duration-300 ${
+          scrolled
+            ? 'bg-white/90 md:bg-slate-50/85 backdrop-blur-xl border-slate-200 shadow-card md:shadow-[0_12px_24px_-16px_rgba(15,23,42,0.4)]'
+            : 'bg-white md:bg-slate-50/85 md:backdrop-blur-xl border-slate-100'
         }`}
         onMouseLeave={closeMega}
         onMouseEnter={() => hoverTimer.current && clearTimeout(hoverTimer.current)}
       >
         {/* Main bar */}
-        <div className="max-w-7xl mx-auto px-4 py-2 sm:py-3">
-          <div className="flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2 md:gap-6">
+        <div className="max-w-7xl mx-auto px-4 py-2 sm:py-3 md:py-0">
+          <div className="flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2 md:gap-5 md:bg-white md:rounded-2xl md:border md:border-slate-200/80 md:shadow-card md:px-5 md:py-2.5">
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}
@@ -604,6 +599,20 @@ export default function Header({ categories }: HeaderProps) {
             </div>
 
             <div className="order-3 md:order-4 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={openDeliver}
+                aria-haspopup="dialog"
+                aria-label={`Deliver to ${deliverLabel}. Change location`}
+                className="hidden md:flex items-center gap-2 h-11 pl-3 pr-3 rounded-xl border border-slate-200 bg-white hover:bg-fresh-50 hover:border-fresh-300 text-left transition-colors duration-200 cursor-pointer"
+              >
+                <MapPin className="w-[18px] h-[18px] text-fresh-600 shrink-0" aria-hidden="true" />
+                <span className="leading-tight">
+                  <span className="block text-[11px] font-medium text-slate-500">Deliver to</span>
+                  <span className="block text-sm font-bold text-slate-900 max-w-[116px] truncate">{deliverLabel}</span>
+                </span>
+                <ChevronDown className="w-4 h-4 text-slate-400" aria-hidden="true" />
+              </button>
               <AccountButton />
               <button
                 type="button"
@@ -631,9 +640,9 @@ export default function Header({ categories }: HeaderProps) {
           </div>
         </div>
 
-        {/* Aisle navigation – text links with an animated underline, no pills */}
-        <nav aria-label="Shop by category" className="hidden lg:block border-t border-slate-100">
-          <div className="max-w-7xl mx-auto px-4 h-12 flex items-center gap-7">
+        {/* Category icon row, like the reference store: the all-categories menu, then each top-level category with its icon */}
+        <nav aria-label="Shop by category" className="hidden lg:block">
+          <div className="max-w-7xl mx-auto px-4 h-[58px] flex items-center gap-3">
             <button
               ref={megaTriggerRef}
               type="button"
@@ -641,8 +650,8 @@ export default function Header({ categories }: HeaderProps) {
               aria-controls="mega-panel"
               onClick={() => setMegaOpen(o => !o)}
               onMouseEnter={openMega}
-              className={`h-10 px-4 rounded-lg flex items-center gap-2 whitespace-nowrap shrink-0 text-sm font-bold cursor-pointer transition-colors duration-200 ${
-                megaOpen ? 'bg-slate-900 text-white' : 'bg-fresh-50 text-fresh-800 hover:bg-fresh-100'
+              className={`h-10 px-3.5 rounded-xl flex items-center gap-2 whitespace-nowrap shrink-0 text-sm font-bold cursor-pointer transition-colors duration-200 ${
+                megaOpen ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-fresh-800 hover:bg-fresh-50 hover:border-fresh-300'
               }`}
             >
               <LayoutGrid className="w-4 h-4" />
@@ -650,29 +659,26 @@ export default function Header({ categories }: HeaderProps) {
               <ChevronDown className={`w-4 h-4 transition-transform duration-300 ease-out-expo ${megaOpen ? 'rotate-180' : ''}`} />
             </button>
 
-            <ul className="flex items-center gap-6 text-sm font-semibold text-slate-700">
-              {FEATURED_AISLES.map(aisle => {
+            <ul className="flex-1 min-w-0 flex items-center gap-0.5 overflow-x-auto no-scrollbar">
+              {FEATURED_AISLES.filter(aisle => CATEGORY_ICONS[aisle.name]).map(aisle => {
+                const icon = CATEGORY_ICONS[aisle.name];
                 const isActive = activeCategory !== undefined && activeCategory.slug === resolveCategory(categories, aisle.slug)?.slug;
                 return (
-                  <li key={aisle.slug}>
+                  <li key={aisle.slug} className="shrink-0">
                     <Link
                       href={`/category/${aisle.slug}`}
                       aria-current={isActive ? 'true' : undefined}
-                      className={`link-underline py-1 whitespace-nowrap transition-colors duration-200 ${
-                        isActive ? 'text-fresh-700 font-bold' : 'text-slate-700 hover:text-fresh-600 active:text-fresh-800'
+                      className={`inline-flex items-center gap-1.5 h-10 pl-1.5 pr-2 rounded-xl text-[13px] font-semibold whitespace-nowrap transition-colors duration-200 ${
+                        isActive ? 'bg-white text-fresh-800 ring-1 ring-fresh-200 shadow-xs' : 'text-slate-700 hover:text-fresh-800 hover:bg-white active:bg-fresh-50'
                       }`}
                     >
+                      <img src={icon} alt="" width={26} height={26} loading="lazy" decoding="async" className="w-[26px] h-[26px] object-contain" />
                       {aisle.name}
                     </Link>
                   </li>
                 );
               })}
             </ul>
-
-            <span className="ml-auto hidden xl:flex items-center gap-1.5 whitespace-nowrap shrink-0 text-sm text-slate-600">
-              <Gift className="w-4 h-4 text-brand-600" />
-              Code <strong className="text-slate-900">FRESH10</strong> takes 10% off your first order
-            </span>
           </div>
         </nav>
 
@@ -896,55 +902,9 @@ export default function Header({ categories }: HeaderProps) {
         </div>
       )}
 
-      {/* Floating bottom navigation for phones */}
-      <nav
-        aria-label="Quick navigation"
-        className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom))] grid grid-cols-5 shadow-2xl"
-      >
-        {[
-          { label: 'Store', Icon: Home, active: pathname === '/', onClick: goHome },
-          { label: 'Categories', Icon: LayoutGrid, active: activeSlug !== '', onClick: () => setDrawerOpen(true) },
-          { label: 'Search', Icon: Search, active: false, onClick: focusSearch },
-        ].map(item => (
-          <button
-            key={item.label}
-            type="button"
-            onClick={item.onClick}
-            className={`flex flex-col items-center justify-center gap-0.5 min-h-[48px] rounded-lg text-[11px] font-semibold cursor-pointer transition-colors ${
-              item.active ? 'text-fresh-700' : 'text-slate-600 active:text-fresh-700'
-            }`}
-          >
-            <item.Icon className="w-5 h-5" />
-            {item.label}
-          </button>
-        ))}
-
-        <button
-          type="button"
-          onClick={() => setIsCartOpen(true)}
-          className="flex flex-col items-center justify-center gap-0.5 min-h-[48px] rounded-lg text-[11px] font-semibold text-slate-600 active:text-fresh-700 cursor-pointer"
-        >
-          <span className="relative">
-            <ShoppingBag className="w-5 h-5" />
-            {totalItems > 0 && (
-              <span className="absolute -top-1.5 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-fresh-600 text-white text-[10px] font-black flex items-center justify-center">
-                {totalItems}
-              </span>
-            )}
-          </span>
-          Basket
-        </button>
-
-        <a
-          href="https://wa.me/923001234567"
-          target="_blank"
-          rel="noreferrer"
-          className="flex flex-col items-center justify-center gap-0.5 min-h-[48px] rounded-lg text-[11px] font-semibold text-slate-600 active:text-emerald-700"
-        >
-          <MessageCircle className="w-5 h-5" />
-          WhatsApp
-        </a>
-      </nav>
+      {/* Phone navigation and the WhatsApp button */}
+      <MobileTabBar onCategories={() => setDrawerOpen(true)} categoriesOpen={drawerOpen} />
+      <WhatsAppFab />
     </>
   );
 }

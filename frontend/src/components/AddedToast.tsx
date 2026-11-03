@@ -29,7 +29,7 @@ export default function AddedToast() {
       aria-live="polite"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="fixed z-[65] left-4 right-4 bottom-20 sm:left-auto sm:right-6 sm:bottom-6 sm:w-[380px] animate-fade-in-up"
+      className="fixed z-[65] left-4 right-4 bottom-[96px] md:left-auto md:right-6 md:bottom-6 md:w-[380px] animate-fade-in-up"
     >
       <div className="relative overflow-hidden flex items-center gap-3 bg-white rounded-2xl border border-slate-200 shadow-2xl p-3 pr-2">
         <img src={product.primary_image || PLACEHOLDER_IMG} alt="" className="w-12 h-12 object-contain rounded-xl border border-slate-100 bg-white p-1 shrink-0" />

@@ -1,34 +1,118 @@
 {
   "categories": [
     {
-      "name": "Almarai",
-      "slug": "almarai",
+      "name": "Fruits",
+      "slug": "fruits",
       "description": "",
       "image": ""
     },
     {
-      "name": "Baby Food",
-      "slug": "karachi-baby-food",
+      "name": "Fruits/Regular Fruits",
+      "slug": "fruits-karachi",
       "description": "",
       "image": ""
     },
     {
-      "name": "Baby Food/Ella's Kitchen",
-      "slug": "karachi-baby-food-ellas-kitchen",
+      "name": "Fruits/World Fruits",
+      "slug": "karachi-fruits-world-fruits",
       "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Ella_s_Kitchen.png?v=1709659033"
+      "image": ""
     },
     {
-      "name": "Baby Food/Gerber",
-      "slug": "karachi-baby-food-gerber",
+      "name": "Fruits/Fresh Cut Fruits",
+      "slug": "fresh-cut-fruits",
       "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Gerber.png?v=1709659118"
+      "image": ""
     },
     {
-      "name": "Back To School Essentials",
-      "slug": "back-to-school-essentials",
+      "name": "Vegetables",
+      "slug": "vegetables",
       "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Back-to-school.jpg?v=1729165136"
+      "image": ""
+    },
+    {
+      "name": "Vegetables/Regular Vegetables",
+      "slug": "karachi-vegetables-regular-vegetables",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Vegetables/World Vegetables",
+      "slug": "imported-vegetables",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Vegetables/Leafy Vegetables",
+      "slug": "karachi-vegetables-leafy-vegetables",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Vegetables/Fresh Cut Veges",
+      "slug": "fresh-cut-veges",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Vegetables/Salad Essentials",
+      "slug": "salad-essentials",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Vegetables/Herbs",
+      "slug": "herbs",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Vegetables/Planting Seeds",
+      "slug": "vegetables-planting-seeds",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Nuts & Dates",
+      "slug": "karachi-nuts-and-dates",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Nuts & Dates/Nuts",
+      "slug": "nuts",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Nuts & Dates/Mix Nuts",
+      "slug": "mixed-nuts",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Nuts & Dates/Dates",
+      "slug": "dates",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Nuts & Dates/Dried Fruits",
+      "slug": "dry-fruits",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Nuts & Dates/Seeds",
+      "slug": "seeds",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Nuts & Dates/Snack Packs",
+      "slug": "karachi-nuts-and-dates-snack-packs",
+      "description": "",
+      "image": ""
     },
     {
       "name": "Bakery",
@@ -43,26 +127,284 @@
       "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/17089455540.png?v=1727687422"
     },
     {
-      "name": "Bakery/Buns & Rolls",
-      "slug": "bakery-buns-rolls",
-      "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/205-2059686_bun-png-file-download-free-bun-free-png.jpg?v=1717757475"
-    },
-    {
-      "name": "Bakery/Cookies, Cakes & Muffins",
-      "slug": "bakery-cookies-cakes-muffins",
-      "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/pngimg.com_-_muffin_PNG117.png?v=1715335683"
-    },
-    {
       "name": "Bakery/Croissants & Pastries",
       "slug": "croissants-pastries",
       "description": "",
       "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/purepng.com-croissantcroissantpastrypuffcrescent-1411527403253lsdmd.png?v=1715336006"
     },
     {
-      "name": "Best Selling",
-      "slug": "karachi-best-selling",
+      "name": "Bakery/Cookies, Cakes & Muffins",
+      "slug": "bakery-cookies-cakes-muffins",
+      "description": "",
+      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/pngimg.com_-_muffin_PNG117.png?v=1715335683"
+    },
+    {
+      "name": "Bakery/Buns & Rolls",
+      "slug": "bakery-buns-rolls",
+      "description": "",
+      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/205-2059686_bun-png-file-download-free-bun-free-png.jpg?v=1717757475"
+    },
+    {
+      "name": "Dairy",
+      "slug": "dairy",
+      "description": "",
+      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Dairy.jpg?v=1729589198"
+    },
+    {
+      "name": "Dairy/Milk & Yogurt",
+      "slug": "milk",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Dairy/Cheese",
+      "slug": "cheese",
+      "description": "",
+      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Cheese.png?v=1709657151"
+    },
+    {
+      "name": "Dairy/Butter & Ghee",
+      "slug": "dairy-butter-ghee",
+      "description": "",
+      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Butter-and-Ghee.jpg?v=1729249806"
+    },
+    {
+      "name": "Dairy/Greek Yogurt",
+      "slug": "greek-yogurt",
+      "description": "",
+      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Greek_Yogurt.png?v=1709656506"
+    },
+    {
+      "name": "Dairy/Flavored Milk",
+      "slug": "flavoured-milk",
+      "description": "",
+      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Flavored_Milk.png?v=1709659382"
+    },
+    {
+      "name": "Dairy/Condensed and Evaporated Milk",
+      "slug": "dairy-condensed-and-evaporated-milk",
+      "description": "",
+      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Evaporated-Milk.jpg?v=1729593148"
+    },
+    {
+      "name": "Pantry",
+      "slug": "karachi-pantry",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Spices & Dried Herbs",
+      "slug": "karachi-pantry-spices-dried-herbs",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Cooking Sauces & Ingredients",
+      "slug": "cooking-sauces-ingredients",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Sauces, Dips & Dressings",
+      "slug": "karachi-pantry-sauces",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Pasta, Noodles and Rice",
+      "slug": "karachi-pantry-pasta-noodles",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Honey, Jams and Spreads",
+      "slug": "pantry-honey-jams-and-spreads",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Ready To Eat",
+      "slug": "karachi-pantry-ready-to-eat",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Crisps & Snacks",
+      "slug": "karachi-pantry-snacks",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Gluten Free",
+      "slug": "gluten-free",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Breakfast Options",
+      "slug": "karachi-pantry-breakfast-options",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Non Dairy Milk",
+      "slug": "karachi-pantry-non-dairy-milk",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Crackers & Biscuits",
+      "slug": "pantry-crackers-biscuits",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Energy Snacks",
+      "slug": "pantry-energy-snacks",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Chocolates",
+      "slug": "pantry-chocolates",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Flours and Mixes",
+      "slug": "pantry-flours-and-mixes",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Flatbreads",
+      "slug": "pantry-flatbreads",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Oil & Vinegar",
+      "slug": "pantry-oil-vinegar",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Ramen",
+      "slug": "pantry-ramen",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Achaar & Chutney",
+      "slug": "pantry-achaar-chutney",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Pantry/Olives and Pickles",
+      "slug": "vegetables-olives-and-pickles",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Gift Basket",
+      "slug": "karachi-gift-baskets",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Gift Basket/Dry Fruit Basket",
+      "slug": "dry-fruit-basket",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Gift Basket/Fresh Fruit Basket",
+      "slug": "karachi-gift-baskets-fresh-fruit-basket",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Gift Basket/Gift Cards",
+      "slug": "karachi-gift-baskets-gift-cards",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Frozen",
+      "slug": "karachi-frozen",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Frozen/Chicken, Seafood & Meat",
+      "slug": "karachi-frozen-chicken",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Frozen/Fruits & Veges",
+      "slug": "karachi-frozen-fruits-veges",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Frozen/Breakfast Options",
+      "slug": "frozen-breakfast",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Frozen/Gelato & Ice Cream",
+      "slug": "ice-cream-gelato",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Baby Food",
+      "slug": "karachi-baby-food",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Baby Food/Gerber",
+      "slug": "karachi-baby-food-gerber",
+      "description": "",
+      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Gerber.png?v=1709659118"
+    },
+    {
+      "name": "Baby Food/Ella's Kitchen",
+      "slug": "karachi-baby-food-ellas-kitchen",
+      "description": "",
+      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Ella_s_Kitchen.png?v=1709659033"
+    },
+    {
+      "name": "Tea & Coffee",
+      "slug": "karachi-tea-coffee",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Tea & Coffee/Coffee",
+      "slug": "coffee",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Tea & Coffee/Coffee Pods",
+      "slug": "tea-coffee-coffee-pods",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Tea & Coffee/Tea",
+      "slug": "karachi-tea-coffee-tea",
+      "description": "",
+      "image": ""
+    },
+    {
+      "name": "Tea & Coffee/Sweetners",
+      "slug": "tea-coffee-sweetners",
       "description": "",
       "image": ""
     },
@@ -73,28 +415,10 @@
       "image": ""
     },
     {
-      "name": "Beverages/Coconut Drinks",
-      "slug": "beverages-coconut-drinks",
+      "name": "Beverages/Still and Sparkling Water",
+      "slug": "beverages-water",
       "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/a-1_5.jpg?v=1725540306"
-    },
-    {
-      "name": "Beverages/Energy Drinks",
-      "slug": "beverages-energy-drinks",
-      "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Prime-StrawberryWatermelonDrink_330ml.png?v=1729244377"
-    },
-    {
-      "name": "Beverages/Iced Teas & Cold Coffees",
-      "slug": "beverages-iced-teas-cold-coffees",
-      "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Lipton-LemonIceTea_320ml__11zon.jpg?v=1729593610"
-    },
-    {
-      "name": "Beverages/Juices",
-      "slug": "juices",
-      "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Cold-Pressed-Juices.webp?v=1717069621"
+      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/nestle_pure_water_single.webp?v=1729591757"
     },
     {
       "name": "Beverages/Kefir & Kombucha",
@@ -103,76 +427,28 @@
       "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Kefir-and-Kombucha.webp?v=1717069276"
     },
     {
+      "name": "Beverages/Juices",
+      "slug": "juices",
+      "description": "",
+      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Cold-Pressed-Juices.webp?v=1717069621"
+    },
+    {
+      "name": "Beverages/Iced Teas & Cold Coffees",
+      "slug": "beverages-iced-teas-cold-coffees",
+      "description": "",
+      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Lipton-LemonIceTea_320ml__11zon.jpg?v=1729593610"
+    },
+    {
+      "name": "Beverages/Coconut Drinks",
+      "slug": "beverages-coconut-drinks",
+      "description": "",
+      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/a-1_5.jpg?v=1725540306"
+    },
+    {
       "name": "Beverages/Sherbat",
       "slug": "beverages-sherbat",
       "description": "",
       "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Sherbat.jpg?v=1729502550"
-    },
-    {
-      "name": "Beverages/Still and Sparkling Water",
-      "slug": "beverages-water",
-      "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/nestle_pure_water_single.webp?v=1729591757"
-    },
-    {
-      "name": "Breakfast",
-      "slug": "karachi-breakfast",
-      "description": "",
-      "image": ""
-    },
-    {
-      "name": "Cooking Ingredients",
-      "slug": "karachi-pantry-cooking-ingredients",
-      "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Cooking_Ingredients.png?v=1709657167"
-    },
-    {
-      "name": "Cooking Sauces",
-      "slug": "karachi-pantry-cooking-sauces",
-      "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Cooking_Sauces.png?v=1709659012"
-    },
-    {
-      "name": "Crafted At Home",
-      "slug": "crafted-at-home",
-      "description": "",
-      "image": ""
-    },
-    {
-      "name": "Dairy",
-      "slug": "dairy",
-      "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Dairy.jpg?v=1729589198"
-    },
-    {
-      "name": "Dairy/Butter & Ghee",
-      "slug": "dairy-butter-ghee",
-      "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Butter-and-Ghee.jpg?v=1729249806"
-    },
-    {
-      "name": "Dairy/Cheese",
-      "slug": "cheese",
-      "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Cheese.png?v=1709657151"
-    },
-    {
-      "name": "Dairy/Condensed and Evaporated Milk",
-      "slug": "dairy-condensed-and-evaporated-milk",
-      "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Evaporated-Milk.jpg?v=1729593148"
-    },
-    {
-      "name": "Dairy/Flavoured Milk",
-      "slug": "flavoured-milk",
-      "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Flavored_Milk.png?v=1709659382"
-    },
-    {
-      "name": "Dairy/Greek Yogurt",
-      "slug": "greek-yogurt",
-      "description": "",
-      "image": "https://cdn.shopify.com/s/files/1/0742/6591/9805/collections/Greek_Yogurt.png?v=1709656506"
     }
   ],
   "products": [
@@ -17072,6 +17348,6 @@
       ]
     }
   ],
-  "total_categories": 29,
+  "total_categories": 75,
   "total_products": 750
 }

@@ -10,6 +10,7 @@ import CartDrawer from '@/components/CartDrawer';
 import CheckoutModal from '@/components/CheckoutModal';
 import OrderSuccessModal from '@/components/OrderSuccessModal';
 import ScrollUI from '@/components/ScrollUI';
+import SubCategoryTiles from '@/components/SubCategoryTiles';
 import Reveal from '@/components/Reveal';
 import CategoryFilters, { ActiveFilterChips, EMPTY_FILTERS, Filters, activeFilterCount, applyFilters } from '@/components/CategoryFilters';
 import { fetchCategories, fetchProducts } from '@/lib/api';
@@ -223,7 +224,7 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
       <main id="main-content" className="flex-1 pb-20 sm:pb-8">
         <div className="max-w-7xl mx-auto px-4 pt-5">
           {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="flex items-center flex-wrap gap-1 text-sm text-slate-500 mb-4">
+          <nav aria-label="Breadcrumb" className="hidden md:flex items-center flex-wrap gap-1 text-sm text-slate-500 mb-4">
             <Link href="/" className="hover:text-fresh-700 transition-colors">
               Home
             </Link>
@@ -246,10 +247,16 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
             </span>
           </nav>
 
+          {/* Phone heading: "Vegetables (58) results found", like the reference store */}
+          <h1 className="md:hidden text-[1.375rem] leading-tight font-bold tracking-tight text-fresh-800 break-words">
+            {title}
+            {!isLoading && total > 0 && <span className="ml-2 text-[1.05rem] font-medium text-slate-500">({total}) results found</span>}
+          </h1>
+
           {/* Category banner */}
           <section
             data-surface="dark"
-            className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-fresh-950 via-fresh-900 to-[#173216] text-white p-6 sm:p-10 animate-fade-in-up"
+            className="max-md:hidden relative overflow-hidden rounded-3xl bg-gradient-to-br from-fresh-950 via-fresh-900 to-[#173216] text-white p-6 sm:p-10 animate-fade-in-up"
           >
             <div className="absolute -right-16 -top-16 w-72 h-72 rounded-full bg-fresh-400/15 blur-3xl animate-blob" aria-hidden="true" />
             <div className="absolute right-6 bottom-0 text-[9rem] leading-none opacity-[0.07] select-none font-black tracking-tighter hidden sm:block" aria-hidden="true">
@@ -257,7 +264,7 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
             </div>
 
             <div className="relative max-w-2xl">
-              <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">{title}</h1>
+              <p role="heading" aria-level={1} className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">{title}</p>
               <p className="mt-3 text-sm sm:text-base text-emerald-100/85 leading-relaxed">
                 {description ||
                   `Freshly stocked ${title.toLowerCase()} delivered across Karachi in as little as 2 hours, with Cash on Delivery.`}
@@ -276,47 +283,12 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
             </div>
           </section>
 
-          {/* Sibling category chips */}
-          {siblings.children.length > 0 && (
-            <div className="mt-5 -mx-4 px-4 overflow-x-auto no-scrollbar">
-              <ul className="flex items-center gap-2 w-max">
-                {siblings.parent && (
-                  <li>
-                    <Link
-                      href={`/category/${siblings.parent.slug}`}
-                      aria-current={siblings.parent.slug === activeSlug ? 'page' : undefined}
-                      className={`inline-flex items-center h-10 px-4 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${
-                        siblings.parent.slug === activeSlug
-                          ? 'bg-fresh-700 text-white'
-                          : 'bg-white border border-slate-200 text-slate-700 hover:border-fresh-400 hover:text-fresh-800'
-                      }`}
-                    >
-                      All {groupName || title}
-                    </Link>
-                  </li>
-                )}
-                {siblings.children.map(c => (
-                  <li key={c.id}>
-                    <Link
-                      href={`/category/${c.slug}`}
-                      aria-current={c.slug === activeSlug ? 'page' : undefined}
-                      className={`inline-flex items-center h-10 px-4 rounded-full text-sm font-semibold whitespace-nowrap transition-colors ${
-                        c.slug === activeSlug
-                          ? 'bg-fresh-700 text-white'
-                          : 'bg-white border border-slate-200 text-slate-700 hover:border-fresh-400 hover:text-fresh-800'
-                      }`}
-                    >
-                      {lastSegment(c.name)}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          {/* Sub-categories as picture tiles */}
+          <SubCategoryTiles categories={categories} activeSlug={activeSlug} />
 
           {/* Toolbar */}
-          <div className="mt-8 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-slate-200">
-            <p className="text-sm text-slate-600" aria-live="polite">
+          <div className="mt-4 md:mt-8 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 md:pb-5 border-b border-slate-200">
+            <p className="text-sm text-slate-600 max-md:sr-only" aria-live="polite">
               {isLoading ? (
                 'Loading products…'
               ) : filterCount > 0 ? (

@@ -184,7 +184,7 @@ export default function Home() {
             title="Best sellers"
             subtitle="What Karachi is adding to basket this week"
             products={bestSellers}
-            viewAllHref="/category/karachi-best-selling"
+            viewAllHref="/#products-section"
             onQuickView={setQuickViewProduct}
           />
 
@@ -339,18 +339,6 @@ export default function Home() {
         <FaqSection />
         <NewsletterBanner />
       </main>
-
-      {/* Floating WhatsApp quick-order button (sits above the mobile bottom nav) */}
-      <a
-        href="https://wa.me/923001234567?text=Assalam-o-Alaikum!%20I%20want%20to%20order%20groceries%20from%20Fresh%20House."
-        target="_blank"
-        rel="noreferrer"
-        className="hidden sm:flex fixed sm:bottom-6 sm:right-6 h-12 sm:w-auto sm:px-5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white rounded-full shadow-2xl flex items-center justify-center gap-2 z-40 transition-all duration-200"
-        aria-label="Chat with Fresh House support on WhatsApp"
-      >
-        <MessageCircle className="w-6 h-6" />
-        <span className="hidden sm:inline font-bold text-sm">WhatsApp order support</span>
-      </a>
 
       <QuickViewModal product={quickViewProduct} onClose={() => setQuickViewProduct(null)} />
       <PromoRewardsModal linkUrl="#products-section" rewardCoupon="FRESH10" />

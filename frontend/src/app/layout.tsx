@@ -4,6 +4,8 @@ import './globals.css';
 import { CartProvider } from '@/context/CartContext';
 import { AuthProvider } from '@/context/AuthContext';
 import AuthModal from '@/components/AuthModal';
+import { DeliveryProvider } from '@/context/DeliveryContext';
+import DeliverToModal from '@/components/DeliverToModal';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -64,8 +66,11 @@ export default function RootLayout({
           Skip to main content
         </a>
         <AuthProvider>
-          <CartProvider>{children}</CartProvider>
-          <AuthModal />
+          <DeliveryProvider>
+            <CartProvider>{children}</CartProvider>
+            <AuthModal />
+            <DeliverToModal />
+          </DeliveryProvider>
         </AuthProvider>
       </body>
     </html>

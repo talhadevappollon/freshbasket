@@ -2,25 +2,7 @@
 
 import React, { useEffect, useId, useRef, useState } from 'react';
 import Link from 'next/link';
-import {
-  Truck,
-  Banknote,
-  Clock,
-  ShieldCheck,
-  Sparkles,
-  Flame,
-  Milk,
-  Croissant,
-  CupSoda,
-  Baby,
-  Gift,
-  ShoppingBasket,
-  Check,
-  ChevronDown,
-  Plus,
-  MessageCircle,
-  Timer,
-} from 'lucide-react';
+import { Truck, Banknote, Clock, Sparkles, Milk, Croissant, CupSoda, Gift, ShoppingBasket, Check, ChevronDown, Plus, MessageCircle, Timer, Apple, Carrot } from 'lucide-react';
 import Reveal from '@/components/Reveal';
 import { AISLES } from '@/data/aisles';
 import { useCart } from '@/context/CartContext';
@@ -42,16 +24,16 @@ interface BentoTile {
 
 const BENTO_TILES: BentoTile[] = [
   {
-    slug: AISLES.bestSelling.slug,
-    title: 'This week’s best sellers',
-    blurb: 'The groceries Karachi keeps adding to the basket, restocked every morning.',
+    slug: AISLES.fruits.slug,
+    title: 'Fresh fruits',
+    blurb: 'Seasonal and imported fruit, picked and delivered fresh every morning.',
     gradient: 'from-fresh-900 via-fresh-800 to-emerald-900',
-    Icon: Flame,
+    Icon: Apple,
     large: true,
   },
   {
     slug: AISLES.dairy.slug,
-    title: 'Dairy & cheese',
+    title: 'Dairy',
     blurb: 'Milk, yogurt, butter and imported cheeses.',
     gradient: 'from-fresh-700 to-fresh-900',
     Icon: Milk,
@@ -71,11 +53,11 @@ const BENTO_TILES: BentoTile[] = [
     Icon: CupSoda,
   },
   {
-    slug: AISLES.baby.slug,
-    title: 'Baby food',
-    blurb: 'Organic purees and toddler snacks.',
+    slug: AISLES.vegetables.slug,
+    title: 'Vegetables',
+    blurb: 'Farm vegetables, leafy greens and herbs.',
     gradient: 'from-rose-800 to-fuchsia-900',
-    Icon: Baby,
+    Icon: Carrot,
   },
 ];
 

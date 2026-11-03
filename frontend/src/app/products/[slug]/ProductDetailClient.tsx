@@ -252,7 +252,7 @@ export default function ProductDetailPage() {
                   {/* Add to Cart */}
                   <button
                     onClick={() => addToCart(product, quantity)}
-                    className="flex-1 h-12 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 text-white px-6 rounded-2xl font-bold text-sm shadow-xl shadow-fresh-600/25 flex items-center justify-center space-x-2 transition cursor-pointer"
+                    className="sm:flex-1 h-12 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 text-white px-6 rounded-2xl font-bold text-sm shadow-xl shadow-fresh-600/25 flex items-center justify-center space-x-2 transition cursor-pointer"
                   >
                     <ShoppingBag className="w-4 h-4" />
                     <span>Add To Basket &bull; PKR {(product.price * quantity).toLocaleString()}</span>
@@ -386,7 +386,7 @@ export default function ProductDetailPage() {
       {/* Sticky add-to-basket bar for phones, shown once the main button is off screen */}
       <div
         aria-hidden={ctaVisible}
-        className={`sm:hidden fixed left-0 right-0 z-[39] bottom-[calc(3.75rem+env(safe-area-inset-bottom))] px-3 transition-all duration-300 ease-out-expo ${
+        className={`sm:hidden fixed left-0 right-0 z-[39] bottom-[calc(5.75rem+env(safe-area-inset-bottom))] px-3 transition-all duration-300 ease-out-expo ${
           ctaVisible ? 'opacity-0 translate-y-6 pointer-events-none' : 'opacity-100 translate-y-0'
         }`}
       >

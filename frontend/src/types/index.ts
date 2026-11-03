@@ -7,6 +7,8 @@ export interface Category {
   description?: string;
   products_count?: number;
   parent_id?: number | null;
+  /** Products in this category and its sub-categories (products_count is only its own) */
+  total_products?: number;
   /** Up to three product photos from this category (added by the categories API) */
   preview_images?: string[];
 }

@@ -6,7 +6,7 @@ import { FEATURED_AISLES } from '@/data/aisles';
 import { ShoppingBag, Phone, Mail, MapPin, ShieldCheck, Heart, ArrowRight, MessageCircle, Sparkles, PackageSearch } from 'lucide-react';
 
 export default function Footer() {
-  const aisles = FEATURED_AISLES.map(a => ({ name: a.name, slug: a.slug }));
+  const aisles = FEATURED_AISLES.slice(0, 8).map(a => ({ name: a.name, slug: a.slug }));
 
   const deliveryHubs = [
     'DHA Phase 1 - 8',
@@ -147,7 +147,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-6 border-t border-emerald-900/60 flex flex-col sm:flex-row items-center justify-between text-xs text-emerald-300/60 gap-3 sm:gap-4 text-center sm:text-left pb-20 sm:pb-0">
+        <div className="mt-12 pt-6 border-t border-emerald-900/60 flex flex-col sm:flex-row items-center justify-between text-xs text-emerald-300/60 gap-3 sm:gap-4 text-center sm:text-left pb-28 md:pb-0">
           <p>&copy; {new Date().getFullYear()} Fresh House. All rights reserved.</p>
           <div className="flex items-center justify-center flex-wrap gap-x-1 text-center">
             <span>Crafted with</span>

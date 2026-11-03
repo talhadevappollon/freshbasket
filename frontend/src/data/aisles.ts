@@ -12,58 +12,32 @@ export interface Aisle {
 }
 
 export const AISLES: Record<string, Aisle> = {
-  dairy: {
-    slug: 'dairy',
-    name: 'Dairy & Cheese',
-    emoji: '🧀',
-    blurb: 'Milk, yogurt, butter & imported cheeses',
-  },
-  bakery: {
-    slug: 'bakery-items',
-    name: 'Bakery',
-    emoji: '🥖',
-    blurb: 'Breads, rolls, croissants & cookies',
-  },
-  beverages: {
-    slug: 'karachi-beverages',
-    name: 'Beverages',
-    emoji: '🧃',
-    blurb: 'Juices, coconut water, iced coffee & kombucha',
-  },
-  baby: {
-    slug: 'karachi-baby-food',
-    name: 'Baby Food',
-    emoji: '👶',
-    blurb: 'Organic purees, cereals & toddler snacks',
-  },
-  pantry: {
-    slug: 'karachi-pantry-cooking-ingredients',
-    name: 'Cooking & Pantry',
-    emoji: '🫒',
-    blurb: 'Oils, sauces, honey & kitchen staples',
-  },
-  breakfast: {
-    slug: 'karachi-breakfast',
-    name: 'Breakfast',
-    emoji: '🥞',
-    blurb: 'Cereals, spreads & morning essentials',
-  },
-  bestSelling: {
-    slug: 'karachi-best-selling',
-    name: 'Best Sellers',
-    emoji: '🔥',
-    blurb: 'What Karachi is adding to basket this week',
-  },
+  fruits: { slug: 'fruits', name: 'Fruits', emoji: '🍎', blurb: 'Seasonal and imported fruit, delivered fresh' },
+  vegetables: { slug: 'vegetables', name: 'Vegetables', emoji: '🥕', blurb: 'Farm vegetables, leafy greens and herbs' },
+  nuts: { slug: 'karachi-nuts-and-dates', name: 'Nuts & Dates', emoji: '🥜', blurb: 'Nuts, dates, dried fruit and seeds' },
+  bakery: { slug: 'bakery-items', name: 'Bakery', emoji: '🥖', blurb: 'Breads, rolls and bakes' },
+  dairy: { slug: 'dairy', name: 'Dairy', emoji: '🧀', blurb: 'Milk, yogurt, butter and cheese' },
+  pantry: { slug: 'karachi-pantry', name: 'Pantry', emoji: '🫒', blurb: 'Sauces, spreads, snacks and kitchen staples' },
+  gift: { slug: 'karachi-gift-baskets', name: 'Gift Basket', emoji: '🎁', blurb: 'Fruit and dry-fruit gift baskets' },
+  frozen: { slug: 'karachi-frozen', name: 'Frozen', emoji: '🧊', blurb: 'Frozen meat, veg, breakfast and ice cream' },
+  baby: { slug: 'karachi-baby-food', name: 'Baby Food', emoji: '👶', blurb: 'Organic purees and toddler snacks' },
+  tea: { slug: 'karachi-tea-coffee', name: 'Tea & Coffee', emoji: '☕', blurb: 'Coffee, coffee pods, tea and sweeteners' },
+  beverages: { slug: 'karachi-beverages', name: 'Beverages', emoji: '🧃', blurb: 'Juices, coconut water, kombucha and more' },
 };
 
+/** The store's categories in the order the reference store shows them (menus, footer, "other categories"). */
 export const FEATURED_AISLES = [
-  AISLES.bestSelling,
-  AISLES.dairy,
+  AISLES.fruits,
+  AISLES.vegetables,
+  AISLES.nuts,
   AISLES.bakery,
-  AISLES.beverages,
-  AISLES.baby,
+  AISLES.dairy,
   AISLES.pantry,
-  AISLES.breakfast,
+  AISLES.gift,
+  AISLES.frozen,
+  AISLES.baby,
+  AISLES.tea,
+  AISLES.beverages,
 ];
 
 /** Name of a category in the bundled catalogue file, looked up by its slug. */

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 
@@ -12,12 +13,14 @@ class ProductController extends Controller
     {
         $query = Product::with(['category', 'images'])->where('is_active', true);
 
-        // Filter by category
+        // Filter by category. A category page lists its own products and those of its sub-categories
+        // (the Fruits page shows Regular, World and Fresh Cut fruits together).
         if ($request->filled('category')) {
-            $catSlug = $request->query('category');
-            $query->whereHas('category', function ($q) use ($catSlug) {
-                $q->where('slug', $catSlug);
-            });
+            $category = Category::where('slug', $request->query('category'))->first();
+            $ids = $category
+                ? Category::where('id', $category->id)->orWhere('parent_id', $category->id)->pluck('id')
+                : collect();
+            $query->whereIn('category_id', $ids);
         }
 
         // Search query

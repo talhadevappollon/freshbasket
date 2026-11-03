@@ -17,6 +17,12 @@ import {
   Sandwich,
   ShoppingBasket,
   Sparkles,
+  Apple,
+  Carrot,
+  Nut,
+  Gift,
+  Snowflake,
+  Coffee,
 } from 'lucide-react';
 
 interface CategorySliderProps {
@@ -27,6 +33,12 @@ type IconType = React.ComponentType<{ className?: string }>;
 
 function iconFor(cat: Category): IconType {
   const s = cat.slug;
+  if (s === 'fruits') return Apple;
+  if (s === 'vegetables') return Carrot;
+  if (s.includes('nuts')) return Nut;
+  if (s.includes('gift')) return Gift;
+  if (s.includes('frozen')) return Snowflake;
+  if (s.includes('tea-coffee')) return Coffee;
   if (s.includes('baby')) return Baby;
   if (s.includes('bakery') || s.includes('croissant')) return Croissant;
   if (s.includes('bever') || s.includes('juice')) return CupSoda;

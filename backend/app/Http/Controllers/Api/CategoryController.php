@@ -16,7 +16,7 @@ class CategoryController extends Controller
     public function index()
     {
         try {
-            $payload = Cache::remember('api.categories.index.v2', self::CACHE_SECONDS, fn () => $this->buildIndex());
+            $payload = Cache::remember('api.categories.index.v3', self::CACHE_SECONDS, fn () => $this->buildIndex());
         } catch (\Throwable $e) {
             // A broken cache store must never take the storefront menu down
             $payload = $this->buildIndex();
@@ -50,12 +50,33 @@ class CategoryController extends Controller
             ->groupBy('category_id')
             ->map(fn ($rows) => $rows->pluck('primary_image')->unique()->take(3)->values()->all());
 
-        return $categories->map(function (Category $c) use ($previews) {
+        // products_count is the category's own; total_products also counts its sub-categories
+        $withChildren = $categories->mapWithKeys(fn (Category $c) => [
+            $c->id => (int) $c->products_count + (int) $categories->where('parent_id', $c->id)->sum('products_count'),
+        ]);
+
+        return $categories->map(function (Category $c) use ($previews, $withChildren) {
             $row = $c->toArray();
-            $row['preview_images'] = $previews->get($c->id, []);
+            $row['total_products'] = $withChildren[$c->id] ?? (int) $c->products_count;
+            // a parent's picture falls back to its children's, so every category tile has a real photo
+            $mine = $previews->get($c->id, []);
+            $row['preview_images'] = $mine ?: $this->childPreviews($c->id, $previews);
 
             return $row;
         })->all();
+    }
+
+    private function childPreviews(int $parentId, $previews): array
+    {
+        $ids = Category::where('parent_id', $parentId)->pluck('id');
+        $pool = [];
+        foreach ($ids as $id) {
+            foreach ($previews->get($id, []) as $url) {
+                $pool[$url] = true;
+            }
+        }
+
+        return array_slice(array_keys($pool), 0, 3);
     }
 
     public function show($slug)

@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
+import { useDelivery } from '@/context/DeliveryContext';
+import { KARACHI_AREAS } from '@/data/deliveryAreas';
 import { submitCheckout } from '@/lib/api';
 import { OrderCustomer } from '@/types';
 import DeliverySlotPicker from '@/components/DeliverySlotPicker';
@@ -16,27 +18,6 @@ import {
   AlertCircle,
   Loader2,
 } from 'lucide-react';
-
-const KARACHI_AREAS = [
-  'DHA Phase 1',
-  'DHA Phase 2',
-  'DHA Phase 4',
-  'DHA Phase 5',
-  'DHA Phase 6',
-  'DHA Phase 7',
-  'DHA Phase 8',
-  'Clifton Block 1 to 9',
-  'Gulshan-e-Iqbal',
-  'PECHS Block 2 / 6',
-  'Bahria Town Karachi',
-  'North Nazimabad',
-  'Gulistan-e-Jauhar',
-  'Muhammad Ali Society (MACHS)',
-  'KDA Scheme 1',
-  'Sharifabad / Federal B Area',
-  'Malir Cantt',
-  'Other Karachi Area',
-];
 
 export default function CheckoutModal() {
   const {
@@ -64,6 +45,7 @@ export default function CheckoutModal() {
   });
 
   const { account, refreshAccount } = useAuth();
+  const { location: deliverTo } = useDelivery();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -96,6 +78,12 @@ export default function CheckoutModal() {
       delivery_address: f.delivery_address || account.delivery_address || '',
     }));
   }, [isCheckoutOpen, account]);
+
+  // The area chosen in "Deliver to" is used for the order (it is set after the account's saved area so it wins)
+  useEffect(() => {
+    if (!isCheckoutOpen || !deliverTo) return;
+    setFormData(f => ({ ...f, delivery_city: deliverTo.city, delivery_area: deliverTo.area }));
+  }, [isCheckoutOpen, deliverTo]);
 
   // A tab left open overnight must not offer yesterday's slot
   useEffect(() => {

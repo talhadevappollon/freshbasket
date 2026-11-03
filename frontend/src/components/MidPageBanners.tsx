@@ -7,11 +7,11 @@ import Reveal from '@/components/Reveal';
 import { Sparkles, ArrowRight, ShieldCheck, Flame, Gift, Clock, Truck, Heart } from 'lucide-react';
 
 const CATEGORY_ROUTES: Record<string, string> = {
-  'fresh-produce': '/category/karachi-breakfast',
+  'fresh-produce': '/category/fruits',
   'dairy-cheese': '/category/dairy',
   'bakery-breakfast': '/category/bakery-items',
   'beverages-juices': '/category/karachi-beverages',
-  'pantry-cooking': '/category/karachi-pantry-cooking-ingredients',
+  'pantry-cooking': '/category/karachi-pantry',
   'baby-food': '/category/karachi-baby-food',
   '': '/#products-section',
 };
