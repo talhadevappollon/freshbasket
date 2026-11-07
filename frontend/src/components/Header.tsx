@@ -10,7 +10,7 @@ import { PLACEHOLDER_IMG } from '@/lib/placeholder';
 import AccountButton from '@/components/AccountButton';
 import MobileTabBar from '@/components/MobileTabBar';
 import WhatsAppFab from '@/components/WhatsAppFab';
-import { useDelivery } from '@/context/DeliveryContext';
+import { useAuth } from '@/context/AuthContext';
 import { CATEGORY_ICONS } from '@/data/categoryIcons';
 import { FEATURED_AISLES, resolveCategory } from '@/data/aisles';
 import {
@@ -34,7 +34,7 @@ import {
   ShieldCheck,
   Loader2,
   PackageSearch,
-  MapPin,
+  Crown,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -325,7 +325,7 @@ export default function Header({ categories }: HeaderProps) {
   const { totalItems, subtotal, setIsCartOpen } = useCart();
   const pathname = usePathname() || '/';
   const router = useRouter();
-  const { openDeliver, label: deliverLabel } = useDelivery();
+  const { openAuth, account } = useAuth();
 
   const [scrolled, setScrolled] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
@@ -508,7 +508,10 @@ export default function Header({ categories }: HeaderProps) {
         className="bg-fresh-950 text-white"
       >
         <div className="max-w-7xl mx-auto px-4 h-9 flex items-center justify-between gap-4 text-xs">
-          <div className="relative h-5 flex-1 min-w-0 overflow-hidden" role="status" aria-live="off">
+          <p className="hidden md:block flex-1 text-center font-medium tracking-wide text-emerald-50">
+            Daily Harvest <span className="mx-1.5 text-emerald-300/60">|</span> Free Delivery Across Karachi on Orders Rs. 2,500+
+          </p>
+          <div className="md:hidden relative h-5 flex-1 min-w-0 overflow-hidden" role="status" aria-live="off">
             {ANNOUNCEMENTS.map((text, i) => (
               <p
                 key={text}
@@ -522,7 +525,7 @@ export default function Header({ categories }: HeaderProps) {
             ))}
           </div>
 
-          <div className="hidden md:flex items-center gap-5 text-emerald-100/90 shrink-0">
+          <div className="hidden items-center gap-5 text-emerald-100/90 shrink-0">
             <span className="flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-emerald-300" />
               8 AM – 11 PM daily
@@ -546,17 +549,17 @@ export default function Header({ categories }: HeaderProps) {
       <header
         ref={headerRef}
         data-tucked={searchTucked && !searchFocused ? 'true' : 'false'}
-        className={`header-tuck sticky top-0 z-40 border-b md:border-b-0 md:pt-2.5 transition-[background-color,box-shadow,border-color] duration-300 ${
+        className={`header-tuck sticky top-0 z-40 border-b md:border-b-0 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-500 ${
           scrolled
-            ? 'bg-white/90 md:bg-slate-50/85 backdrop-blur-xl border-slate-200 shadow-card md:shadow-[0_12px_24px_-16px_rgba(15,23,42,0.4)]'
-            : 'bg-white md:bg-slate-50/85 md:backdrop-blur-xl border-slate-100'
+            ? 'bg-white/90 backdrop-blur-xl border-slate-200 shadow-card md:bg-white/40 md:backdrop-blur-2xl md:shadow-[0_14px_30px_-18px_rgba(8,40,24,0.5)]'
+            : 'bg-white border-slate-100 md:bg-gradient-to-b md:from-fresh-950 md:to-[#0f3a26] md:border-transparent'
         }`}
         onMouseLeave={closeMega}
         onMouseEnter={() => hoverTimer.current && clearTimeout(hoverTimer.current)}
       >
         {/* Main bar */}
         <div className="max-w-7xl mx-auto px-4 py-2 sm:py-3 md:py-0">
-          <div className="flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2 md:gap-5 md:bg-white md:rounded-2xl md:border md:border-slate-200/80 md:shadow-card md:px-5 md:py-2.5">
+          <div className="flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2 md:gap-6 md:px-1 md:py-3">
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}
@@ -578,14 +581,29 @@ export default function Header({ categories }: HeaderProps) {
               className="order-2 flex items-center gap-2.5 group shrink-0 mr-auto md:mr-0"
               aria-label="Fresh House – home"
             >
-              <img
-                src="/logo.png"
-                alt="Fresh House"
-                width={177}
-                height={40}
-                decoding="async"
-                className="w-auto h-7 sm:h-10 transition-transform duration-300 ease-out-expo group-hover:scale-[1.03]"
-              />
+              <span className="relative block">
+                <img
+                  src="/logo.png"
+                  alt="Fresh House"
+                  width={177}
+                  height={40}
+                  decoding="async"
+                  className={`w-auto h-7 sm:h-10 md:h-[46px] transition-[transform,opacity] duration-500 ease-out-expo group-hover:scale-[1.03] ${scrolled ? '' : 'md:opacity-0'}`}
+                />
+                <span
+                  aria-hidden="true"
+                  className={`hidden md:block absolute inset-0 transition-opacity duration-500 ${scrolled ? 'opacity-0' : 'opacity-100'}`}
+                  style={{
+                    background: 'linear-gradient(180deg,#f8e9ae 0%,#dcb355 38%,#a8741f 64%,#efcf7c 100%)',
+                    WebkitMaskImage: 'url(/logo.png)',
+                    maskImage: 'url(/logo.png)',
+                    WebkitMaskSize: '100% 100%',
+                    maskSize: '100% 100%',
+                    WebkitMaskRepeat: 'no-repeat',
+                    maskRepeat: 'no-repeat',
+                  }}
+                />
+              </span>
             </Link>
 
             <div
@@ -601,24 +619,23 @@ export default function Header({ categories }: HeaderProps) {
             <div className="order-3 md:order-4 flex items-center gap-2">
               <button
                 type="button"
-                onClick={openDeliver}
+                onClick={() => openAuth(account ? 'account' : 'register')}
                 aria-haspopup="dialog"
-                aria-label={`Deliver to ${deliverLabel}. Change location`}
-                className="hidden md:flex items-center gap-2 h-11 pl-3 pr-3 rounded-xl border border-slate-200 bg-white hover:bg-fresh-50 hover:border-fresh-300 text-left transition-colors duration-200 cursor-pointer"
+                aria-label={account ? 'Fresh House Membership Club: open my account' : 'Join the Fresh House Membership Club'}
+                className="hidden md:flex relative items-center h-11 rounded-full bg-[#b3e4b9] text-fresh-950 border border-[#d9b25a]/70 shadow-[0_0_0_3px_rgba(217,178,90,0.18)] hover:shadow-[0_0_0_3px_rgba(217,178,90,0.4)] transition-shadow duration-300 cursor-pointer"
               >
-                <MapPin className="w-[18px] h-[18px] text-fresh-600 shrink-0" aria-hidden="true" />
-                <span className="leading-tight">
-                  <span className="block text-[11px] font-medium text-slate-500">Deliver to</span>
-                  <span className="block text-sm font-bold text-slate-900 max-w-[116px] truncate">{deliverLabel}</span>
+                <Crown className="absolute -top-3.5 right-6 w-6 h-6 text-[#d9ac4e] drop-shadow" strokeWidth={1.6} aria-hidden="true" />
+                <span className="pl-4 pr-3 text-sm font-semibold whitespace-nowrap">Membership Club</span>
+                <span className="h-[38px] mr-[3px] px-4 rounded-full bg-fresh-950 text-white text-sm font-bold flex items-center whitespace-nowrap">
+                  {account ? 'My account' : 'Join Now'}
                 </span>
-                <ChevronDown className="w-4 h-4 text-slate-400" aria-hidden="true" />
               </button>
               <AccountButton />
               <button
                 type="button"
                 onClick={() => setIsCartOpen(true)}
                 aria-label={`Open basket, ${totalItems} item${totalItems === 1 ? '' : 's'}, PKR ${subtotal.toLocaleString()}`}
-                className="flex items-center gap-3 h-11 px-3 sm:px-4 rounded-xl bg-fresh-700 hover:bg-fresh-800 active:scale-[0.97] text-white shadow-lg shadow-fresh-700/20 transition-all duration-200 cursor-pointer sheen"
+                className={`flex items-center gap-3 h-11 px-3 sm:px-4 rounded-xl active:scale-[0.97] text-white transition-all duration-300 cursor-pointer sheen bg-fresh-700 hover:bg-fresh-800 shadow-lg shadow-fresh-700/20 ${scrolled ? '' : 'md:bg-white/15 md:hover:bg-white/25 md:shadow-none md:ring-1 md:ring-white/25'}`}
               >
                 <span className="relative">
                   <ShoppingBag className="w-5 h-5" />
@@ -641,8 +658,8 @@ export default function Header({ categories }: HeaderProps) {
         </div>
 
         {/* Category icon row, like the reference store: the all-categories menu, then each top-level category with its icon */}
-        <nav aria-label="Shop by category" className="hidden lg:block">
-          <div className="max-w-7xl mx-auto px-4 h-[58px] flex items-center gap-3">
+        <nav aria-label="Shop by category" className={`hidden lg:block transition-colors duration-500 ${scrolled ? 'bg-white/45' : 'bg-[#f3f4ef]'}`}>
+          <div className="max-w-7xl mx-auto px-4 h-[82px] flex items-center gap-3">
             <button
               ref={megaTriggerRef}
               type="button"
@@ -659,7 +676,7 @@ export default function Header({ categories }: HeaderProps) {
               <ChevronDown className={`w-4 h-4 transition-transform duration-300 ease-out-expo ${megaOpen ? 'rotate-180' : ''}`} />
             </button>
 
-            <ul className="flex-1 min-w-0 flex items-center gap-0.5 overflow-x-auto no-scrollbar">
+            <ul className="flex-1 min-w-0 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar">
               {FEATURED_AISLES.filter(aisle => CATEGORY_ICONS[aisle.name]).map(aisle => {
                 const icon = CATEGORY_ICONS[aisle.name];
                 const isActive = activeCategory !== undefined && activeCategory.slug === resolveCategory(categories, aisle.slug)?.slug;
@@ -668,11 +685,19 @@ export default function Header({ categories }: HeaderProps) {
                     <Link
                       href={`/category/${aisle.slug}`}
                       aria-current={isActive ? 'true' : undefined}
-                      className={`inline-flex items-center gap-1.5 h-10 pl-1.5 pr-2 rounded-xl text-[13px] font-semibold whitespace-nowrap transition-colors duration-200 ${
-                        isActive ? 'bg-white text-fresh-800 ring-1 ring-fresh-200 shadow-xs' : 'text-slate-700 hover:text-fresh-800 hover:bg-white active:bg-fresh-50'
+                      className={`group flex flex-col items-center justify-center gap-1 h-[70px] px-3 rounded-xl text-[13px] font-semibold whitespace-nowrap transition-colors duration-200 ${
+                        isActive ? 'bg-white text-fresh-800 ring-1 ring-fresh-200 shadow-xs' : 'text-slate-800 hover:text-fresh-800 hover:bg-white/80 active:bg-fresh-50'
                       }`}
                     >
-                      <img src={icon} alt="" width={26} height={26} loading="lazy" decoding="async" className="w-[26px] h-[26px] object-contain" />
+                      <img
+                        src={icon}
+                        alt=""
+                        width={40}
+                        height={40}
+                        loading="lazy"
+                        decoding="async"
+                        className={`w-10 h-10 object-contain transition-all duration-300 group-hover:scale-110 group-hover:grayscale-0 group-hover:saturate-150 ${isActive ? '' : 'grayscale contrast-125 brightness-75'}`}
+                      />
                       {aisle.name}
                     </Link>
                   </li>

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Product } from '@/types';
 import { useCart } from '@/context/CartContext';
 import { Plus, Minus, Sparkles, Eye, Check } from 'lucide-react';
+import { unavailableLabel } from '@/lib/availability';
 
 interface ProductCardProps {
   product: Product;
@@ -31,6 +32,7 @@ export default function ProductCard({ product, onQuickView, imageBg }: ProductCa
     addedTimer.current = setTimeout(() => setJustAdded(false), 1400);
   };
 
+  const unavailable = unavailableLabel(product);
   const discount =
     product.compare_at_price && product.compare_at_price > product.price
       ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
@@ -119,7 +121,14 @@ export default function ProductCard({ product, onQuickView, imageBg }: ProductCa
             )}
           </div>
 
-          {cartItem ? (
+          {unavailable ? (
+            <span
+              className="h-11 sm:h-10 px-3 rounded-xl text-xs font-bold flex items-center justify-center shrink-0 border border-[#f0c35a] bg-[#fff4d6] text-[#8a5a00] cursor-not-allowed select-none"
+              role="status"
+            >
+              {unavailable}
+            </span>
+          ) : cartItem ? (
             <div className="flex items-center gap-1 bg-fresh-50 border border-fresh-200 rounded-xl p-0.5 shrink-0">
               <button
                 type="button"

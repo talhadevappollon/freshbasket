@@ -104,6 +104,7 @@
                         <th class="px-4">Retail Price</th>
                         <th class="px-4">Cost Price (Margin)</th>
                         <th class="px-4">Live Inventory</th>
+                        <th class="px-4">Availability</th>
                         <th class="px-6 text-right">Quick Stock Actions</th>
                     </tr>
                 </thead>
@@ -151,6 +152,19 @@
                             </span>
                         </td>
 
+                        <td class="px-4">
+                            <form action="{{ route('admin.products.availability', $product->id) }}" method="POST">
+                                @csrf
+                                @php $av = $product->availability ?? 'available'; @endphp
+                                <select name="availability" onchange="this.form.submit()" title="Stays on the website; only the button changes"
+                                    class="text-xs font-bold rounded-lg border px-2 py-1 cursor-pointer {{ $av === 'available' ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : ($av === 'out_of_season' ? 'bg-yellow-50 border-yellow-300 text-yellow-800' : 'bg-rose-50 border-rose-200 text-rose-700') }}">
+                                    @foreach(\App\Models\Product::AVAILABILITY as $key => $label)
+                                        <option value="{{ $key }}" {{ $av === $key ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </form>
+                        </td>
+
                         <td class="px-6 text-right">
                             <div class="inline-flex items-center space-x-1.5">
                                 <form action="{{ route('admin.products.adjust_stock', $product->id) }}" method="POST" class="inline">
@@ -179,7 +193,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center py-12 text-gray-400 text-xs">No products match your search.</td>
+                        <td colspan="8" class="text-center py-12 text-gray-400 text-xs">No products match your search.</td>
                     </tr>
                     @endforelse
                 </tbody>

@@ -27,6 +27,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/products/export-csv', [AdminController::class, 'exportProductsCsv'])->name('products.export_csv');
     Route::post('/products/{id}/quick-update', [AdminController::class, 'quickUpdateProduct'])->name('products.quick_update');
     Route::post('/products/{id}/stock', [AdminController::class, 'adjustStock'])->name('products.adjust_stock');
+    Route::post('/products/{id}/availability', [AdminController::class, 'setAvailability'])->name('products.availability');
     Route::post('/products/save/{id?}', [AdminController::class, 'saveProduct'])->name('products.save');
 
     // Categories & Collections

@@ -3,155 +3,165 @@
 import React from 'react';
 import Link from 'next/link';
 import { FEATURED_AISLES } from '@/data/aisles';
-import { ShoppingBag, Phone, Mail, MapPin, ShieldCheck, Heart, ArrowRight, MessageCircle, Sparkles, PackageSearch } from 'lucide-react';
+import { SOCIAL_LINKS, SocialLink } from '@/data/socialLinks';
+import { useAuth } from '@/context/AuthContext';
+import { useDelivery } from '@/context/DeliveryContext';
+import { Heart, Mail, MessageCircle, Phone } from 'lucide-react';
+
+function SocialIcon({ name }: { name: SocialLink['key'] }) {
+  const common = { width: 20, height: 20, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true };
+  switch (name) {
+    case 'facebook':
+      return (
+        <svg {...common}>
+          <path d="M15 3h-2.5A4.5 4.5 0 0 0 8 7.5V10H5.5v3.5H8V21h3.5v-7.5H15L15.5 10h-4V7.8c0-.5.4-.8.8-.8H15z" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    case 'instagram':
+      return (
+        <svg {...common}>
+          <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+          <circle cx="12" cy="12" r="4" />
+          <circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    case 'tiktok':
+      return (
+        <svg {...common}>
+          <path d="M14 3v11.2a3.7 3.7 0 1 1-3.7-3.7" />
+          <path d="M14 3c.4 2.6 2 4.2 4.6 4.5" />
+        </svg>
+      );
+    case 'youtube':
+      return (
+        <svg {...common}>
+          <rect x="2.5" y="5.5" width="19" height="13" rx="4" />
+          <path d="M10 9.5v5l4.5-2.5z" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    case 'x':
+      return (
+        <svg {...common}>
+          <path d="M4 4l16 16M20 4L4 20" />
+        </svg>
+      );
+    default:
+      return <MessageCircle width={20} height={20} aria-hidden="true" />;
+  }
+}
+
+const linkCls = 'block py-1.5 text-[17px] text-slate-800 hover:text-fresh-700 transition-colors cursor-pointer text-left';
 
 export default function Footer() {
-  const aisles = FEATURED_AISLES.slice(0, 8).map(a => ({ name: a.name, slug: a.slug }));
-
-  const deliveryHubs = [
-    'DHA Phase 1 - 8',
-    'Clifton Blocks 1 - 9',
-    'Gulshan-e-Iqbal',
-    'PECHS & Tariq Road',
-    'North Nazimabad',
-    'KDA Scheme 1',
-    'Gulistan-e-Jauhar',
-    'Bahria Town Karachi',
-  ];
+  const { openAuth } = useAuth();
+  const { openDeliver } = useDelivery();
+  const aisles = FEATURED_AISLES.map(a => ({ name: a.name, slug: a.slug }));
+  const socials = SOCIAL_LINKS.filter(s => s.url);
 
   return (
-    <footer className="bg-gradient-to-b from-[#0a170a] via-[#0f210e] to-[#071107] text-white mt-16 border-t border-emerald-900/80">
-      <div className="max-w-7xl mx-auto px-4 py-12 sm:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Brand Info */}
-          <div className="space-y-4">
-            <Link
-              href="/"
-              className="inline-flex items-center group"
-            >
-              <span className="inline-flex items-center bg-white rounded-xl sm:rounded-2xl px-3 py-1.5 sm:px-4 sm:py-2.5 shadow-lg shadow-black/20 group-hover:shadow-xl transition-shadow">
-                <img src="/logo.png" alt="Fresh House" width={156} height={35} loading="lazy" className="h-6 sm:h-9 w-auto" />
-              </span>
-            </Link>
-            <p className="text-sm text-emerald-100/75 leading-relaxed">
-              Karachi&apos;s leading online fresh supermarket. Sourcing pristine fruits, daily vegetables, bakery essentials, and imported provisions with express doorstep delivery.
-            </p>
-            <div className="flex items-center space-x-2 text-xs text-fresh-400 font-semibold group cursor-default">
-              <ShieldCheck className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-              <span className="group-hover:text-emerald-300 transition-colors">100% Quality & Hygiene Verified</span>
-            </div>
-          </div>
-
-          {/* Quick Aisles (Interactive Category Links) */}
-          <div>
-            <h4 className="font-bold text-sm text-white mb-4 tracking-wide uppercase text-[11px] text-fresh-400 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-              <span>Popular Categories</span>
-            </h4>
-            <ul className="space-y-2.5 text-xs text-emerald-200/80">
-              {aisles.map(aisle => (
-                <li key={aisle.name}>
-                  <Link
-                    href={`/category/${aisle.slug}`}
-                    className="group flex items-center space-x-2.5 py-1 min-h-11 sm:min-h-0 text-emerald-200/80 hover:text-white hover:translate-x-1.5 transition-all duration-200 cursor-pointer"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 group-hover:bg-amber-300 group-hover:scale-150 transition-all duration-200"></span>
-                    <span className="group-hover:text-fresh-300 group-hover:font-semibold transition-colors">
-                      {aisle.name}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Karachi Delivery Coverage */}
-          <div>
-            <h4 className="font-bold text-sm text-white mb-4 tracking-wide uppercase text-[11px] text-fresh-400 flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Karachi Delivery Hubs</span>
-            </h4>
-            <div className="grid grid-cols-2 gap-2 text-xs text-emerald-200/80">
-              {deliveryHubs.map(hub => (
-                <div
-                  key={hub}
-                  className="flex items-center gap-1.5 px-2 py-1.5 rounded-xl hover:bg-emerald-900/60 hover:text-white hover:border-emerald-700/50 border border-transparent transition-all duration-200 group cursor-default"
-                >
-                  <span className="w-1 h-1 rounded-full bg-emerald-400 group-hover:scale-125 group-hover:bg-amber-300 transition-all"></span>
-                  <span className="truncate">{hub}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Contact & Support */}
-          <div>
-            <h4 className="font-bold text-sm text-white mb-4 tracking-wide uppercase text-[11px] text-fresh-400">
-              Direct Helpline & CRM
-            </h4>
-            <div className="space-y-3 text-xs text-emerald-200/80">
-              <a
-                href="tel:+9221111373742"
-                className="flex items-center space-x-2 min-h-11 sm:min-h-0 group hover:text-white hover:translate-x-1 transition-all duration-200"
-              >
-                <div className="w-7 h-7 rounded-lg bg-emerald-900/60 group-hover:bg-fresh-600 text-fresh-400 group-hover:text-white flex items-center justify-center transition shrink-0">
-                  <Phone className="w-3.5 h-3.5" />
-                </div>
-                <span className="group-hover:text-fresh-300 transition-colors">UAN: +92 21 111-373-742</span>
-              </a>
-
-              <a
-                href="https://wa.me/923001234567"
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center space-x-2 min-h-11 sm:min-h-0 group hover:text-white hover:translate-x-1 transition-all duration-200"
-              >
-                <div className="w-7 h-7 rounded-lg bg-emerald-900/60 group-hover:bg-emerald-600 text-emerald-400 group-hover:text-white flex items-center justify-center transition shrink-0">
-                  <MessageCircle className="w-3.5 h-3.5" />
-                </div>
-                <span className="group-hover:text-emerald-300 transition-colors">WhatsApp: +92 300 123-4567</span>
-              </a>
-
-              <a
-                href="mailto:orders@freshbasket.com.pk"
-                className="flex items-center space-x-2 min-h-11 sm:min-h-0 group hover:text-white hover:translate-x-1 transition-all duration-200"
-              >
-                <div className="w-7 h-7 rounded-lg bg-emerald-900/60 group-hover:bg-fresh-600 text-fresh-400 group-hover:text-white flex items-center justify-center transition shrink-0">
-                  <Mail className="w-3.5 h-3.5" />
-                </div>
-                <span className="group-hover:text-fresh-300 transition-colors truncate">orders@freshbasket.com.pk</span>
-              </a>
-
-              <Link
-                href="/track"
-                className="flex items-center space-x-2 min-h-11 sm:min-h-0 group hover:text-white hover:translate-x-1 transition-all duration-200"
-              >
-                <div className="w-7 h-7 rounded-lg bg-emerald-900/60 group-hover:bg-fresh-600 text-fresh-400 group-hover:text-white flex items-center justify-center transition shrink-0">
-                  <PackageSearch className="w-3.5 h-3.5" />
-                </div>
-                <span className="group-hover:text-fresh-300 transition-colors">Track your order</span>
-              </Link>
-
-              <div className="pt-2">
+    <footer className="bg-[#f4f4f2] text-slate-900 mt-16 border-t border-slate-200">
+      <div className="max-w-7xl mx-auto px-4 py-12 sm:py-14">
+        {/* Connect with us */}
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-4">
+          <h2 className="text-xl font-semibold text-slate-800">Connect with us</h2>
+          <ul className="flex items-center gap-3">
+            {socials.map(s => (
+              <li key={s.key}>
                 <a
-                  href="/admin"
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-900 to-fresh-900 hover:from-fresh-600 hover:to-emerald-700 text-fresh-300 hover:text-white px-4 py-2 rounded-xl text-xs font-bold border border-emerald-700/60 hover:border-fresh-500 shadow-md hover:shadow-lg hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200 group"
+                  href={s.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label={s.label}
+                  className="w-11 h-11 rounded-full bg-slate-800 text-white flex items-center justify-center hover:bg-fresh-700 hover:scale-105 active:scale-95 transition"
                 >
-                  <ShieldCheck className="w-3.5 h-3.5 text-fresh-400 group-hover:rotate-12 transition-transform" />
-                  <span>Admin CRM Login</span>
-                  <ArrowRight className="w-3 h-3 opacity-60 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                  <SocialIcon name={s.key} />
                 </a>
-              </div>
-            </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="mt-10 grid grid-cols-2 lg:grid-cols-[1fr_1fr_1.1fr_1.1fr_1.6fr] gap-x-8 gap-y-10">
+          <ul>
+            <li>
+              <a href="https://wa.me/923001234567" target="_blank" rel="noreferrer" className={linkCls}>
+                Contact Us
+              </a>
+            </li>
+            <li>
+              <Link href="/recipes" className={linkCls}>
+                Recipes
+              </Link>
+            </li>
+            <li>
+              <Link href="/track" className={linkCls}>
+                Track your order
+              </Link>
+            </li>
+          </ul>
+
+          <ul>
+            <li>
+              <button type="button" onClick={() => openAuth('login')} className={linkCls}>
+                Login
+              </button>
+            </li>
+            <li>
+              <Link href="/account" className={linkCls}>
+                My Account
+              </Link>
+            </li>
+            <li>
+              <button type="button" onClick={openDeliver} className={linkCls}>
+                Postal Codes
+              </button>
+            </li>
+          </ul>
+
+          <ul>
+            {aisles.slice(0, 6).map(a => (
+              <li key={a.slug}>
+                <Link href={`/category/${a.slug}`} className={linkCls}>
+                  {a.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <ul>
+            {aisles.slice(6).map(a => (
+              <li key={a.slug}>
+                <Link href={`/category/${a.slug}`} className={linkCls}>
+                  {a.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <div className="col-span-2 lg:col-span-1 space-y-4">
+            <a href="mailto:orders@freshbasket.com.pk" className="flex items-center gap-4 rounded-2xl border-2 border-[#bfe96f] bg-white/40 px-5 py-3.5 hover:bg-white transition">
+              <Mail className="w-6 h-6 text-fresh-950 shrink-0" aria-hidden="true" />
+              <span>
+                <span className="block text-sm font-semibold uppercase tracking-wide text-[#6fa31a]">Help Center</span>
+                <span className="block font-bold text-fresh-950">orders@freshbasket.com.pk</span>
+              </span>
+            </a>
+            <a href="tel:+9221111373742" className="flex items-center gap-4 rounded-2xl border-2 border-[#bfe96f] bg-white/40 px-5 py-3.5 hover:bg-white transition">
+              <Phone className="w-6 h-6 text-fresh-950 shrink-0" aria-hidden="true" />
+              <span>
+                <span className="block text-sm font-semibold uppercase tracking-wide text-[#6fa31a]">Phone Support</span>
+                <span className="block font-bold text-fresh-950">021-111-373-742</span>
+              </span>
+            </a>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-12 pt-6 border-t border-emerald-900/60 flex flex-col sm:flex-row items-center justify-between text-xs text-emerald-300/60 gap-3 sm:gap-4 text-center sm:text-left pb-28 md:pb-0">
-          <p>&copy; {new Date().getFullYear()} Fresh House. All rights reserved.</p>
-          <div className="flex items-center justify-center flex-wrap gap-x-1 text-center">
+        <div className="mt-12 pt-6 border-t border-slate-300/70 flex flex-col sm:flex-row items-center justify-between text-sm text-slate-600 gap-3 text-center sm:text-left pb-28 md:pb-0">
+          <p>
+            &copy; {new Date().getFullYear()} Fresh House. All rights reserved. <a href="/admin" className="ml-2 text-slate-400 hover:text-slate-700">Staff login</a>
+          </p>
+          <div className="flex items-center justify-center flex-wrap gap-x-1">
             <span>Crafted with</span>
-            <Heart className="w-3.5 h-3.5 text-rose-500 inline fill-rose-500 animate-pulse" aria-label="love" />
+            <Heart className="w-3.5 h-3.5 text-rose-500 inline fill-rose-500" aria-label="love" />
             <span>for seamless grocery delivery.</span>
           </div>
         </div>

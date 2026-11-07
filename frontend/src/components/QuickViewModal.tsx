@@ -1,5 +1,6 @@
 'use client';
 
+import { unavailableLabel } from '@/lib/availability';
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { PLACEHOLDER_IMG } from '@/lib/placeholder';
@@ -41,7 +42,8 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
     product.compare_at_price && product.compare_at_price > product.price
       ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
       : null;
-  const inStock = product.stock_quantity > 0;
+  const unavailable = unavailableLabel(product);
+  const inStock = product.stock_quantity > 0 && !unavailable;
 
   const handleAdd = () => {
     addToCart(product, qty);
@@ -113,7 +115,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
             <div className="flex items-center gap-2 text-sm">
               <span className={`w-2.5 h-2.5 rounded-full ${inStock ? 'bg-emerald-500' : 'bg-rose-500'}`} aria-hidden="true" />
               <span className={`font-semibold ${inStock ? 'text-emerald-800' : 'text-rose-700'}`}>
-                {inStock ? 'In stock · 90-minute Karachi express delivery' : 'Currently out of stock'}
+                {inStock ? 'In stock · 90-minute Karachi express delivery' : unavailable ? `${unavailable} — still listed, not available to order` : 'Currently out of stock'}
               </span>
             </div>
 

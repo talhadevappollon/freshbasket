@@ -15,6 +15,7 @@ import ProductImageViewer from '@/components/ProductImageViewer';
 import { useCart } from '@/context/CartContext';
 import { fetchCategories, fetchProductBySlug } from '@/lib/api';
 import { Product, Category } from '@/types';
+import { unavailableLabel } from '@/lib/availability';
 import {
   ShoppingBag,
   Truck,
@@ -252,16 +253,18 @@ export default function ProductDetailPage() {
                   {/* Add to Cart */}
                   <button
                     onClick={() => addToCart(product, quantity)}
-                    className="sm:flex-1 h-12 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 text-white px-6 rounded-2xl font-bold text-sm shadow-xl shadow-fresh-600/25 flex items-center justify-center space-x-2 transition cursor-pointer"
+                    disabled={!!unavailableLabel(product)}
+                    className="sm:flex-1 h-12 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 disabled:bg-[#fff4d6] disabled:text-[#8a5a00] disabled:shadow-none disabled:cursor-not-allowed text-white px-6 rounded-2xl font-bold text-sm shadow-xl shadow-fresh-600/25 flex items-center justify-center space-x-2 transition cursor-pointer"
                   >
                     <ShoppingBag className="w-4 h-4" />
-                    <span>Add To Basket &bull; PKR {(product.price * quantity).toLocaleString()}</span>
+                    <span>{unavailableLabel(product) ?? <>Add To Basket &bull; PKR {(product.price * quantity).toLocaleString()}</>}</span>
                   </button>
 
                   {/* Buy Now COD */}
                   <button
                     onClick={handleBuyNow}
-                    className="h-12 bg-fresh-950 hover:bg-black text-white px-6 rounded-2xl font-bold text-sm shadow-md transition flex items-center justify-center space-x-1.5 cursor-pointer"
+                    disabled={!!unavailableLabel(product)}
+                    className="h-12 disabled:opacity-40 disabled:cursor-not-allowed bg-fresh-950 hover:bg-black text-white px-6 rounded-2xl font-bold text-sm shadow-md transition flex items-center justify-center space-x-1.5 cursor-pointer"
                   >
                     <Banknote className="w-4 h-4 text-fresh-400" />
                     <span>Buy Now (COD)</span>
@@ -399,11 +402,11 @@ export default function ProductDetailPage() {
             type="button"
             tabIndex={ctaVisible ? -1 : 0}
             onClick={() => addToCart(product, quantity)}
-            disabled={product.stock_quantity <= 0}
+            disabled={product.stock_quantity <= 0 || !!unavailableLabel(product)}
             className="h-12 px-5 rounded-xl bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 disabled:bg-slate-300 text-white text-sm font-bold flex items-center gap-2 cursor-pointer transition-colors"
           >
             <ShoppingBag className="w-4 h-4" />
-            Add{quantity > 1 ? ` ${quantity}` : ''} to basket
+            {unavailableLabel(product) ?? `Add${quantity > 1 ? ` ${quantity}` : ''} to basket`}
           </button>
         </div>
       </div>

@@ -28,7 +28,20 @@ class Product extends Model
         'primary_image',
         'is_featured',
         'is_active',
+        'availability',
     ];
+
+    public const AVAILABILITY = [
+        'available' => 'Available',
+        'out_of_stock' => 'Out of stock',
+        'out_of_season' => 'Out of season',
+    ];
+
+    /** True when the product can go into an order (the manual switch is "available"). */
+    public function isOrderable(): bool
+    {
+        return ($this->availability ?? 'available') === 'available';
+    }
 
     protected $casts = [
         'price' => 'float',

@@ -73,6 +73,12 @@ class CheckoutController extends Controller
                 $product = Product::lockForUpdate()->findOrFail($item['product_id']);
                 $qty = intval($item['quantity']);
 
+                if (!$product->isOrderable()) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'items' => ["{$product->name} is currently " . strtolower(Product::AVAILABILITY[$product->availability] ?? 'unavailable') . ". Please remove it from your basket."],
+                    ]);
+                }
+
                 $lineTotal = $product->price * $qty;
                 $subtotal += $lineTotal;
 

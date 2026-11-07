@@ -30,6 +30,8 @@ export interface Product {
   unit?: string;
   primary_image?: string;
   is_featured: boolean;
+  /** Manual switch from the admin: the product stays listed, only its button changes */
+  availability?: 'available' | 'out_of_stock' | 'out_of_season';
   category?: Category;
   images?: { id: number; image_url: string; is_primary: boolean }[];
 }

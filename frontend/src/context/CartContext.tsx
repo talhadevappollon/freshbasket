@@ -61,6 +61,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     product.stock_quantity > 0 ? Math.min(quantity, product.stock_quantity) : quantity;
 
   const addToCart = (product: Product, quantity = 1) => {
+    if (product.availability && product.availability !== 'available') return; // out of stock / out of season
     setItems(prev => {
       const existing = prev.find(item => item.product.id === product.id);
       if (existing) {

@@ -14,6 +14,7 @@ use App\Models\Rider;
 use App\Models\Branch;
 use App\Models\StoreSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -279,6 +280,22 @@ class AdminController extends Controller
         ]);
 
         return redirect()->back()->with('success', "Stock updated for {$product->name}. New balance: {$newBalance} units");
+    }
+
+    /**
+     * Switch a product between available / out of stock / out of season.
+     * It stays on the storefront lists; only its button changes.
+     */
+    public function setAvailability(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+        $request->validate(['availability' => 'required|in:' . implode(',', array_keys(Product::AVAILABILITY))]);
+
+        $product->availability = $request->availability;
+        $product->save();
+        Cache::forget('api.categories.index.v3');
+
+        return redirect()->back()->with('success', "{$product->name} is now: " . Product::AVAILABILITY[$product->availability]);
     }
 
     /**
