@@ -379,14 +379,17 @@ const ICONS = { MapPin, Smartphone, PackageCheck, Sprout, HandHeart, Gift, Credi
 export function CommitmentBar() {
   const row = [...COMMITMENTS, ...COMMITMENTS];
   return (
-    <section className="mt-16 bg-[#bfe96f] rounded-t-[70px] pt-10 overflow-hidden" aria-label="Our commitments">
-      <h2 className="text-center text-2xl font-extrabold text-fresh-950 leading-tight">
+    <section
+      className="mt-16 bg-[#bbe96f] pt-12 overflow-hidden [border-radius:50%_50%_0_0/46px_46px_0_0]"
+      aria-label="Our commitments"
+    >
+      <h2 className="text-center text-[1.65rem] font-semibold text-[#0b3b2c] leading-snug">
         We always provide
         <br />
         you the best in Karachi
       </h2>
-      <div className="marquee-track mt-8">
-        <ul className="marquee-inner flex w-max gap-4 animate-marquee">
+      <div className="marquee-track mt-14">
+        <ul className="marquee-inner flex w-max gap-[30px] animate-marquee pl-[30px]">
           {[...row, ...row].map((c, i) => {
             const Icon = ICONS[c.icon];
             return (
@@ -394,10 +397,10 @@ export function CommitmentBar() {
                 key={i}
                 aria-hidden={i >= COMMITMENTS.length ? 'true' : undefined}
                 data-surface="dark"
-                className="w-[158px] h-[132px] shrink-0 rounded-t-[48px] bg-fresh-950 text-[#bfe96f] px-4 pt-5 flex flex-col items-center justify-between pb-4"
+                className="w-[191px] h-[176px] shrink-0 bg-[#023038] text-[#bbe96f] px-5 pt-[42px] flex flex-col [border-radius:42%_42%_0_0/20px_20px_0_0]"
               >
-                <span className="text-[13px] font-bold text-center leading-tight">{c.label}</span>
-                <Icon className="w-9 h-9" strokeWidth={1.4} aria-hidden="true" />
+                <span className="text-[15px] font-semibold leading-snug">{c.label}</span>
+                <Icon className="w-[52px] h-[52px] mt-auto mb-6 self-center" strokeWidth={1.1} aria-hidden="true" />
               </li>
             );
           })}

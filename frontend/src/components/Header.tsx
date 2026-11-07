@@ -660,22 +660,6 @@ export default function Header({ categories }: HeaderProps) {
         {/* Category icon row, like the reference store: the all-categories menu, then each top-level category with its icon */}
         <nav aria-label="Shop by category" className={`hidden lg:block transition-colors duration-500 ${scrolled ? 'bg-white/45' : 'bg-[#f3f4ef]'}`}>
           <div className="max-w-7xl mx-auto px-4 h-[82px] flex items-center gap-3">
-            <button
-              ref={megaTriggerRef}
-              type="button"
-              aria-expanded={megaOpen}
-              aria-controls="mega-panel"
-              onClick={() => setMegaOpen(o => !o)}
-              onMouseEnter={openMega}
-              className={`h-10 px-3.5 rounded-xl flex items-center gap-2 whitespace-nowrap shrink-0 text-sm font-bold cursor-pointer transition-colors duration-200 ${
-                megaOpen ? 'bg-slate-900 text-white' : 'bg-white border border-slate-200 text-fresh-800 hover:bg-fresh-50 hover:border-fresh-300'
-              }`}
-            >
-              <LayoutGrid className="w-4 h-4" />
-              All categories
-              <ChevronDown className={`w-4 h-4 transition-transform duration-300 ease-out-expo ${megaOpen ? 'rotate-180' : ''}`} />
-            </button>
-
             <ul className="flex-1 min-w-0 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar">
               {FEATURED_AISLES.filter(aisle => CATEGORY_ICONS[aisle.name]).map(aisle => {
                 const icon = CATEGORY_ICONS[aisle.name];
