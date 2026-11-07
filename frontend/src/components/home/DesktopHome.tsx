@@ -389,7 +389,7 @@ export function CommitmentBar() {
         you the best in Karachi
       </h2>
       <div className="marquee-track mt-14">
-        <ul className="marquee-inner flex w-max gap-[30px] animate-marquee pl-[30px]">
+        <ul className="marquee-inner flex w-max gap-[22px] animate-marquee pl-[22px]">
           {[...row, ...row].map((c, i) => {
             const Icon = ICONS[c.icon];
             return (
@@ -397,10 +397,11 @@ export function CommitmentBar() {
                 key={i}
                 aria-hidden={i >= COMMITMENTS.length ? 'true' : undefined}
                 data-surface="dark"
-                className="w-[191px] h-[176px] shrink-0 bg-[#023038] text-[#bbe96f] px-5 pt-[42px] flex flex-col [border-radius:42%_42%_0_0/20px_20px_0_0]"
+                className="w-[200px] h-[182px] shrink-0 bg-[#023038] text-[#bbe96f] px-5 pt-[46px] flex flex-col"
+                style={{ clipPath: 'path("M0 182 V48 C0 35 8 29 22 26 C70 14 130 14 178 26 C192 29 200 35 200 48 V182 Z")' }}
               >
                 <span className="text-[15px] font-semibold leading-snug">{c.label}</span>
-                <Icon className="w-[52px] h-[52px] mt-auto mb-6 self-center" strokeWidth={1.1} aria-hidden="true" />
+                <Icon className="w-[56px] h-[56px] mt-auto mb-5 self-center" strokeWidth={1.2} aria-hidden="true" />
               </li>
             );
           })}
