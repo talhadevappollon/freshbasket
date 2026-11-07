@@ -329,6 +329,8 @@ export default function Header({ categories }: HeaderProps) {
 
   const [scrolled, setScrolled] = useState(false);
   const [megaOpen, setMegaOpen] = useState(false);
+  // desktop category row: the category whose sub-categories are showing in the hover panel
+  const [menuKey, setMenuKey] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeGroupKey, setActiveGroupKey] = useState<string>('');
   const [openAccordion, setOpenAccordion] = useState<string>('');
@@ -482,6 +484,7 @@ export default function Header({ categories }: HeaderProps) {
   useEffect(() => {
     setMegaOpen(false);
     setDrawerOpen(false);
+    setMenuKey(null);
   }, [pathname]);
 
   const openMega = () => {
@@ -554,7 +557,10 @@ export default function Header({ categories }: HeaderProps) {
             ? 'bg-white/90 backdrop-blur-xl border-slate-200 shadow-card md:bg-white/40 md:backdrop-blur-2xl md:shadow-[0_14px_30px_-18px_rgba(8,40,24,0.5)]'
             : 'bg-white border-slate-100 md:bg-gradient-to-b md:from-fresh-950 md:to-[#0f3a26] md:border-transparent'
         }`}
-        onMouseLeave={closeMega}
+        onMouseLeave={() => {
+          closeMega();
+          setMenuKey(null);
+        }}
         onMouseEnter={() => hoverTimer.current && clearTimeout(hoverTimer.current)}
       >
         {/* Main bar */}
@@ -661,27 +667,35 @@ export default function Header({ categories }: HeaderProps) {
         <nav aria-label="Shop by category" className={`hidden lg:block transition-colors duration-500 ${scrolled ? 'bg-white/45' : 'bg-[#f3f4ef]'}`}>
           <div className="max-w-7xl mx-auto px-4 h-[82px] flex items-center gap-3">
             <ul className="flex-1 min-w-0 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar">
-              {FEATURED_AISLES.filter(aisle => CATEGORY_ICONS[aisle.name]).map(aisle => {
+              {FEATURED_AISLES.map(aisle => {
                 const icon = CATEGORY_ICONS[aisle.name];
                 const isActive = activeCategory !== undefined && activeCategory.slug === resolveCategory(categories, aisle.slug)?.slug;
                 return (
-                  <li key={aisle.slug} className="shrink-0">
+                  <li key={aisle.slug} className="shrink-0" onMouseEnter={() => setMenuKey(aisle.slug)}>
                     <Link
                       href={`/category/${aisle.slug}`}
                       aria-current={isActive ? 'true' : undefined}
                       className={`group flex flex-col items-center justify-center gap-1 h-[70px] px-3 rounded-xl text-[13px] font-semibold whitespace-nowrap transition-colors duration-200 ${
-                        isActive ? 'bg-white text-fresh-800 ring-1 ring-fresh-200 shadow-xs' : 'text-slate-800 hover:text-fresh-800 hover:bg-white/80 active:bg-fresh-50'
+                        isActive ? 'bg-white text-fresh-800 ring-1 ring-fresh-200 shadow-xs' : menuKey === aisle.slug ? 'text-fresh-600' : 'text-slate-800 hover:text-fresh-800 active:bg-fresh-50'
                       }`}
                     >
-                      <img
-                        src={icon}
-                        alt=""
-                        width={40}
-                        height={40}
-                        loading="lazy"
-                        decoding="async"
-                        className={`w-10 h-10 object-contain transition-all duration-300 group-hover:scale-110 group-hover:grayscale-0 group-hover:saturate-150 ${isActive ? '' : 'grayscale contrast-125 brightness-75'}`}
-                      />
+                      {icon ? (
+                        <img
+                          src={icon}
+                          alt=""
+                          width={40}
+                          height={40}
+                          loading="lazy"
+                          decoding="async"
+                          className={`w-10 h-10 object-contain transition-all duration-300 group-hover:scale-110 group-hover:grayscale-0 group-hover:saturate-150 ${isActive ? '' : 'grayscale contrast-125 brightness-75'}`}
+                        />
+                      ) : (
+                        <CupSoda
+                          className={`w-10 h-10 p-1 transition-all duration-300 group-hover:scale-110 group-hover:text-fresh-600 ${isActive ? 'text-fresh-600' : 'text-slate-600'}`}
+                          strokeWidth={1.3}
+                          aria-hidden="true"
+                        />
+                      )}
                       {aisle.name}
                     </Link>
                   </li>
@@ -690,6 +704,36 @@ export default function Header({ categories }: HeaderProps) {
             </ul>
           </div>
         </nav>
+
+        {/* Hover panel: the sub-categories of the category being pointed at, with their pictures */}
+        {menuKey && (() => {
+          const aisle = FEATURED_AISLES.find(a => a.slug === menuKey);
+          const parent = aisle ? resolveCategory(categories, aisle.slug) : undefined;
+          const kids = parent
+            ? categories.filter(c => (c.parent_id === parent.id || c.name.startsWith(parent.name + '/')) && c.id !== parent.id && (c.total_products ?? c.products_count ?? 1) > 0)
+            : [];
+          if (kids.length === 0) return null;
+          return (
+            <div className="hidden lg:block absolute left-0 right-0 top-full bg-[#f3f4ef] border-t border-slate-200/70 shadow-[0_18px_30px_-18px_rgba(8,40,24,0.45)] animate-menu-in" onMouseEnter={() => setMenuKey(menuKey)}>
+              <ul className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap gap-4" aria-label={`${aisle?.name} sub-categories`}>
+                {kids.map(k => (
+                  <li key={k.id} className="w-[118px]">
+                    <Link href={`/category/${k.slug}`} className="group block text-center" onClick={() => setMenuKey(null)}>
+                      <span className="block h-[84px] bg-white rounded-sm overflow-hidden flex items-center justify-center">
+                        {k.preview_images?.[0] || k.image_url ? (
+                          <img src={(k.preview_images?.[0] || k.image_url) as string} alt="" loading="lazy" className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300" />
+                        ) : (
+                          <span className="text-2xl" aria-hidden="true">🛒</span>
+                        )}
+                      </span>
+                      <span className="block mt-2 text-[12.5px] font-medium text-slate-800 leading-tight group-hover:text-fresh-700">{childLabel(k)}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })()}
 
         {/* Mega menu panel */}
         {megaOpen && groups.length > 0 && activeGroup && (

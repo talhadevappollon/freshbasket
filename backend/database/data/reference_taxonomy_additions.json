@@ -1,0 +1,46 @@
+{
+ "note": "Sub-categories of the reference menu that were missing, and the products that belong in them",
+ "categories": [
+  {
+   "parent": "Fruits",
+   "name": "Mangoes",
+   "slug": "mangoes"
+  },
+  {
+   "parent": "Beverages",
+   "name": "Energy Drinks",
+   "slug": "beverages-energy-drinks"
+  },
+  {
+   "parent": "Gift Basket",
+   "name": "Choose Your Own Basket",
+   "slug": "karachi-gift-baskets-choose-your-own-basket"
+  },
+  {
+   "parent": "Pantry",
+   "name": "Cereals & Granola",
+   "slug": "pantry-cereals-granola"
+  }
+ ],
+ "products": {
+  "5859": "Pantry/Cereals & Granola",
+  "5858": "Pantry/Cereals & Granola",
+  "9787": "Pantry/Cereals & Granola",
+  "225389530416": "Pantry/Cereals & Granola",
+  "8969123283177": "Pantry/Cereals & Granola",
+  "887": "Pantry/Cereals & Granola",
+  "769503879727": "Pantry/Cereals & Granola",
+  "5000108478119": "Pantry/Cereals & Granola",
+  "8969123148148": "Pantry/Cereals & Granola",
+  "8961004323293": "Pantry/Cereals & Granola",
+  "8961004239907": "Pantry/Cereals & Granola",
+  "8852756905342": "Pantry/Cereals & Granola",
+  "0989232": "Pantry/Cereals & Granola",
+  "0989233": "Pantry/Cereals & Granola",
+  "644925484417": "Pantry/Cereals & Granola",
+  "29435982": "Pantry/Cereals & Granola",
+  "29310715": "Pantry/Cereals & Granola",
+  "721688728030": "Pantry/Cereals & Granola",
+  "721688728047": "Pantry/Cereals & Granola"
+ }
+}
