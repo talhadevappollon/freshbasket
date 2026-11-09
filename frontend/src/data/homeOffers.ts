@@ -27,12 +27,20 @@ export const PLANS: Offer[] = [
   { key: 'plan-fruit-sabzi', name: 'Fruit & Sabzi Plan – Weekly Family Membership', price: 14996, was: 17244, note: 'monthly bill · 4 weekly boxes', image: '/home/plan-fruit-sabzi.webp', kind: 'plan' },
   { key: 'plan-family-premium', name: 'Family Premium Plan – Fruit, Sabzi & Dry Fruits Membership', price: 26495, was: 30789, note: 'monthly bill · 4 weekly boxes', image: '/home/plan-family-premium.webp', kind: 'plan' },
   { key: 'plan-kitchen', name: 'Kitchen Plan – Weekly Vegetable Membership', price: 6196, was: 7116, note: 'monthly bill · 4 weekly boxes', image: '/home/plan-kitchen.webp', kind: 'plan' },
+  // sample plans (placeholders until the real line-up is confirmed)
+  { key: 'plan-fruit-lover', name: 'Fruit Lover Plan – Weekly Fruit Membership', price: 9496, was: 10880, note: 'monthly bill · 4 weekly boxes', image: '/home/gift-5.webp', kind: 'plan' },
+  { key: 'plan-breakfast', name: 'Breakfast Plan – Fruit & Dairy Membership', price: 7996, was: 9140, note: 'monthly bill · 4 weekly boxes', image: '/home/plan-fruit-sabzi.webp', kind: 'plan' },
+  { key: 'plan-dry-fruit', name: 'Dry Fruit Plan – Monthly Nuts & Dates Membership', price: 11499, was: 13200, note: 'monthly bill · 1 monthly box', image: '/home/bundle-dry-fruits-box.webp', kind: 'plan' },
 ];
 
 export const BUNDLES: Offer[] = [
   ...PLANS,
   { key: 'bundle-platter', name: 'Get Well Soon Fruit Platter', price: 2299, was: 2600, image: '/home/bundle-fruit-platter.webp', kind: 'bundle' },
   { key: 'bundle-dry-box', name: 'Monthly Family Dry Fruits Box', price: 12199, was: 13545, image: '/home/bundle-dry-fruits-box.webp', kind: 'bundle' },
+  // sample bundles
+  { key: 'bundle-bbq', name: 'Weekend BBQ Veggie Box', price: 3499, was: 3990, image: '/home/plan-kitchen.webp', kind: 'bundle' },
+  { key: 'bundle-juice', name: 'Fresh Juice Fruit Box', price: 2799, was: 3150, image: '/home/gift-5.webp', kind: 'bundle' },
+  { key: 'bundle-snacking', name: 'Healthy Snacking Nuts Bundle', price: 4299, was: 4890, image: '/home/tile-mixed-nuts.webp', kind: 'bundle' },
 ];
 
 export const GIFTS: Offer[] = [
@@ -41,6 +49,10 @@ export const GIFTS: Offer[] = [
   { key: 'gift-3', name: 'Roshni Dry Fruit Basket', price: 6599, image: '/home/gift-3.webp', kind: 'gift' },
   { key: 'gift-4', name: 'Shubh Deepavali Dry Fruit Basket', price: 9499, image: '/home/gift-4.webp', kind: 'gift' },
   { key: 'gift-5', name: 'Royal Deepavali Fresh Fruit Basket', price: 10299, image: '/home/gift-5.webp', kind: 'gift' },
+  // sample gift baskets
+  { key: 'gift-eid', name: 'Eid Mubarak Dry Fruit Basket', price: 8999, image: '/home/gift-3.webp', kind: 'gift' },
+  { key: 'gift-exotic', name: 'Premium Exotic Fruit Basket', price: 12499, image: '/home/gift-5.webp', kind: 'gift' },
+  { key: 'gift-corporate', name: 'Corporate Gift Hamper', price: 15999, image: '/home/gift-4.webp', kind: 'gift' },
 ];
 
 /** Nuts · Dates · Mixed Nuts · Seeds · Snack Pack tiles (category slugs from the catalogue) */

@@ -12,15 +12,15 @@ import OrderSuccessModal from '@/components/OrderSuccessModal';
 import ScrollUI from '@/components/ScrollUI';
 import SubCategoryTiles from '@/components/SubCategoryTiles';
 import Reveal from '@/components/Reveal';
-import CategoryFilters, { ActiveFilterChips, EMPTY_FILTERS, Filters, activeFilterCount, applyFilters } from '@/components/CategoryFilters';
+import CategorySidebar from '@/components/CategorySidebar';
 import { fetchCategories, fetchProducts } from '@/lib/api';
 import { resolveCategory } from '@/data/aisles';
 import { FEATURED_AISLES } from '@/data/aisles';
 import { Category, Product } from '@/types';
-import { ChevronRight, ArrowDown, SlidersHorizontal, SearchX, Truck, ShieldCheck, Banknote, ArrowRight } from 'lucide-react';
+import { ChevronRight, ArrowDown, SearchX, Truck, ShieldCheck, Banknote, ArrowRight } from 'lucide-react';
 
 const PAGE_SIZE = 12; // products revealed per step
-const FETCH_SIZE = 100; // products fetched per request (the API's maximum), so filters have a real set to work on
+const FETCH_SIZE = 100; // products fetched per request (the API's maximum)
 
 // Placeholder slug of the generic shell page (see page.tsx): the real slug is read from the URL.
 const SHELL_SLUG = '_';
@@ -63,13 +63,11 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [total, setTotal] = useState(0);
-  const [sortBy, setSortBy] = useState('latest');
+  const [sortBy, setSortBy] = useState('featured');
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [fetchedPages, setFetchedPages] = useState(1);
   const [visible, setVisible] = useState(PAGE_SIZE);
-  const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
-  const [filtersOpen, setFiltersOpen] = useState(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const [quickView, setQuickView] = useState<Product | null>(null);
 
@@ -83,10 +81,6 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
     const fromUrl = decodeURIComponent(window.location.pathname.split('/').filter(Boolean)[1] || '');
     setSlug(fromUrl);
   }, [routeSlug]);
-
-  useEffect(() => {
-    setFilters(EMPTY_FILTERS);
-  }, [activeSlug]);
 
   useEffect(() => {
     fetchCategories().then(cats => {
@@ -116,16 +110,14 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
     };
   }, [slug, activeSlug, current, categoriesLoaded, sortBy]);
 
-  const filtered = useMemo(() => applyFilters(products, filters), [products, filters]);
-  const shown = filtered.slice(0, visible);
+  const shown = products.slice(0, visible);
   const hasMoreOnServer = products.length < total;
-  const hasMore = visible < filtered.length || hasMoreOnServer;
-  const filterCount = activeFilterCount(filters);
+  const hasMore = visible < products.length || hasMoreOnServer;
 
   // Reveal the next batch; once everything fetched is on screen, pull the next page from the store
   const loadMore = useCallback(async () => {
     if (isLoadingMore) return;
-    if (visible < filtered.length) {
+    if (visible < products.length) {
       setVisible(v => v + PAGE_SIZE);
       return;
     }
@@ -140,12 +132,12 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
     setFetchedPages(next);
     setVisible(v => v + PAGE_SIZE);
     setIsLoadingMore(false);
-  }, [isLoadingMore, visible, filtered.length, hasMoreOnServer, current, fetchedPages, activeSlug, sortBy]);
+  }, [isLoadingMore, visible, products.length, hasMoreOnServer, current, fetchedPages, activeSlug, sortBy]);
 
-  // Changing filters or sort starts again from the top of the list
+  // Changing the sort starts again from the top of the list
   useEffect(() => {
     setVisible(PAGE_SIZE);
-  }, [filters, sortBy]);
+  }, [sortBy]);
 
   // Infinite scroll: the button below stays as the keyboard / no-JS-observer fallback
   useEffect(() => {
@@ -284,73 +276,43 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
           </section>
 
           {/* Sub-categories as picture tiles */}
-          <SubCategoryTiles categories={categories} activeSlug={activeSlug} />
-
-          {/* Toolbar */}
-          <div className="mt-4 md:mt-8 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 md:pb-5 border-b border-slate-200">
-            <p className="text-sm text-slate-600 max-md:sr-only" aria-live="polite">
-              {isLoading ? (
-                'Loading products…'
-              ) : filterCount > 0 ? (
-                <>
-                  <strong className="text-slate-900">{filtered.length}</strong> of {products.length}
-                  {hasMoreOnServer ? '+' : ''} products match your filters
-                </>
-              ) : (
-                <>
-                  Showing <strong className="text-slate-900">{Math.min(shown.length, total)}</strong> of{' '}
-                  <strong className="text-slate-900">{total}</strong> products
-                </>
-              )}
-            </p>
-            <div className="flex items-center gap-2 w-full sm:w-auto">
-              <button
-                type="button"
-                onClick={() => setFiltersOpen(true)}
-                className="lg:hidden relative inline-flex shrink-0 items-center gap-2 h-11 px-4 rounded-xl bg-white border border-slate-200 hover:border-fresh-400 text-sm font-semibold text-slate-800 cursor-pointer transition"
-              >
-                <SlidersHorizontal className="w-4 h-4 text-fresh-600" />
-                Filters
-                {filterCount > 0 && (
-                  <span className="min-w-5 h-5 px-1.5 rounded-full bg-fresh-700 text-white text-[11px] font-bold flex items-center justify-center">{filterCount}</span>
-                )}
-              </button>
-              <label htmlFor="category-sort" className="sr-only sm:not-sr-only text-sm font-semibold text-slate-600 whitespace-nowrap">
-                Sort by
-              </label>
-              <select
-                id="category-sort"
-                value={sortBy}
-                onChange={e => setSortBy(e.target.value)}
-                className="h-11 sm:h-10 flex-1 min-w-0 sm:flex-none bg-white border border-slate-200 hover:border-fresh-400 text-sm font-semibold text-slate-800 rounded-xl px-3 focus:outline-none focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 cursor-pointer transition"
-              >
-                <option value="latest">Featured &amp; newest</option>
-                <option value="price_asc">Price: low to high</option>
-                <option value="price_desc">Price: high to low</option>
-                <option value="name_asc">Name: A to Z</option>
-              </select>
-            </div>
+          <div className="lg:hidden">
+            <SubCategoryTiles categories={categories} activeSlug={activeSlug} />
           </div>
 
-          {filterCount > 0 && (
-            <div className="mb-5">
-              <ActiveFilterChips filters={filters} onChange={setFilters} />
-            </div>
-          )}
+          {/* Sidebar (categories + search) and the products, like the reference store */}
+          <div className="mt-4 md:mt-8 lg:grid lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-8 lg:items-start">
+            <CategorySidebar parent={siblings.parent} subs={siblings.children} activeSlug={activeSlug} />
 
-          <div className="lg:grid lg:grid-cols-[260px_minmax(0,1fr)] lg:gap-8 lg:items-start">
-            {!isLoading && products.length > 0 && (
-              <CategoryFilters
-                products={products}
-                filters={filters}
-                onChange={setFilters}
-                resultCount={filtered.length}
-                open={filtersOpen}
-                onClose={() => setFiltersOpen(false)}
-              />
-            )}
+            <div>
+              {/* "Pantry (765) results found" and the sort menu */}
+              <div className="mb-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-4 border-b border-slate-200">
+                <h2 className="max-md:sr-only text-2xl font-bold text-[#173c2a]" aria-live="polite">
+                  {title}{' '}
+                  <span className="text-base font-medium text-slate-500">{isLoading ? '' : `(${total}) results found`}</span>
+                </h2>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <label htmlFor="category-sort" className="sr-only sm:not-sr-only text-sm font-semibold text-slate-600 whitespace-nowrap">
+                    Sort by
+                  </label>
+                  <select
+                    id="category-sort"
+                    value={sortBy}
+                    onChange={e => setSortBy(e.target.value)}
+                    className="h-11 sm:h-10 flex-1 min-w-0 sm:flex-none bg-white border border-slate-200 hover:border-fresh-400 text-sm font-semibold text-slate-800 rounded-xl px-3 focus:outline-none focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 cursor-pointer transition"
+                  >
+                    <option value="featured">Featured</option>
+                    <option value="best_selling">Best Selling</option>
+                    <option value="name_asc">Alphabetically, A-Z</option>
+                    <option value="name_desc">Alphabetically, Z-A</option>
+                    <option value="price_asc">Price, low to high</option>
+                    <option value="price_desc">Price, high to low</option>
+                    <option value="latest">Date, new to old</option>
+                    <option value="oldest">Date, old to new</option>
+                  </select>
+                </div>
+              </div>
 
-            <div className={!isLoading && products.length > 0 ? '' : 'lg:col-span-2'}>
               {/* Grid */}
               {isLoading ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-6">
@@ -386,21 +348,6 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
                     </div>
                   )}
                 </>
-              ) : products.length > 0 ? (
-                <div className="text-center bg-white rounded-3xl border border-slate-200 px-6 py-16">
-                  <div className="w-14 h-14 mx-auto rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center">
-                    <SearchX className="w-7 h-7" />
-                  </div>
-                  <h2 className="mt-4 text-lg font-black text-slate-900">No products match these filters</h2>
-                  <p className="mt-1 text-sm text-slate-600 max-w-md mx-auto">Try widening the price range or removing a brand.</p>
-                  <button
-                    type="button"
-                    onClick={() => setFilters(EMPTY_FILTERS)}
-                    className="mt-6 inline-flex items-center h-11 px-5 rounded-xl bg-fresh-700 hover:bg-fresh-800 text-white text-sm font-bold transition-colors cursor-pointer"
-                  >
-                    Clear all filters
-                  </button>
-                </div>
               ) : (
                 <div className="text-center bg-white rounded-3xl border border-slate-200 px-6 py-16">
                   <div className="w-14 h-14 mx-auto rounded-2xl bg-slate-100 text-slate-500 flex items-center justify-center">

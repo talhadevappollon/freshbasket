@@ -42,10 +42,17 @@ class ProductController extends Controller
 
         // Sorting
         $sort = $request->query('sort', 'latest');
+        // The reference store's sort menu: Featured, Best Selling, A-Z, Z-A, price both ways, date both ways
         match ($sort) {
+            'featured' => $query->orderByDesc('is_featured')->latest(),
+            'best_selling' => $query->orderByDesc(
+                \Illuminate\Support\Facades\DB::table('order_items')->selectRaw('COALESCE(SUM(quantity), 0)')->whereColumn('order_items.product_id', 'products.id')
+            )->latest(),
             'price_asc' => $query->orderBy('price', 'asc'),
             'price_desc' => $query->orderBy('price', 'desc'),
             'name_asc' => $query->orderBy('name', 'asc'),
+            'name_desc' => $query->orderBy('name', 'desc'),
+            'oldest' => $query->oldest(),
             default => $query->latest(),
         };
 

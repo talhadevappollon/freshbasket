@@ -99,7 +99,7 @@ export function PromoBanner() {
 /* Offer cards (membership plans, bundles, gift baskets)                                       */
 /* ------------------------------------------------------------------------------------------ */
 
-function OfferCard({ offer }: { offer: Offer }) {
+export function OfferCard({ offer }: { offer: Offer }) {
   const off = discountOf(offer);
   const plan = offer.kind === 'plan';
   return (
@@ -135,13 +135,13 @@ function OfferRail({ id, title, offers, tileLabel, tileIcon, viewAll }: { id?: s
   const scroller = useRef<HTMLUListElement>(null);
   const by = (dir: number) => scroller.current?.scrollBy({ left: dir * 640, behavior: 'smooth' });
   return (
-    <section id={id} className="bg-[#faf6ee] py-10 scroll-mt-[var(--header-offset,120px)]">
+    <section id={id} className="py-10 scroll-mt-[var(--header-offset,120px)]">
       <div className={SHELL}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-serif text-[1.7rem] font-bold text-fresh-950 tracking-tight">{title}</h2>
           {viewAll && (
-            <Link href={viewAll} className="h-9 px-4 rounded-full bg-white border border-slate-200 text-sm font-semibold text-slate-800 flex items-center hover:border-fresh-400 transition">
-              View all
+            <Link href={viewAll} className="shrink-0 text-[15px] font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1.5">
+              View All <ArrowRight className="w-4 h-4" />
             </Link>
           )}
         </div>
@@ -172,15 +172,15 @@ function OfferRail({ id, title, offers, tileLabel, tileIcon, viewAll }: { id?: s
 
 /** 5th: Fresh House Family Membership */
 export function MembershipSection() {
-  return <OfferRail id="membership" title="Family Membership – fresh boxes every week" offers={PLANS} tileLabel="Membership" tileIcon="crown" />;
+  return <OfferRail id="membership" title="Family Membership – fresh boxes every week" offers={PLANS} tileLabel="Membership" tileIcon="crown" viewAll="/offers#membership" />;
 }
 
 /** 6th and 7th: Bundles, then Gift Baskets */
 export function BundlesAndGifts() {
   return (
     <>
-      <OfferRail id="bundles" title="Bundle boxes – save more" offers={BUNDLES} tileLabel="Offers & Bundles" tileIcon="package" viewAll="/category/karachi-gift-baskets" />
-      <OfferRail id="gift-baskets" title="Gift Baskets" offers={GIFTS} tileLabel="Gift Baskets" tileIcon="gift" viewAll="/category/karachi-gift-baskets" />
+      <OfferRail id="bundles" title="Bundle boxes – save more" offers={BUNDLES} tileLabel="Offers & Bundles" tileIcon="package" viewAll="/offers#bundles" />
+      <OfferRail id="gift-baskets" title="Gift Baskets" offers={GIFTS} tileLabel="Gift Baskets" tileIcon="gift" viewAll="/offers#gift-baskets" />
     </>
   );
 }
