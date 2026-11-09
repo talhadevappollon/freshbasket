@@ -288,10 +288,10 @@ h1, h2, h3 {
 }
 
 /* Category strip scrollbar: the classic grey bar with arrow buttons, like the reference store */
-.cat-scroll::-webkit-scrollbar { height: 10px; }
+.cat-scroll::-webkit-scrollbar { height: 8px; }
 .cat-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
 .cat-scroll::-webkit-scrollbar-thumb { background: #8c8c8c; border-radius: 6px; border: 2px solid #f1f1f1; }
 .cat-scroll::-webkit-scrollbar-thumb:hover { background: #6f6f6f; }
-.cat-scroll::-webkit-scrollbar-button:horizontal:single-button { display: block; width: 10px; height: 10px; background-color: #f1f1f1; background-repeat: no-repeat; background-position: center; background-size: 8px; }
+.cat-scroll::-webkit-scrollbar-button:horizontal:single-button { display: block; width: 8px; height: 8px; background-color: #f1f1f1; background-repeat: no-repeat; background-position: center; background-size: 8px; }
 .cat-scroll::-webkit-scrollbar-button:horizontal:start:decrement { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M6 1v6L2 4z' fill='%23777'/%3E%3C/svg%3E"); }
 .cat-scroll::-webkit-scrollbar-button:horizontal:end:increment { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M2 1v6l4-3z' fill='%23777'/%3E%3C/svg%3E"); }

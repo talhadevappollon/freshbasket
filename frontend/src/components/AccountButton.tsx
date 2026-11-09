@@ -16,7 +16,7 @@ export default function AccountButton() {
       aria-label={label}
       title={label}
       aria-haspopup="dialog"
-      className="flex items-center justify-center w-11 h-11 md:w-[46px] md:h-[46px] shrink-0 rounded-xl md:rounded-full border border-slate-200 bg-white hover:bg-fresh-50 hover:border-fresh-300 text-slate-700 hover:text-fresh-800 active:scale-95 shadow-xs transition-all duration-200 cursor-pointer"
+      className="flex items-center justify-center w-11 h-11 md:w-[40px] md:h-[40px] shrink-0 rounded-xl md:rounded-full border border-slate-200 bg-white hover:bg-fresh-50 hover:border-fresh-300 text-slate-700 hover:text-fresh-800 active:scale-95 shadow-xs transition-all duration-200 cursor-pointer"
     >
       {account ? (
         <span className="w-7 h-7 rounded-full bg-fresh-700 text-white text-[13px] font-black flex items-center justify-center" aria-hidden="true">
