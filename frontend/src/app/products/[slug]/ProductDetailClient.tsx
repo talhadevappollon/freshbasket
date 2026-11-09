@@ -254,19 +254,19 @@ export default function ProductDetailPage() {
                   <button
                     onClick={() => addToCart(product, quantity)}
                     disabled={!!unavailableLabel(product)}
-                    className="sm:flex-1 h-12 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 disabled:bg-[#fff4d6] disabled:text-[#8a5a00] disabled:shadow-none disabled:cursor-not-allowed text-white px-6 rounded-2xl font-bold text-sm shadow-xl shadow-fresh-600/25 flex items-center justify-center space-x-2 transition cursor-pointer"
+                    className="sm:flex-1 min-w-0 h-12 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 disabled:bg-[#fff4d6] disabled:text-[#8a5a00] disabled:shadow-none disabled:cursor-not-allowed text-white px-5 rounded-2xl font-bold text-sm whitespace-nowrap shadow-xl shadow-fresh-600/25 flex items-center justify-center gap-2 transition cursor-pointer"
                   >
-                    <ShoppingBag className="w-4 h-4" />
-                    <span>{unavailableLabel(product) ?? <>Add To Basket &bull; PKR {(product.price * quantity).toLocaleString()}</>}</span>
+                    <ShoppingBag className="w-4 h-4 shrink-0" />
+                    <span>{unavailableLabel(product) ?? 'Add to basket'}</span>
                   </button>
 
                   {/* Buy Now COD */}
                   <button
                     onClick={handleBuyNow}
                     disabled={!!unavailableLabel(product)}
-                    className="h-12 disabled:opacity-40 disabled:cursor-not-allowed bg-fresh-950 hover:bg-black text-white px-6 rounded-2xl font-bold text-sm shadow-md transition flex items-center justify-center space-x-1.5 cursor-pointer"
+                    className="sm:flex-1 min-w-0 h-12 disabled:opacity-40 disabled:cursor-not-allowed bg-fresh-950 hover:bg-black text-white px-5 rounded-2xl font-bold text-sm whitespace-nowrap shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <Banknote className="w-4 h-4 text-fresh-400" />
+                    <Banknote className="w-4 h-4 text-fresh-400 shrink-0" />
                     <span>Buy Now (COD)</span>
                   </button>
                 </div>

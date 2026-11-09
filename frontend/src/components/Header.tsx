@@ -722,19 +722,21 @@ export default function Header({ categories }: HeaderProps) {
             : [];
           if (kids.length === 0) return null;
           return (
-            <div className="hidden lg:block absolute left-0 right-0 top-full bg-[#f3f4ef] border-t border-slate-200/70 shadow-[0_18px_30px_-18px_rgba(8,40,24,0.45)] animate-menu-in" onMouseEnter={() => setMenuKey(menuKey)}>
-              <ul className="max-w-[1200px] mx-auto px-4 py-4 flex flex-wrap gap-4" aria-label={`${aisle?.name} sub-categories`}>
+            // Like the reference store: the panel opens in place on the page background, inside the page width,
+            // and pushes the page down (no floating band or shadow)
+            <div className="hidden lg:block bg-slate-50 animate-menu-in" onMouseEnter={() => setMenuKey(menuKey)}>
+              <ul className="max-w-[1200px] mx-auto px-4 pt-3 pb-5 flex flex-wrap gap-x-[10px] gap-y-3" aria-label={`${aisle?.name} sub-categories`}>
                 {kids.map(k => (
-                  <li key={k.id} className="w-[118px]">
+                  <li key={k.id} className="w-[105px]">
                     <Link href={`/category/${k.slug}`} className="group block text-center" onClick={() => setMenuKey(null)}>
-                      <span className="block h-[84px] bg-white rounded-sm overflow-hidden flex items-center justify-center">
+                      <span className="block h-[80px] bg-white overflow-hidden flex items-center justify-center">
                         {k.preview_images?.[0] || k.image_url ? (
                           <img src={(k.preview_images?.[0] || k.image_url) as string} alt="" loading="lazy" className="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300" />
                         ) : (
                           <span className="text-2xl" aria-hidden="true">🛒</span>
                         )}
                       </span>
-                      <span className="block mt-2 text-[12.5px] font-medium text-slate-800 leading-tight group-hover:text-fresh-700">{childLabel(k)}</span>
+                      <span className="block mt-2 text-[12.5px] font-medium text-[#173c2a] leading-tight group-hover:text-fresh-600">{childLabel(k)}</span>
                     </Link>
                   </li>
                 ))}

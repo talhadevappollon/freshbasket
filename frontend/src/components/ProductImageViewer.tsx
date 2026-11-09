@@ -32,7 +32,7 @@ export default function ProductImageViewer({ images, activeImage, onSelect, alt,
 
   return (
     <>
-      <div className="relative bg-slate-50 rounded-3xl border border-gray-100 flex items-center justify-center h-52 sm:h-96 overflow-hidden group">
+      <div className="relative bg-white rounded-3xl border border-gray-100 flex items-center justify-center h-52 sm:h-96 overflow-hidden group">
         {badge}
 
         <button
