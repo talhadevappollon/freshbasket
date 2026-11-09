@@ -23,7 +23,7 @@ export default function RecipesPage() {
     <div className="min-h-screen flex flex-col bg-slate-50">
       <Header categories={categories} />
       <ScrollUI />
-      <main id="main-content" className="flex-1 max-w-7xl w-full mx-auto px-4 py-8 sm:py-12 pb-24 md:pb-12">
+      <main id="main-content" className="flex-1 max-w-[1200px] w-full mx-auto px-4 py-8 sm:py-12 pb-24 md:pb-12">
         <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-fresh-950">Recipe Ideas</h1>
         <p className="mt-2 text-slate-600 max-w-2xl">Pick a recipe, see what goes in it and add every ingredient we stock to your basket in one tap.</p>
         <ul className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

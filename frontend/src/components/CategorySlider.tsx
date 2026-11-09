@@ -57,7 +57,7 @@ export default function CategorySlider({ categories }: CategorySliderProps) {
   const displayCats = categories.filter(c => !c.name.includes('/')).slice(0, 12);
 
   return (
-    <Reveal className="max-w-7xl mx-auto px-4 py-8">
+    <Reveal className="max-w-[1200px] mx-auto px-4 py-8">
       <div className="mb-5">
         <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Shop by category</h2>
         <p className="text-sm text-slate-600 mt-0.5">Every category has its own page, with filters and sorting.</p>

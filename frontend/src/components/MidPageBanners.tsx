@@ -42,7 +42,7 @@ export default function MidPageBanners() {
   });
 
   return (
-    <Reveal as="section" className="max-w-7xl mx-auto px-4 py-8">
+    <Reveal as="section" className="max-w-[1200px] mx-auto px-4 py-8">
       {/* Section Header */}
       <div className="flex items-center justify-between mb-6">
         <div>

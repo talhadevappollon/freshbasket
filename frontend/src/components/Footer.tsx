@@ -60,7 +60,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#f4f4f2] text-slate-900 mt-16 border-t border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 py-12 sm:py-14">
+      <div className="max-w-[1200px] mx-auto px-4 py-12 sm:py-14">
         {/* Connect with us */}
         <div className="flex flex-wrap items-center gap-x-5 gap-y-4">
           <h2 className="text-xl font-semibold text-slate-800">Connect with us</h2>

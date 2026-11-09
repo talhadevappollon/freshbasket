@@ -51,7 +51,7 @@ export default function ProductRail({ title, subtitle, products, viewAllHref, on
     'w-11 h-11 rounded-full bg-white border border-slate-200 text-slate-700 flex items-center justify-center shadow-xs transition-colors duration-200 cursor-pointer hover:bg-fresh-600 hover:border-fresh-600 hover:text-white active:bg-fresh-700 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white disabled:hover:border-slate-200 disabled:hover:text-slate-700';
 
   return (
-    <Reveal as="section" className="max-w-7xl mx-auto px-4 py-8">
+    <Reveal as="section" className="max-w-[1200px] mx-auto px-4 py-8">
       <div className="flex items-end justify-between gap-4 mb-5">
         <div className="min-w-0">
           <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">{title}</h2>

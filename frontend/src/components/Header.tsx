@@ -510,7 +510,7 @@ export default function Header({ categories }: HeaderProps) {
         data-surface="dark"
         className="bg-fresh-950 text-white md:hidden"
       >
-        <div className="max-w-7xl mx-auto px-4 h-9 flex items-center justify-between gap-4 text-xs">
+        <div className="max-w-[1200px] mx-auto px-4 h-9 flex items-center justify-between gap-4 text-xs">
           <p className="hidden md:block flex-1 text-center font-medium tracking-wide text-emerald-50">
             Daily Harvest <span className="mx-1.5 text-emerald-300/60">|</span> Free Delivery Across Karachi on Orders Rs. 2,500+
           </p>
@@ -564,7 +564,7 @@ export default function Header({ categories }: HeaderProps) {
         onMouseEnter={() => hoverTimer.current && clearTimeout(hoverTimer.current)}
       >
         {/* Main bar */}
-        <div className="max-w-7xl mx-auto px-4 py-2 sm:py-3 md:py-0">
+        <div className="max-w-[1200px] mx-auto px-4 py-2 sm:py-3 md:py-0">
           <div
             className={`flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2 md:gap-6 md:px-5 md:py-2.5 md:rounded-2xl md:border md:transition-all md:duration-500 ${
               scrolled
@@ -671,9 +671,9 @@ export default function Header({ categories }: HeaderProps) {
 
         {/* Category icon row, like the reference store: the all-categories menu, then each top-level category with its icon */}
         <nav aria-label="Shop by category" className="hidden lg:block">
-          <div className="max-w-7xl mx-auto px-4 mt-2">
+          <div className="max-w-[1200px] mx-auto px-4 mt-2">
           <div className={`h-[64px] px-4 rounded-2xl flex items-center gap-3 transition-colors duration-500 ${scrolled ? 'bg-white/55 backdrop-blur-2xl border border-white/70' : 'bg-[#f3f4ef] border border-slate-200/70'}`}>
-            <ul className="flex-1 min-w-0 flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
+            <ul className="flex-1 min-w-0 flex items-center gap-2 overflow-x-scroll pb-1.5 cat-scroll">
               {FEATURED_AISLES.map(aisle => {
                 const icon = CATEGORY_ICONS[aisle.name];
                 const isActive = activeCategory !== undefined && activeCategory.slug === resolveCategory(categories, aisle.slug)?.slug;
@@ -723,7 +723,7 @@ export default function Header({ categories }: HeaderProps) {
           if (kids.length === 0) return null;
           return (
             <div className="hidden lg:block absolute left-0 right-0 top-full bg-[#f3f4ef] border-t border-slate-200/70 shadow-[0_18px_30px_-18px_rgba(8,40,24,0.45)] animate-menu-in" onMouseEnter={() => setMenuKey(menuKey)}>
-              <ul className="max-w-7xl mx-auto px-4 py-4 flex flex-wrap gap-4" aria-label={`${aisle?.name} sub-categories`}>
+              <ul className="max-w-[1200px] mx-auto px-4 py-4 flex flex-wrap gap-4" aria-label={`${aisle?.name} sub-categories`}>
                 {kids.map(k => (
                   <li key={k.id} className="w-[118px]">
                     <Link href={`/category/${k.slug}`} className="group block text-center" onClick={() => setMenuKey(null)}>
@@ -749,7 +749,7 @@ export default function Header({ categories }: HeaderProps) {
             id="mega-panel"
             className="hidden lg:block absolute left-0 right-0 top-full bg-white border-t border-slate-100 shadow-2xl animate-menu-in"
           >
-            <div className="max-w-7xl mx-auto px-4 py-7 grid grid-cols-12 gap-8 max-h-[calc(100vh-var(--header-offset)-1rem)] overflow-y-auto">
+            <div className="max-w-[1200px] mx-auto px-4 py-7 grid grid-cols-12 gap-8 max-h-[calc(100vh-var(--header-offset)-1rem)] overflow-y-auto">
               {/* Groups */}
               <ul className="col-span-3 space-y-1" role="tablist" aria-label="Category groups">
                 {groups.map(g => {

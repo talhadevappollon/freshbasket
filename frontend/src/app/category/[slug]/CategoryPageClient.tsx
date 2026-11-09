@@ -222,7 +222,7 @@ export default function CategoryPageClient({ slug: routeSlug, initialName, initi
       <ScrollUI />
 
       <main id="main-content" className="flex-1 pb-20 sm:pb-8">
-        <div className="max-w-7xl mx-auto px-4 pt-5">
+        <div className="max-w-[1200px] mx-auto px-4 pt-5">
           {/* Breadcrumb */}
           <nav aria-label="Breadcrumb" className="hidden md:flex items-center flex-wrap gap-1 text-sm text-slate-500 mb-4">
             <Link href="/" className="hover:text-fresh-700 transition-colors">

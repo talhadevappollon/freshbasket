@@ -63,7 +63,7 @@ const BENTO_TILES: BentoTile[] = [
 
 export function BentoAisles() {
   return (
-    <Reveal as="section" className="max-w-7xl mx-auto px-4 py-10">
+    <Reveal as="section" className="max-w-[1200px] mx-auto px-4 py-10">
       <div className="mb-6">
         <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Shop by need</h2>
         <p className="text-sm text-slate-600 mt-1">Start from what’s for dinner, breakfast or the baby bag.</p>
@@ -129,7 +129,7 @@ export function DealOfTheDay({ product }: { product?: Product | null }) {
   };
 
   return (
-    <Reveal as="section" className="max-w-7xl mx-auto px-4 py-10">
+    <Reveal as="section" className="max-w-[1200px] mx-auto px-4 py-10">
       <div
         data-surface="dark"
         className="grid lg:grid-cols-2 overflow-hidden rounded-3xl bg-gradient-to-br from-fresh-950 via-fresh-900 to-[#173216] text-white"
@@ -213,7 +213,7 @@ export function DealOfTheDay({ product }: { product?: Product | null }) {
 
 export function DualPromo() {
   return (
-    <section className="max-w-7xl mx-auto px-4 py-8">
+    <section className="max-w-[1200px] mx-auto px-4 py-8">
       <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
         <Reveal variant="left">
           <div
@@ -343,7 +343,7 @@ const STATS = [
 
 export function StatsBand() {
   return (
-    <Reveal as="section" className="max-w-7xl mx-auto px-4 py-10">
+    <Reveal as="section" className="max-w-[1200px] mx-auto px-4 py-10">
       <dl className="grid grid-cols-2 lg:grid-cols-4 gap-px overflow-hidden rounded-3xl border border-slate-200 bg-slate-200">
         {STATS.map(stat => (
           <div key={stat.label} className="bg-white px-5 py-7 sm:py-9 text-center flex flex-col">
@@ -382,7 +382,7 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <Reveal as="section" className="max-w-7xl mx-auto px-4 py-10">
+    <Reveal as="section" className="max-w-[1200px] mx-auto px-4 py-10">
       <div className="text-center max-w-xl mx-auto mb-10">
         <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Groceries in three steps</h2>
         <p className="text-sm sm:text-base text-slate-600 mt-2">From basket to doorstep without the supermarket queue.</p>
@@ -448,7 +448,7 @@ export function FaqSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <Reveal as="section" className="max-w-7xl mx-auto px-4 py-10">
+    <Reveal as="section" className="max-w-[1200px] mx-auto px-4 py-10">
       <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
         <div className="lg:col-span-4">
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Questions before you order</h2>
@@ -541,7 +541,7 @@ export function NewsletterBanner() {
   };
 
   return (
-    <Reveal as="section" className="max-w-7xl mx-auto px-4 py-10">
+    <Reveal as="section" className="max-w-[1200px] mx-auto px-4 py-10">
       <div
         data-surface="dark"
         className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-fresh-950 via-fresh-900 to-[#173216] px-6 py-10 sm:px-12 sm:py-14 text-white"

@@ -106,7 +106,7 @@ export default function CartPage() {
     <div className="min-h-screen flex flex-col bg-slate-50">
       <Header categories={categories} />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:py-8 pb-20 sm:pb-8">
+      <main className="flex-1 max-w-[1200px] w-full mx-auto px-4 py-6 sm:py-8 pb-20 sm:pb-8">
         {/* Checkout Stepper Progress */}
         <div className="max-w-xl mx-auto mb-8">
           <div className="flex items-center justify-between text-xs font-bold text-slate-400">

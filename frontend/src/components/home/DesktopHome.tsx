@@ -11,7 +11,7 @@ import { BUNDLES, COMMITMENTS, GIFTS, NUT_TILES, Offer, PLANS, discountOf, whats
 
 /** The desktop home page sections, in the order set out in "Fresh House WebData Updates". */
 
-const SHELL = 'max-w-7xl mx-auto px-4';
+const SHELL = 'max-w-[1200px] mx-auto px-4';
 
 /** true once the element is within `margin` of the screen (sections only fetch products when near) */
 function useNear<T extends HTMLElement>(margin = '800px 0px') {

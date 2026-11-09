@@ -66,7 +66,7 @@ export default function HomePromoBanners() {
   });
 
   return (
-    <div className="space-y-12 my-12 max-w-7xl mx-auto px-4">
+    <div className="space-y-12 my-12 max-w-[1200px] mx-auto px-4">
       {/* SECTION 1: Dual High-Impact Lifestyle & Department Banners */}
       <Reveal as="section">
         <div className="flex items-center justify-between mb-6">

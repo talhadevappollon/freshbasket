@@ -129,7 +129,7 @@ export default function ProductDetailPage() {
     <div className="min-h-screen flex flex-col bg-slate-50">
       <Header categories={categories} />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:py-8 pb-36 sm:pb-8">
+      <main className="flex-1 max-w-[1200px] w-full mx-auto px-4 py-6 sm:py-8 pb-36 sm:pb-8">
         {/* Breadcrumb */}
         <div className="flex items-center flex-wrap space-x-2 text-xs text-gray-400 mb-4 sm:mb-6 font-medium min-h-11">
           <Link href="/" className="hover:text-fresh-600 transition flex items-center gap-1 min-h-11">

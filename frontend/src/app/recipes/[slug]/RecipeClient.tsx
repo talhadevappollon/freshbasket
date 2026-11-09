@@ -50,7 +50,7 @@ export default function RecipeClient({ slug }: { slug: string }) {
     <div className="min-h-screen flex flex-col bg-slate-50">
       <Header categories={categories} />
       <ScrollUI />
-      <main id="main-content" className="flex-1 max-w-7xl w-full mx-auto px-4 py-6 sm:py-10 pb-24 md:pb-12">
+      <main id="main-content" className="flex-1 max-w-[1200px] w-full mx-auto px-4 py-6 sm:py-10 pb-24 md:pb-12">
         <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-sm text-slate-500 mb-5">
           <Link href="/" className="hover:text-fresh-700">
             Home

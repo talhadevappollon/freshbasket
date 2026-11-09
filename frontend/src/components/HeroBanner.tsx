@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
  * Home page slider. Every slide is one banner image, so its height is fixed by the picture:
  * the shape never jumps between slides, and phones simply show the whole banner smaller.
  *
- * To add a banner: export it at 2496 x 1200 px, save a 2496-wide and a 1248-wide WebP in public/banners,
+ * To add a banner: export it at 1024 x 376 px (the reference store's banner shape), save a 2496-wide and a 1248-wide WebP in public/banners,
  * and add a line below.
  */
 interface BannerSlide {
@@ -20,7 +20,7 @@ interface BannerSlide {
 }
 
 const BANNER_WIDTH = 2496;
-const BANNER_HEIGHT = 1200;
+const BANNER_HEIGHT = 917;
 
 const BANNER_SLIDES: BannerSlide[] = [
   {
@@ -34,6 +34,12 @@ const BANNER_SLIDES: BannerSlide[] = [
     alt: 'Fresh House, the house of freshness, is coming soon to Karachi. Fresher choices closer to you.',
     small: '/banners/coming-soon-karachi-1248.webp',
     large: '/banners/coming-soon-karachi-2496.webp',
+  },
+  {
+    id: 'wrapped-with-love',
+    alt: 'Fresh House: wrapped with love. A gold-embossed green gift box carrying the Fresh House logo.',
+    small: '/banners/wrapped-with-love-1248.webp',
+    large: '/banners/wrapped-with-love-2496.webp',
   },
 ];
 
@@ -76,7 +82,7 @@ export default function HeroBanner() {
     'hidden sm:flex absolute top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/30 hover:bg-black/55 active:scale-95 text-white items-center justify-center backdrop-blur-md border border-white/30 transition-all duration-200 cursor-pointer opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100';
 
   return (
-    <div className="max-w-7xl mx-auto px-4 pt-4 sm:pt-6 pb-2">
+    <div className="max-w-[1200px] mx-auto px-4 pt-4 sm:pt-6 pb-2">
       <div
         className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-fresh-50 shadow-lg sm:shadow-2xl group"
         role="region"
@@ -105,7 +111,7 @@ export default function HeroBanner() {
                 <img
                   src={s.small}
                   srcSet={`${s.small} 1248w, ${s.large} 2496w`}
-                  sizes="(min-width: 1344px) 1248px, calc(100vw - 32px)"
+                  sizes="(min-width: 1232px) 1168px, calc(100vw - 32px)"
                   width={BANNER_WIDTH}
                   height={BANNER_HEIGHT}
                   alt={s.alt}
