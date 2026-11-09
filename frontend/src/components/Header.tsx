@@ -202,7 +202,7 @@ function SearchBox({ inputRef }: SearchBoxProps) {
         Search products
       </label>
       <div className="relative group">
-        <Search className="w-4.5 h-4.5 text-slate-400 group-focus-within:text-fresh-600 transition-colors absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <Search className="w-4.5 h-4.5 md:w-5 md:h-5 text-slate-400 md:text-slate-800 group-focus-within:text-fresh-600 transition-colors absolute left-4 md:left-auto md:right-5 top-1/2 -translate-y-1/2 pointer-events-none" />
         <input
           id="site-search"
           name="q"
@@ -218,10 +218,10 @@ function SearchBox({ inputRef }: SearchBoxProps) {
           onChange={e => setQuery(e.target.value)}
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
-          placeholder="Search groceries…"
-          className="w-full h-10 sm:h-11 bg-slate-100/80 hover:bg-slate-100 focus:bg-white border border-transparent focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 pl-11 pr-11 md:pr-20 rounded-xl text-sm text-slate-900 placeholder-slate-500 outline-none transition-all duration-200 [&::-webkit-search-cancel-button]:hidden"
+          placeholder="Search fruits, veggies, dry fruits…"
+          className="w-full h-10 sm:h-11 bg-slate-100/80 hover:bg-slate-100 focus:bg-white border border-transparent focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 pl-11 pr-11 md:pl-6 md:pr-24 rounded-xl md:rounded-full md:h-[46px] md:bg-white md:hover:bg-white md:text-[15px] text-sm text-slate-900 placeholder-slate-500 outline-none transition-all duration-200 [&::-webkit-search-cancel-button]:hidden"
         />
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
+        <div className="absolute right-3 md:right-12 top-1/2 -translate-y-1/2 flex items-center gap-2">
           {loading && <Loader2 className="w-4 h-4 text-fresh-600 animate-spin" aria-hidden="true" />}
           {query ? (
             <button
@@ -508,7 +508,7 @@ export default function Header({ categories }: HeaderProps) {
           (Collapsing it inside the sticky header changed the page height mid-scroll and made the header flicker.) */}
       <div
         data-surface="dark"
-        className="bg-fresh-950 text-white"
+        className="bg-fresh-950 text-white md:hidden"
       >
         <div className="max-w-7xl mx-auto px-4 h-9 flex items-center justify-between gap-4 text-xs">
           <p className="hidden md:block flex-1 text-center font-medium tracking-wide text-emerald-50">
@@ -552,10 +552,10 @@ export default function Header({ categories }: HeaderProps) {
       <header
         ref={headerRef}
         data-tucked={searchTucked && !searchFocused ? 'true' : 'false'}
-        className={`header-tuck sticky top-0 z-40 border-b md:border-b-0 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-500 ${
+        className={`header-tuck sticky top-0 z-40 border-b md:border-b-0 md:pt-3 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-500 ${
           scrolled
-            ? 'bg-white/90 backdrop-blur-xl border-slate-200 shadow-card md:bg-white/40 md:backdrop-blur-2xl md:shadow-[0_14px_30px_-18px_rgba(8,40,24,0.5)]'
-            : 'bg-white border-slate-100 md:bg-gradient-to-b md:from-fresh-950 md:to-[#0f3a26] md:border-transparent'
+            ? 'bg-white/90 backdrop-blur-xl border-slate-200 shadow-card md:bg-transparent md:backdrop-blur-none md:shadow-none md:border-transparent'
+            : 'bg-white border-slate-100 md:bg-transparent md:border-transparent'
         }`}
         onMouseLeave={() => {
           closeMega();
@@ -565,7 +565,13 @@ export default function Header({ categories }: HeaderProps) {
       >
         {/* Main bar */}
         <div className="max-w-7xl mx-auto px-4 py-2 sm:py-3 md:py-0">
-          <div className="flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2 md:gap-6 md:px-1 md:py-3">
+          <div
+            className={`flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2 md:gap-6 md:px-5 md:py-2.5 md:rounded-2xl md:border md:transition-all md:duration-500 ${
+              scrolled
+                ? 'md:bg-white/45 md:backdrop-blur-2xl md:border-white/70 md:shadow-[0_14px_30px_-18px_rgba(8,40,24,0.5)]'
+                : 'md:bg-gradient-to-r md:from-fresh-950 md:to-[#0f3a26] md:border-[#d9b25a]/40 md:shadow-[0_10px_24px_-14px_rgba(8,40,24,0.6)]'
+            }`}
+          >
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}
@@ -615,7 +621,7 @@ export default function Header({ categories }: HeaderProps) {
             <div
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
-              className={`order-4 md:order-3 w-full md:w-auto md:flex-1 md:max-w-2xl md:mx-auto max-md:transition-[opacity,transform,visibility] max-md:duration-300 ${
+              className={`order-4 md:order-3 w-full md:w-auto md:flex-1 md:max-w-[460px] md:mx-auto max-md:transition-[opacity,transform,visibility] max-md:duration-300 ${
                 searchTucked && !searchFocused ? 'max-md:opacity-0 max-md:-translate-y-2 max-md:invisible max-md:pointer-events-none' : ''
               }`}
             >
@@ -641,20 +647,20 @@ export default function Header({ categories }: HeaderProps) {
                 type="button"
                 onClick={() => setIsCartOpen(true)}
                 aria-label={`Open basket, ${totalItems} item${totalItems === 1 ? '' : 's'}, PKR ${subtotal.toLocaleString()}`}
-                className={`flex items-center gap-3 h-11 px-3 sm:px-4 rounded-xl active:scale-[0.97] text-white transition-all duration-300 cursor-pointer sheen bg-fresh-700 hover:bg-fresh-800 shadow-lg shadow-fresh-700/20 ${scrolled ? '' : 'md:bg-white/15 md:hover:bg-white/25 md:shadow-none md:ring-1 md:ring-white/25'}`}
+                className={`flex items-center gap-3 h-11 px-3 sm:px-4 rounded-xl active:scale-[0.97] text-white transition-all duration-300 cursor-pointer sheen bg-fresh-700 hover:bg-fresh-800 shadow-lg shadow-fresh-700/20 md:rounded-full md:w-[46px] md:h-[46px] md:px-0 md:justify-center md:bg-white md:text-slate-900 md:hover:bg-fresh-50 md:shadow-none`}
               >
                 <span className="relative">
                   <ShoppingBag className="w-5 h-5" />
                   {totalItems > 0 && (
                     <span
                       key={bumpKey}
-                      className="absolute -top-2 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-brand-600 text-white ring-2 ring-fresh-700 text-[11px] font-black flex items-center justify-center animate-bump"
+                      className="absolute -top-2 -right-2.5 min-w-[18px] h-[18px] px-1 rounded-full bg-brand-600 text-white ring-2 ring-fresh-700 md:ring-white text-[11px] font-black flex items-center justify-center animate-bump"
                     >
                       {totalItems}
                     </span>
                   )}
                 </span>
-                <span className="hidden sm:block text-left leading-tight">
+                <span className="hidden sm:block md:hidden text-left leading-tight">
                   <span className="block text-[11px] text-emerald-200 font-medium">My basket</span>
                   <span className="block text-sm font-bold tabular-nums">PKR {subtotal.toLocaleString()}</span>
                 </span>
@@ -664,9 +670,10 @@ export default function Header({ categories }: HeaderProps) {
         </div>
 
         {/* Category icon row, like the reference store: the all-categories menu, then each top-level category with its icon */}
-        <nav aria-label="Shop by category" className={`hidden lg:block transition-colors duration-500 ${scrolled ? 'bg-white/45' : 'bg-[#f3f4ef]'}`}>
-          <div className="max-w-7xl mx-auto px-4 h-[82px] flex items-center gap-3">
-            <ul className="flex-1 min-w-0 flex items-center justify-between gap-1 overflow-x-auto no-scrollbar">
+        <nav aria-label="Shop by category" className="hidden lg:block">
+          <div className="max-w-7xl mx-auto px-4 mt-2">
+          <div className={`h-[64px] px-4 rounded-2xl flex items-center gap-3 transition-colors duration-500 ${scrolled ? 'bg-white/55 backdrop-blur-2xl border border-white/70' : 'bg-[#f3f4ef] border border-slate-200/70'}`}>
+            <ul className="flex-1 min-w-0 flex items-center gap-2 overflow-x-auto pb-1 [scrollbar-width:thin]">
               {FEATURED_AISLES.map(aisle => {
                 const icon = CATEGORY_ICONS[aisle.name];
                 const isActive = activeCategory !== undefined && activeCategory.slug === resolveCategory(categories, aisle.slug)?.slug;
@@ -675,7 +682,7 @@ export default function Header({ categories }: HeaderProps) {
                     <Link
                       href={`/category/${aisle.slug}`}
                       aria-current={isActive ? 'true' : undefined}
-                      className={`group flex flex-col items-center justify-center gap-1 h-[70px] px-3 rounded-xl text-[13px] font-semibold whitespace-nowrap transition-colors duration-200 ${
+                      className={`group flex items-center gap-2 h-[50px] px-3 rounded-xl text-[15px] font-semibold whitespace-nowrap transition-colors duration-200 ${
                         isActive ? 'bg-white text-fresh-800 ring-1 ring-fresh-200 shadow-xs' : menuKey === aisle.slug ? 'text-fresh-600' : 'text-slate-800 hover:text-fresh-800 active:bg-fresh-50'
                       }`}
                     >
@@ -683,15 +690,15 @@ export default function Header({ categories }: HeaderProps) {
                         <img
                           src={icon}
                           alt=""
-                          width={40}
-                          height={40}
+                          width={36}
+                          height={36}
                           loading="lazy"
                           decoding="async"
-                          className={`w-10 h-10 object-contain transition-all duration-300 group-hover:scale-110 group-hover:grayscale-0 group-hover:saturate-150 ${isActive ? '' : 'grayscale contrast-125 brightness-75'}`}
+                          className={`w-9 h-9 object-contain transition-all duration-300 group-hover:scale-110 group-hover:grayscale-0 group-hover:saturate-150 ${isActive ? '' : 'grayscale contrast-125 brightness-75'}`}
                         />
                       ) : (
                         <CupSoda
-                          className={`w-10 h-10 p-1 transition-all duration-300 group-hover:scale-110 group-hover:text-fresh-600 ${isActive ? 'text-fresh-600' : 'text-slate-600'}`}
+                          className={`w-9 h-9 p-1 transition-all duration-300 group-hover:scale-110 group-hover:text-fresh-600 ${isActive ? 'text-fresh-600' : 'text-slate-600'}`}
                           strokeWidth={1.3}
                           aria-hidden="true"
                         />
@@ -702,6 +709,7 @@ export default function Header({ categories }: HeaderProps) {
                 );
               })}
             </ul>
+          </div>
           </div>
         </nav>
 
