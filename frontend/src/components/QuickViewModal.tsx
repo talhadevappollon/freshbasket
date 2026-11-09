@@ -130,7 +130,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
                 className="flex-1 h-12 min-w-0 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 active:scale-[0.98] disabled:bg-slate-300 disabled:cursor-not-allowed text-white px-4 rounded-xl text-sm font-bold shadow-lg shadow-fresh-600/25 flex items-center justify-center gap-2 transition cursor-pointer"
               >
                 <ShoppingBag className="w-4 h-4 shrink-0" />
-                <span className="truncate">Add · PKR {(product.price * qty).toLocaleString()}</span>
+                <span className="truncate">Add to cart</span>
               </button>
             </div>
 

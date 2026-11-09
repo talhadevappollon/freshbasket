@@ -257,7 +257,7 @@ export default function ProductDetailPage() {
                     className="sm:flex-1 min-w-0 h-12 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 disabled:bg-[#fff4d6] disabled:text-[#8a5a00] disabled:shadow-none disabled:cursor-not-allowed text-white px-5 rounded-2xl font-bold text-sm whitespace-nowrap shadow-xl shadow-fresh-600/25 flex items-center justify-center gap-2 transition cursor-pointer"
                   >
                     <ShoppingBag className="w-4 h-4 shrink-0" />
-                    <span>{unavailableLabel(product) ?? 'Add to basket'}</span>
+                    <span>{unavailableLabel(product) ?? 'Add to cart'}</span>
                   </button>
 
                   {/* Buy Now COD */}
@@ -406,7 +406,7 @@ export default function ProductDetailPage() {
             className="h-12 px-5 rounded-xl bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 disabled:bg-slate-300 text-white text-sm font-bold flex items-center gap-2 cursor-pointer transition-colors"
           >
             <ShoppingBag className="w-4 h-4" />
-            {unavailableLabel(product) ?? `Add${quantity > 1 ? ` ${quantity}` : ''} to basket`}
+            {unavailableLabel(product) ?? 'Add to cart'}
           </button>
         </div>
       </div>

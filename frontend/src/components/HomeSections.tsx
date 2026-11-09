@@ -196,7 +196,7 @@ export function DealOfTheDay({ product }: { product?: Product | null }) {
                 </>
               ) : (
                 <>
-                  <Plus className="w-4 h-4" /> Add to basket
+                  <Plus className="w-4 h-4" /> Add to cart
                 </>
               )}
             </button>
