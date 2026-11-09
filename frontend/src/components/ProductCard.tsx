@@ -35,7 +35,7 @@ const CARD_MASK: React.CSSProperties = {
   maskRepeat: 'no-repeat',
 };
 
-const BLOCK_MASK: React.CSSProperties = {
+export const BLOCK_MASK: React.CSSProperties = {
   WebkitMaskImage: svg('0 0 148 58', 'M0 3Q74 13 148 3V41Q74 71 0 41Z'),
   maskImage: svg('0 0 148 58', 'M0 3Q74 13 148 3V41Q74 71 0 41Z'),
   WebkitMaskSize: '100% 100%',

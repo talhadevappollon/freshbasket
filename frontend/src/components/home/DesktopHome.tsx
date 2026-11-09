@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ChevronLeft, ChevronRight, Clock, CreditCard, Crown, Gift, HandHeart, MapPin, Package, PackageCheck, Smartphone, Sprout, Store } from 'lucide-react';
-import ProductCard from '@/components/ProductCard';
+import ProductCard, { BLOCK_MASK } from '@/components/ProductCard';
 import { fetchProducts } from '@/lib/api';
 import { Product } from '@/types';
 import recipes from '@/data/recipes.json';
@@ -119,7 +119,8 @@ function OfferCard({ offer }: { offer: Offer }) {
         href={whatsappLink(`Assalam-o-Alaikum! I'd like to order: ${offer.name} (Rs ${offer.price.toLocaleString()}).`)}
         target="_blank"
         rel="noreferrer"
-        className="mt-auto h-11 rounded-full bg-gradient-to-b from-fresh-600 to-fresh-800 text-white text-xs font-extrabold tracking-wide uppercase flex items-center justify-center hover:brightness-110 active:scale-95 transition"
+        style={BLOCK_MASK}
+        className="mt-auto h-[59px] pb-4 bg-[#f0f4ea] hover:bg-[#bbea70] text-[#3e872a] text-[13px] font-extrabold tracking-wide uppercase flex items-center justify-center transition-colors duration-300"
       >
         {plan ? 'Choose plan' : 'Order on WhatsApp'}
       </a>
