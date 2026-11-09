@@ -172,15 +172,15 @@ function OfferRail({ id, title, offers, tileLabel, tileIcon, viewAll }: { id?: s
 
 /** 5th: Fresh House Family Membership */
 export function MembershipSection() {
-  return <OfferRail id="membership" title="Family Membership – fresh boxes every week" offers={PLANS} tileLabel="Membership" tileIcon="crown" viewAll="/offers#membership" />;
+  return <OfferRail id="membership" title="Family Membership – fresh boxes every week" offers={PLANS} tileLabel="Membership" tileIcon="crown" viewAll="/membership-plans" />;
 }
 
 /** 6th and 7th: Bundles, then Gift Baskets */
 export function BundlesAndGifts() {
   return (
     <>
-      <OfferRail id="bundles" title="Bundle boxes – save more" offers={BUNDLES} tileLabel="Offers & Bundles" tileIcon="package" viewAll="/offers#bundles" />
-      <OfferRail id="gift-baskets" title="Gift Baskets" offers={GIFTS} tileLabel="Gift Baskets" tileIcon="gift" viewAll="/offers#gift-baskets" />
+      <OfferRail id="bundles" title="Bundle boxes – save more" offers={BUNDLES} tileLabel="Offers & Bundles" tileIcon="package" viewAll="/bundle-boxes" />
+      <OfferRail id="gift-baskets" title="Gift Baskets" offers={GIFTS} tileLabel="Gift Baskets" tileIcon="gift" viewAll="/gift-baskets" />
     </>
   );
 }
