@@ -566,7 +566,7 @@ export default function Header({ categories }: HeaderProps) {
         {/* Main bar */}
         <div className="max-w-[1200px] mx-auto px-4 py-2 sm:py-3 md:py-0">
           <div
-            className={`flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2 md:gap-6 md:px-5 md:py-2.5 md:rounded-2xl md:border md:transition-all md:duration-500 ${
+            className={`flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2 md:gap-6 md:px-5 md:py-[8px] md:rounded-2xl md:border md:transition-all md:duration-500 ${
               scrolled
                 ? 'md:bg-white/45 md:backdrop-blur-2xl md:border-white/70 md:shadow-[0_14px_30px_-18px_rgba(8,40,24,0.5)]'
                 : 'md:bg-gradient-to-r md:from-fresh-950 md:to-[#0f3a26] md:border-[#d9b25a]/40 md:shadow-[0_10px_24px_-14px_rgba(8,40,24,0.6)]'
@@ -672,8 +672,8 @@ export default function Header({ categories }: HeaderProps) {
         {/* Category icon row, like the reference store: the all-categories menu, then each top-level category with its icon */}
         <nav aria-label="Shop by category" className="hidden lg:block">
           <div className="max-w-[1200px] mx-auto px-4 mt-2">
-          <div className={`h-[64px] px-4 rounded-2xl flex items-center gap-3 transition-colors duration-500 ${scrolled ? 'bg-white/55 backdrop-blur-2xl border border-white/70' : 'bg-[#f3f4ef] border border-slate-200/70'}`}>
-            <ul className="flex-1 min-w-0 flex items-center gap-2 overflow-x-scroll pb-1.5 cat-scroll">
+          <div className={`h-[56px] px-4 rounded-2xl flex items-center gap-3 transition-colors duration-500 ${scrolled ? 'bg-white/55 backdrop-blur-2xl border border-white/70' : 'bg-[#f3f4ef] border border-slate-200/70'}`}>
+            <ul className="flex-1 min-w-0 flex items-center gap-2 overflow-x-scroll pb-1 cat-scroll">
               {FEATURED_AISLES.map(aisle => {
                 const icon = CATEGORY_ICONS[aisle.name];
                 const isActive = activeCategory !== undefined && activeCategory.slug === resolveCategory(categories, aisle.slug)?.slug;
@@ -682,7 +682,7 @@ export default function Header({ categories }: HeaderProps) {
                     <Link
                       href={`/category/${aisle.slug}`}
                       aria-current={isActive ? 'true' : undefined}
-                      className={`group flex items-center gap-2 h-[50px] px-3 rounded-xl text-[15px] font-semibold whitespace-nowrap transition-colors duration-200 ${
+                      className={`group flex items-center gap-2 h-[40px] px-3 rounded-xl text-[15px] font-semibold whitespace-nowrap transition-colors duration-200 ${
                         isActive ? 'bg-white text-fresh-800 ring-1 ring-fresh-200 shadow-xs' : menuKey === aisle.slug ? 'text-fresh-600' : 'text-slate-800 hover:text-fresh-800 active:bg-fresh-50'
                       }`}
                     >
@@ -694,11 +694,11 @@ export default function Header({ categories }: HeaderProps) {
                           height={36}
                           loading="lazy"
                           decoding="async"
-                          className={`w-9 h-9 object-contain transition-all duration-300 group-hover:scale-110 group-hover:grayscale-0 group-hover:saturate-150 ${isActive ? '' : 'grayscale contrast-125 brightness-75'}`}
+                          className={`w-8 h-8 object-contain transition-all duration-300 group-hover:scale-110 group-hover:grayscale-0 group-hover:saturate-150 ${isActive ? '' : 'grayscale contrast-125 brightness-75'}`}
                         />
                       ) : (
                         <CupSoda
-                          className={`w-9 h-9 p-1 transition-all duration-300 group-hover:scale-110 group-hover:text-fresh-600 ${isActive ? 'text-fresh-600' : 'text-slate-600'}`}
+                          className={`w-8 h-8 p-1 transition-all duration-300 group-hover:scale-110 group-hover:text-fresh-600 ${isActive ? 'text-fresh-600' : 'text-slate-600'}`}
                           strokeWidth={1.3}
                           aria-hidden="true"
                         />
