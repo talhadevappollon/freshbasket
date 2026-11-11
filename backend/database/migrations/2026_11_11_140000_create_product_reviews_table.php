@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('product_reviews');
         Schema::create('product_reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->nullable()->constrained('products')->nullOnDelete();
+            $table->unsignedBigInteger('product_id')->nullable()->index();
             $table->string('product_slug', 191)->index();
             $table->string('product_name', 191)->nullable();
             $table->string('customer_name', 191);

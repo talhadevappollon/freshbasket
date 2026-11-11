@@ -61,6 +61,13 @@ $projectRoot = dirname($repoRoot); // /home2/aneetako/freshbasket.aneetakomal.co
 // 1. Pull latest code from GitHub
 echo "[1/4] Pulling latest git changes...\n";
 chdir($projectRoot);
+
+// Clean stale git locks if prior process was interrupted
+$lockFile = $projectRoot . '/.git/index.lock';
+if (file_exists($lockFile)) {
+    @unlink($lockFile);
+}
+
 $gitOutput = shell_exec('git pull origin main 2>&1');
 echo $gitOutput . "\n";
 
