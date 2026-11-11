@@ -68,7 +68,8 @@ if (file_exists($lockFile)) {
     @unlink($lockFile);
 }
 
-$gitOutput = shell_exec('git pull origin main 2>&1');
+// The server copy is deploy-only: make it match GitHub exactly so stale/modified build files can never block a pull
+$gitOutput = shell_exec('git fetch origin main 2>&1 && git reset --hard FETCH_HEAD 2>&1 && git clean -fd backend/public/_next 2>&1');
 echo $gitOutput . "\n";
 
 // 2. Execute deploy.sh
