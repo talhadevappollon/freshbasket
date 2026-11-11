@@ -236,7 +236,7 @@ export default function ProductDetailPage() {
                 {/* Variant / Size Selector */}
                 {product.variants && product.variants.length > 0 && (
                   <div className="my-5 p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80">
-                    <div className="flex items-center justify-between mb-2.5">
+                    <div className="flex items-center gap-2 mb-3">
                       <span className="text-xs font-black text-emerald-950 uppercase tracking-wide">
                         Select Option / Size:
                       </span>
@@ -244,7 +244,15 @@ export default function ProductDetailPage() {
                         {selectedVariant?.title || product.variants[0].title}
                       </span>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div
+                      className={`grid gap-2.5 ${
+                        product.variants.length === 2
+                          ? 'grid-cols-2'
+                          : product.variants.length === 4
+                          ? 'grid-cols-2 sm:grid-cols-4'
+                          : 'grid-cols-1 sm:grid-cols-3'
+                      }`}
+                    >
                       {product.variants.map(v => {
                         const isSelected = (selectedVariant?.id ?? product.variants![0].id) === v.id;
                         return (
@@ -255,14 +263,20 @@ export default function ProductDetailPage() {
                               setSelectedVariant(v);
                               if (v.image) setActiveImage(v.image);
                             }}
-                            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                            className={`p-3 rounded-xl text-center transition-all cursor-pointer flex flex-col items-center justify-center min-h-[64px] ${
                               isSelected
                                 ? 'bg-fresh-600 text-white shadow-md shadow-fresh-600/30 ring-2 ring-fresh-600 scale-[1.02]'
-                                : 'bg-white text-gray-700 border border-gray-200 hover:border-fresh-400 hover:bg-fresh-50/50'
+                                : 'bg-white text-gray-800 border border-gray-200 hover:border-fresh-400 hover:bg-white'
                             }`}
                           >
-                            <span>{v.title}</span>
-                            <span className={`text-[11px] ${isSelected ? 'text-emerald-100 font-semibold' : 'text-gray-500 font-semibold'}`}>
+                            <span className="text-xs font-bold leading-tight">
+                              {v.title}
+                            </span>
+                            <span
+                              className={`text-[12px] font-extrabold mt-1 ${
+                                isSelected ? 'text-emerald-100' : 'text-fresh-800'
+                              }`}
+                            >
                               PKR {v.price.toLocaleString()}
                             </span>
                           </button>
