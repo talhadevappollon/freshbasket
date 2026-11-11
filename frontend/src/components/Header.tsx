@@ -564,7 +564,7 @@ export default function Header({ categories }: HeaderProps) {
           <div
             className={`flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2 md:gap-4 md:px-5 md:py-2 md:rounded-2xl md:border md:transition-all md:duration-500 ${
               scrolled
-                ? 'md:bg-[#072417]/82 md:backdrop-blur-xl md:border-emerald-600/30 md:shadow-[0_12px_28px_-16px_rgba(8,40,24,0.6)]'
+                ? 'md:bg-[#134d30]/72 md:backdrop-blur-md md:border-white/20 md:shadow-[0_12px_28px_-16px_rgba(8,40,24,0.4)]'
                 : 'md:bg-gradient-to-r md:from-fresh-950 md:to-[#0f3a26] md:border-[#d9b25a]/40 md:shadow-[0_10px_24px_-14px_rgba(8,40,24,0.6)]'
             }`}
           >
@@ -600,7 +600,9 @@ export default function Header({ categories }: HeaderProps) {
                 />
                 <span
                   aria-hidden="true"
-                  className="hidden md:block absolute inset-0 transition-opacity duration-500 opacity-100"
+                  className={`hidden md:block absolute inset-0 transition-opacity duration-500 ${
+                    scrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'
+                  }`}
                   style={{
                     background: 'linear-gradient(180deg,#f8e9ae 0%,#dcb355 38%,#a8741f 64%,#efcf7c 100%)',
                     WebkitMaskImage: 'url(/logo.png)',
