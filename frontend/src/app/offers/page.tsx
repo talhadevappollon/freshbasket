@@ -33,7 +33,7 @@ export default function OffersPage() {
         <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-fresh-950">Memberships, bundles &amp; gift baskets</h1>
         {SECTIONS.map(sec => (
           <section key={sec.id} id={sec.id} className="mt-10 scroll-mt-[calc(var(--header-offset,120px)+12px)]" aria-labelledby={`${sec.id}-title`}>
-            <h2 id={`${sec.id}-title`} className="font-serif text-[1.6rem] font-bold text-fresh-950 mb-4">
+            <h2 id={`${sec.id}-title`} className="text-2xl font-black text-fresh-950 mb-4 tracking-tight">
               {sec.title}
             </h2>
             <ul className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">

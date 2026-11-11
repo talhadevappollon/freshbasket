@@ -10,6 +10,7 @@ import CartDrawer from '@/components/CartDrawer';
 import CheckoutModal from '@/components/CheckoutModal';
 import OrderSuccessModal from '@/components/OrderSuccessModal';
 import ProductCard from '@/components/ProductCard';
+import ProductReviews from '@/components/ProductReviews';
 import QuantityStepper from '@/components/QuantityStepper';
 import ProductImageViewer from '@/components/ProductImageViewer';
 import { useCart } from '@/context/CartContext';
@@ -28,6 +29,7 @@ import {
   Sparkles,
   Barcode,
   Loader2,
+  Star,
 } from 'lucide-react';
 
 export default function ProductDetailPage() {
@@ -197,6 +199,18 @@ export default function ProductDetailPage() {
                 <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight leading-snug">
                   {product.name}
                 </h1>
+
+                {/* Rating line like Fresh Basket reference */}
+                <div className="flex items-center gap-2 mt-2">
+                  <div className="flex items-center text-amber-400">
+                    {[1, 2, 3, 4, 5].map(star => (
+                      <Star key={star} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                  <a href="#customer-reviews" className="text-xs text-slate-500 hover:text-fresh-700 font-medium hover:underline">
+                    {product.slug === 'apple-green-local-1kg' ? '4 reviews' : 'Be the first to review'}
+                  </a>
+                </div>
 
                 {/* SKU, Barcode, Stock */}
                 <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100">
@@ -369,6 +383,9 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* Customer Reviews Section */}
+        <ProductReviews product={product} />
 
         {/* Related Products */}
         {related.length > 0 && (

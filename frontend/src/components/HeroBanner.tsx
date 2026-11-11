@@ -84,7 +84,7 @@ export default function HeroBanner() {
   return (
     <div className="max-w-[1200px] mx-auto px-4 pt-4 sm:pt-6 pb-2">
       <div
-        className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-fresh-50 shadow-lg sm:shadow-2xl group"
+        className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-fresh-50 shadow-lg sm:shadow-2xl group w-full aspect-[2496/917]"
         role="region"
         aria-roledescription="carousel"
         aria-label="Featured banners"
@@ -95,8 +95,8 @@ export default function HeroBanner() {
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {/* All slides share one grid cell, so the box is as tall as the picture and the slides cross-fade in place */}
-        <div className="grid" aria-live={autoplay && !isPaused ? 'off' : 'polite'}>
+        {/* All slides share one grid cell, with fixed aspect ratio matching the reference store */}
+        <div className="grid w-full h-full" aria-live={autoplay && !isPaused ? 'off' : 'polite'}>
           {BANNER_SLIDES.map((s, i) => {
             const active = i === currentSlide;
             return (
@@ -106,7 +106,7 @@ export default function HeroBanner() {
                 aria-roledescription="slide"
                 aria-label={`${i + 1} of ${count}`}
                 aria-hidden={!active}
-                className={`col-start-1 row-start-1 transition-opacity duration-700 ease-out ${active ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                className={`col-start-1 row-start-1 w-full h-full transition-opacity duration-700 ease-out ${active ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
               >
                 <img
                   src={s.small}
@@ -119,7 +119,7 @@ export default function HeroBanner() {
                   fetchPriority={i === 0 ? 'high' : 'auto'}
                   decoding="async"
                   draggable={false}
-                  className="block w-full h-auto select-none"
+                  className="block w-full h-full object-cover select-none"
                 />
               </div>
             );

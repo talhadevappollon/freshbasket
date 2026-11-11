@@ -24,7 +24,7 @@ interface ProductCardProps {
 const svg = (viewBox: string, d: string) =>
   `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='${viewBox}' preserveAspectRatio='none'%3E%3Cpath d='${d}'/%3E%3C/svg%3E")`;
 
-const CARD_MASK: React.CSSProperties = {
+export const CARD_MASK: React.CSSProperties = {
   WebkitMaskImage: `linear-gradient(#000,#000), ${svg('0 0 100 24', 'M0 0H100V2Q50 46 0 2Z')}`,
   maskImage: `linear-gradient(#000,#000), ${svg('0 0 100 24', 'M0 0H100V2Q50 46 0 2Z')}`,
   WebkitMaskSize: '100% calc(100% - 23px), 100% 24px',

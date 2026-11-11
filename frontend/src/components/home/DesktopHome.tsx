@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, ChevronLeft, ChevronRight, Clock, CreditCard, Crown, Gift, HandHeart, MapPin, Package, PackageCheck, Smartphone, Sprout, Store } from 'lucide-react';
-import ProductCard, { BLOCK_MASK } from '@/components/ProductCard';
+import ProductCard, { BLOCK_MASK, CARD_MASK } from '@/components/ProductCard';
 import { fetchProducts } from '@/lib/api';
 import { Product } from '@/types';
 import recipes from '@/data/recipes.json';
@@ -103,27 +103,31 @@ export function OfferCard({ offer }: { offer: Offer }) {
   const off = discountOf(offer);
   const plan = offer.kind === 'plan';
   return (
-    <article className="bg-white rounded-3xl p-3.5 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] border border-slate-100 flex flex-col h-full text-center hover:-translate-y-0.5 hover:shadow-card-hover transition duration-300">
-      <div className="relative rounded-2xl bg-[#f8f4ec] aspect-square flex items-center justify-center overflow-hidden">
-        {off && <span className="absolute top-2 left-2 text-[11px] font-bold text-white bg-[#cf6c4d] rounded-full px-2.5 py-1">Save</span>}
-        {off && <span className="absolute top-2 right-2 text-[11px] font-bold text-brand-700 bg-white rounded-full w-9 h-9 flex items-center justify-center shadow-xs">{off}%</span>}
-        <img src={offer.image} alt="" loading="lazy" decoding="async" className="w-full h-full object-contain p-3" />
+    <article className="relative h-full group [filter:drop-shadow(0_1px_1.5px_rgba(23,60,42,0.13))]">
+      <div className="h-full flex flex-col bg-white rounded-t-[10px] p-[15px] text-center" style={CARD_MASK}>
+        <div className="relative rounded-2xl bg-[#f8f4ec] aspect-square flex items-center justify-center overflow-hidden">
+          {off && <span className="absolute top-2 left-2 text-[11px] font-bold text-white bg-[#cf6c4d] rounded-full px-2.5 py-1 z-10">Save</span>}
+          {off && <span className="absolute top-2 right-2 text-[11px] font-bold text-brand-700 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-xs z-10">{off}%</span>}
+          <img src={offer.image} alt={offer.name} loading="lazy" decoding="async" className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out-expo" />
+        </div>
+        <h3 className="mt-3 text-[13px] font-semibold text-[#173c2a] leading-[22px] min-h-[44px] line-clamp-2">{offer.name}</h3>
+        <div className="mt-auto pt-1 mb-2">
+          {offer.was && <s className="block text-[0.7rem] text-slate-400 tabular-nums">Rs.{offer.was.toLocaleString()}</s>}
+          <p className="text-[20px] md:text-[17px] font-extrabold leading-[28px] text-[#173c2a] tabular-nums">
+            Rs.{offer.price.toLocaleString()}
+          </p>
+          <p className="text-[11px] text-slate-500 min-h-[1.2rem] truncate">{offer.note}</p>
+        </div>
+        <a
+          href={whatsappLink(`Assalam-o-Alaikum! I'd like to order: ${offer.name} (Rs ${offer.price.toLocaleString()}).`)}
+          target="_blank"
+          rel="noreferrer"
+          style={BLOCK_MASK}
+          className="h-[52px] pb-3 bg-[#f0f4ea] hover:bg-[#bbea70] text-[#3e872a] text-[12px] font-extrabold tracking-wide uppercase flex items-center justify-center transition-colors duration-300"
+        >
+          {plan ? 'Choose plan' : 'Order on WhatsApp'}
+        </a>
       </div>
-      <h3 className="mt-3 text-[15px] font-semibold text-slate-900 leading-snug min-h-[2.8rem]">{offer.name}</h3>
-      <p className="mt-1 font-serif">
-        {offer.was && <span className="text-sm text-slate-400 line-through mr-1.5">Rs {offer.was.toLocaleString()}</span>}
-        <span className="text-lg font-bold text-fresh-900">Rs {offer.price.toLocaleString()}</span>
-      </p>
-      <p className="text-xs text-slate-500 mt-0.5 min-h-[1.5rem]">{offer.note}</p>
-      <a
-        href={whatsappLink(`Assalam-o-Alaikum! I'd like to order: ${offer.name} (Rs ${offer.price.toLocaleString()}).`)}
-        target="_blank"
-        rel="noreferrer"
-        style={BLOCK_MASK}
-        className="mt-auto h-[59px] pb-4 bg-[#f0f4ea] hover:bg-[#bbea70] text-[#3e872a] text-[13px] font-extrabold tracking-wide uppercase flex items-center justify-center transition-colors duration-300"
-      >
-        {plan ? 'Choose plan' : 'Order on WhatsApp'}
-      </a>
     </article>
   );
 }
@@ -138,7 +142,7 @@ function OfferRail({ id, title, offers, tileLabel, tileIcon, viewAll }: { id?: s
     <section id={id} className="py-10 scroll-mt-[var(--header-offset,120px)]">
       <div className={SHELL}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-serif text-[1.7rem] font-bold text-fresh-950 tracking-tight">{title}</h2>
+          <h2 className="text-2xl font-black text-fresh-950 tracking-tight">{title}</h2>
           {viewAll && (
             <Link href={viewAll} className="shrink-0 text-[15px] font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1.5">
               View All <ArrowRight className="w-4 h-4" />
@@ -150,7 +154,7 @@ function OfferRail({ id, title, offers, tileLabel, tileIcon, viewAll }: { id?: s
             <li className="snap-start shrink-0 w-[190px] relative rounded-3xl overflow-hidden bg-white shadow-card hidden md:block">
               <span className="absolute inset-0 bg-gradient-to-br from-[#dff3d4] via-[#f4efe0] to-[#e9dcc0]" aria-hidden="true" />
               <TileIcon className="absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 w-24 h-24 text-fresh-700/70" strokeWidth={1.1} aria-hidden="true" />
-              <span className="absolute left-3 right-3 bottom-3 rounded-xl bg-white/85 backdrop-blur text-center py-3 font-serif font-bold text-fresh-950">{tileLabel}</span>
+              <span className="absolute left-3 right-3 bottom-3 rounded-xl bg-white/90 backdrop-blur text-center py-2.5 font-bold text-sm text-fresh-950 shadow-xs">{tileLabel}</span>
             </li>
             {offers.map(o => (
               <li key={o.key} className="snap-start shrink-0 w-[215px]">

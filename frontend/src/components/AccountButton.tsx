@@ -16,14 +16,14 @@ export default function AccountButton() {
       aria-label={label}
       title={label}
       aria-haspopup="dialog"
-      className="flex items-center justify-center w-11 h-11 md:w-[40px] md:h-[40px] shrink-0 rounded-xl md:rounded-full border border-slate-200 bg-white hover:bg-fresh-50 hover:border-fresh-300 text-slate-700 hover:text-fresh-800 active:scale-95 shadow-xs transition-all duration-200 cursor-pointer"
+      className="flex items-center justify-center w-9 h-9 md:w-[34px] md:h-[34px] shrink-0 rounded-xl md:rounded-full border border-slate-200 bg-white hover:bg-fresh-50 hover:border-fresh-300 text-slate-700 hover:text-fresh-800 active:scale-95 shadow-xs transition-all duration-200 cursor-pointer"
     >
       {account ? (
-        <span className="w-7 h-7 rounded-full bg-fresh-700 text-white text-[13px] font-black flex items-center justify-center" aria-hidden="true">
+        <span className="w-6 h-6 rounded-full bg-fresh-700 text-white text-[11px] font-black flex items-center justify-center" aria-hidden="true">
           {account.name.trim().charAt(0).toUpperCase()}
         </span>
       ) : (
-        <UserRound className="w-5 h-5" aria-hidden="true" />
+        <UserRound className="w-4 h-4" aria-hidden="true" />
       )}
     </button>
   );
