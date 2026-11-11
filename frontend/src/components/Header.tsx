@@ -669,7 +669,7 @@ export default function Header({ categories }: HeaderProps) {
         {/* Category icon row, like the reference store: the all-categories menu, then each top-level category with its icon */}
         <nav aria-label="Shop by category" className="hidden lg:block">
           <div className="max-w-[1200px] mx-auto px-4 mt-0.5">
-          <div className={`h-[44px] px-4 rounded-2xl flex items-center gap-3 transition-colors duration-500 ${scrolled ? 'bg-[#cfeed4]/80 backdrop-blur-xl border border-[#8fcf9b]/60 shadow-xs' : 'bg-[#f3f4ef] border border-slate-200/70'}`}>
+          <div className={`h-[44px] px-4 rounded-2xl flex items-center gap-3 transition-colors duration-500 ${scrolled ? 'bg-white/90 backdrop-blur-xl border border-slate-200/80 shadow-xs' : 'bg-[#f3f4ef] border border-slate-200/70'}`}>
             <ul className="flex-1 min-w-0 flex items-center gap-2 overflow-x-scroll pb-0.5 cat-scroll">
               {FEATURED_AISLES.map(aisle => {
                 const icon = CATEGORY_ICONS[aisle.name];
