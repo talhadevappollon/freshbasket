@@ -105,12 +105,14 @@ export function OfferCard({ offer }: { offer: Offer }) {
   return (
     <article className="relative h-full group [filter:drop-shadow(0_1px_1.5px_rgba(23,60,42,0.13))]">
       <div className="h-full flex flex-col bg-white rounded-t-[10px] p-[15px] text-center" style={CARD_MASK}>
-        <div className="relative rounded-2xl bg-[#f8f4ec] aspect-square flex items-center justify-center overflow-hidden">
-          {off && <span className="absolute top-2 left-2 text-[11px] font-bold text-white bg-[#cf6c4d] rounded-full px-2.5 py-1 z-10">Save</span>}
-          {off && <span className="absolute top-2 right-2 text-[11px] font-bold text-brand-700 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-xs z-10">{off}%</span>}
-          <img src={offer.image} alt={offer.name} loading="lazy" decoding="async" className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out-expo" />
-        </div>
-        <h3 className="mt-3 text-[13px] font-semibold text-[#173c2a] leading-[22px] min-h-[44px] line-clamp-2">{offer.name}</h3>
+        <Link href={`/products/${offer.key}`} className="block group-hover:opacity-95 transition-opacity">
+          <div className="relative rounded-2xl bg-[#f8f4ec] aspect-square flex items-center justify-center overflow-hidden">
+            {off && <span className="absolute top-2 left-2 text-[11px] font-bold text-white bg-[#cf6c4d] rounded-full px-2.5 py-1 z-10">Save</span>}
+            {off && <span className="absolute top-2 right-2 text-[11px] font-bold text-brand-700 bg-white rounded-full w-8 h-8 flex items-center justify-center shadow-xs z-10">{off}%</span>}
+            <img src={offer.image} alt={offer.name} loading="lazy" decoding="async" className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out-expo" />
+          </div>
+          <h3 className="mt-3 text-[13px] font-semibold text-[#173c2a] leading-[22px] min-h-[44px] line-clamp-2 hover:text-fresh-700 transition-colors">{offer.name}</h3>
+        </Link>
         <div className="mt-auto pt-1 mb-2">
           {offer.was && <s className="block text-[0.7rem] text-slate-400 tabular-nums">Rs.{offer.was.toLocaleString()}</s>}
           <p className="text-[20px] md:text-[17px] font-extrabold leading-[28px] text-[#173c2a] tabular-nums">
@@ -118,15 +120,13 @@ export function OfferCard({ offer }: { offer: Offer }) {
           </p>
           <p className="text-[11px] text-slate-500 min-h-[1.2rem] truncate">{offer.note}</p>
         </div>
-        <a
-          href={whatsappLink(`Assalam-o-Alaikum! I'd like to order: ${offer.name} (Rs ${offer.price.toLocaleString()}).`)}
-          target="_blank"
-          rel="noreferrer"
+        <Link
+          href={`/products/${offer.key}`}
           style={BLOCK_MASK}
           className="h-[52px] pb-3 bg-[#f0f4ea] hover:bg-[#bbea70] text-[#3e872a] text-[12px] font-extrabold tracking-wide uppercase flex items-center justify-center transition-colors duration-300"
         >
-          {plan ? 'Choose plan' : 'Order on WhatsApp'}
-        </a>
+          {plan ? 'View Plan & Sizes' : 'Select Size & Options'}
+        </Link>
       </div>
     </article>
   );

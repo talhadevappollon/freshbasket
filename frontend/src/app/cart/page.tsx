@@ -213,15 +213,18 @@ export default function CartPage() {
                 </div>
 
                 <div className="divide-y divide-slate-100">
-                  {items.map(item => (
+                  {items.map(item => {
+                    const itemKey = item.variant ? `${item.product.id}-${item.variant.id}` : `${item.product.id}`;
+                    const itemPrice = item.variant?.price ?? item.product.price;
+                    return (
                     <div
-                      key={item.product.id}
+                      key={itemKey}
                       className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-50/50 transition"
                     >
                       <div className="flex items-center space-x-4">
                         <Link href={`/products/${item.product.slug}`} className="shrink-0">
                           <img
-                            src={item.product.primary_image || PLACEHOLDER_IMG}
+                            src={item.variant?.image || item.product.primary_image || PLACEHOLDER_IMG}
                             alt={item.product.name}
                             className="w-16 h-16 object-contain rounded-2xl bg-white border border-slate-200 p-1"
                           />
@@ -236,8 +239,13 @@ export default function CartPage() {
                           >
                             {item.product.name}
                           </Link>
+                          {item.variant && (
+                            <span className="inline-block px-2 py-0.5 mt-0.5 rounded bg-fresh-50 text-fresh-800 text-[11px] font-bold border border-fresh-200">
+                              {item.variant.title}
+                            </span>
+                          )}
                           <span className="text-xs text-slate-500 font-mono mt-0.5 block">
-                            {item.product.unit || 'Per Unit'} &bull; SKU: {item.product.sku}
+                            {item.variant?.unit || item.product.unit || 'Per Unit'} &bull; SKU: {item.product.sku}
                           </span>
                         </div>
                       </div>
@@ -248,20 +256,20 @@ export default function CartPage() {
                           min={0}
                           max={item.product.stock_quantity > 0 ? item.product.stock_quantity : 99}
                           label={item.product.name}
-                          onChange={q => updateQuantity(item.product.id, q)}
+                          onChange={q => updateQuantity(item.product.id, q, item.variant?.id)}
                         />
 
                         <div className="text-right min-w-[90px]">
                           <span className="font-black text-sm text-slate-900 block font-mono">
-                            PKR {(item.product.price * item.quantity).toLocaleString()}
+                            PKR {(itemPrice * item.quantity).toLocaleString()}
                           </span>
                           <span className="text-[11px] text-slate-400">
-                            PKR {item.product.price.toLocaleString()} each
+                            PKR {itemPrice.toLocaleString()} each
                           </span>
                         </div>
 
                         <button
-                          onClick={() => removeFromCart(item.product.id)}
+                          onClick={() => removeFromCart(item.product.id, item.variant?.id)}
                           className="text-slate-400 hover:text-rose-600 p-1 transition"
                           title="Remove item"
                         >
@@ -269,7 +277,8 @@ export default function CartPage() {
                         </button>
                       </div>
                     </div>
-                  ))}
+                  );
+                })}
                 </div>
               </div>
 

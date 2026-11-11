@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { Product } from '@/types';
-import { Star, ShieldCheck, Check, UploadCloud, ChevronDown, User, CheckCircle2 } from 'lucide-react';
+import { Star, ShieldCheck, Check, UploadCloud, ChevronDown, User, CheckCircle2, Loader2 } from 'lucide-react';
+import { API_BASE } from '@/lib/api';
 
 export interface ProductReview {
   id: string;
@@ -96,6 +97,7 @@ interface ProductReviewsProps {
 export default function ProductReviews({ product }: ProductReviewsProps) {
   const [reviews, setReviews] = useState<ProductReview[]>([]);
   const [isWriting, setIsWriting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [sortBy, setSortBy] = useState<'recent' | 'highest' | 'lowest'>('recent');
 
   // Form State
@@ -110,22 +112,58 @@ export default function ProductReviews({ product }: ProductReviewsProps) {
 
   const storageKey = `fb_reviews_${product.slug}`;
 
-  // Load reviews on mount or product change
+  // Load reviews on mount or product change from API with fallback
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(storageKey);
-      if (saved) {
-        setReviews(JSON.parse(saved));
-      } else if (DEFAULT_SAMPLE_REVIEWS[product.slug]) {
-        setReviews(DEFAULT_SAMPLE_REVIEWS[product.slug]);
-      } else {
-        setReviews([]);
+    let active = true;
+
+    async function loadReviews() {
+      try {
+        const res = await fetch(`${API_BASE}/products/${product.slug}/reviews`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.reviews) && json.reviews.length > 0) {
+            const apiReviews: ProductReview[] = json.reviews.map((r: any) => ({
+              id: String(r.id),
+              author: r.customer_name || 'Customer',
+              rating: Number(r.rating) || 5,
+              title: r.review_title || 'Review',
+              content: r.review_body || '',
+              date: r.created_at || 'Recently',
+              verified: Boolean(r.is_verified),
+              image: r.media_urls?.[0] || undefined,
+            }));
+            if (active) {
+              setReviews(apiReviews);
+              return;
+            }
+          }
+        }
+      } catch {
+        // Backend API offline or unreachable, fallback below
       }
-    } catch {
-      setReviews(DEFAULT_SAMPLE_REVIEWS[product.slug] || []);
+
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) {
+          if (active) {
+            setReviews(JSON.parse(saved));
+            return;
+          }
+        }
+      } catch {}
+
+      if (active) {
+        setReviews(DEFAULT_SAMPLE_REVIEWS[product.slug] || []);
+      }
     }
+
+    loadReviews();
     setIsWriting(false);
     setSubmittedMessage(false);
+
+    return () => {
+      active = false;
+    };
   }, [product.slug, storageKey]);
 
   // Calculate rating stats
@@ -147,10 +185,11 @@ export default function ProductReviews({ product }: ProductReviewsProps) {
     }
   };
 
-  const handleSubmitReview = (e: React.FormEvent) => {
+  const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !content.trim() || !author.trim()) return;
+    if (!title.trim() || !content.trim() || !author.trim() || isSubmitting) return;
 
+    setIsSubmitting(true);
     const today = new Date();
     const formattedDate = `${String(today.getMonth() + 1).padStart(2, '0')}/${String(today.getDate()).padStart(2, '0')}/${today.getFullYear()}`;
 
@@ -166,6 +205,32 @@ export default function ProductReviews({ product }: ProductReviewsProps) {
       image: previewImage || undefined,
     };
 
+    try {
+      const res = await fetch(`${API_BASE}/products/${product.slug}/reviews`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          rating,
+          customer_name: author.trim(),
+          customer_email: email.trim() || 'customer@freshbasket.com.pk',
+          review_title: title.trim(),
+          review_body: content.trim(),
+          media_urls: previewImage ? [previewImage] : null,
+        }),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.review?.id) {
+          newRev.id = String(json.review.id);
+        }
+      }
+    } catch {
+      // offline fallback
+    }
+
     const updated = [newRev, ...reviews];
     setReviews(updated);
     try {
@@ -179,6 +244,7 @@ export default function ProductReviews({ product }: ProductReviewsProps) {
     setEmail('');
     setPreviewImage(null);
     setIsWriting(false);
+    setIsSubmitting(false);
     setSubmittedMessage(true);
     setTimeout(() => setSubmittedMessage(false), 5000);
   };
@@ -406,9 +472,11 @@ export default function ProductReviews({ product }: ProductReviewsProps) {
             </button>
             <button
               type="submit"
-              className="w-full sm:w-auto px-8 py-2.5 rounded-md bg-[#2d7d32] hover:bg-[#256b2a] text-white font-bold text-xs shadow-md transition active:scale-95 cursor-pointer"
+              disabled={isSubmitting}
+              className="w-full sm:w-auto px-8 py-2.5 rounded-md bg-[#2d7d32] hover:bg-[#256b2a] disabled:bg-slate-400 text-white font-bold text-xs shadow-md transition active:scale-95 cursor-pointer flex items-center justify-center gap-2"
             >
-              Submit Review
+              {isSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+              {isSubmitting ? 'Submitting…' : 'Submit Review'}
             </button>
           </div>
         </form>

@@ -15,7 +15,7 @@ import QuantityStepper from '@/components/QuantityStepper';
 import ProductImageViewer from '@/components/ProductImageViewer';
 import { useCart } from '@/context/CartContext';
 import { fetchCategories, fetchProductBySlug } from '@/lib/api';
-import { Product, Category } from '@/types';
+import { Product, Category, ProductVariant } from '@/types';
 import { unavailableLabel } from '@/lib/availability';
 import {
   ShoppingBag,
@@ -39,6 +39,7 @@ export default function ProductDetailPage() {
 
   const { addToCart, setIsCheckoutOpen } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [related, setRelated] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [activeImage, setActiveImage] = useState<string>('');
@@ -70,6 +71,9 @@ export default function ProductDetailPage() {
         setProduct(res.product);
         setRelated(res.related);
         setActiveImage(res.product.primary_image || '');
+        if (res.product.variants && res.product.variants.length > 0) {
+          setSelectedVariant(res.product.variants[0]);
+        }
       }
       setIsLoading(false);
     });
@@ -85,7 +89,7 @@ export default function ProductDetailPage() {
 
   const handleBuyNow = () => {
     if (!product) return;
-    addToCart(product, quantity);
+    addToCart(product, quantity, selectedVariant || undefined);
     setIsCheckoutOpen(true);
   };
 
@@ -229,18 +233,58 @@ export default function ProductDetailPage() {
                   </span>
                 </div>
 
+                {/* Variant / Size Selector */}
+                {product.variants && product.variants.length > 0 && (
+                  <div className="my-5 p-4 rounded-2xl bg-emerald-50/60 border border-emerald-200/80">
+                    <div className="flex items-center justify-between mb-2.5">
+                      <span className="text-xs font-black text-emerald-950 uppercase tracking-wide">
+                        Select Option / Size:
+                      </span>
+                      <span className="text-xs font-bold text-fresh-700 bg-white px-2.5 py-0.5 rounded-full border border-fresh-200">
+                        {selectedVariant?.title || product.variants[0].title}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {product.variants.map(v => {
+                        const isSelected = (selectedVariant?.id ?? product.variants![0].id) === v.id;
+                        return (
+                          <button
+                            key={v.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedVariant(v);
+                              if (v.image) setActiveImage(v.image);
+                            }}
+                            className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                              isSelected
+                                ? 'bg-fresh-600 text-white shadow-md shadow-fresh-600/30 ring-2 ring-fresh-600 scale-[1.02]'
+                                : 'bg-white text-gray-700 border border-gray-200 hover:border-fresh-400 hover:bg-fresh-50/50'
+                            }`}
+                          >
+                            <span>{v.title}</span>
+                            <span className={`text-[11px] ${isSelected ? 'text-emerald-100 font-semibold' : 'text-gray-500 font-semibold'}`}>
+                              PKR {v.price.toLocaleString()}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {/* Pricing Block */}
                 <div className="my-6 p-4 rounded-2xl bg-gray-50/80 border border-gray-100 flex items-baseline space-x-3">
                   <span className="text-3xl sm:text-4xl font-black text-gray-900">
-                    PKR {product.price.toLocaleString()}
+                    PKR {(selectedVariant?.price ?? product.price).toLocaleString()}
                   </span>
-                  {product.compare_at_price && product.compare_at_price > product.price && (
+                  {(selectedVariant?.compare_at_price ?? product.compare_at_price) &&
+                    (selectedVariant?.compare_at_price ?? product.compare_at_price)! > (selectedVariant?.price ?? product.price) && (
                     <span className="text-base text-gray-400 line-through">
-                      PKR {product.compare_at_price.toLocaleString()}
+                      PKR {(selectedVariant?.compare_at_price ?? product.compare_at_price)!.toLocaleString()}
                     </span>
                   )}
                   <span className="text-xs text-gray-500 font-medium">
-                    / {product.unit || '1 unit'} (Tax Included)
+                    / {selectedVariant?.unit || product.unit || '1 unit'} (Tax Included)
                   </span>
                 </div>
 
@@ -266,7 +310,7 @@ export default function ProductDetailPage() {
 
                   {/* Add to Cart */}
                   <button
-                    onClick={() => addToCart(product, quantity)}
+                    onClick={() => addToCart(product, quantity, selectedVariant || undefined)}
                     disabled={!!unavailableLabel(product)}
                     className="sm:flex-1 min-w-0 h-12 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 disabled:bg-[#fff4d6] disabled:text-[#8a5a00] disabled:shadow-none disabled:cursor-not-allowed text-white px-5 rounded-2xl font-bold text-sm whitespace-nowrap shadow-xl shadow-fresh-600/25 flex items-center justify-center gap-2 transition cursor-pointer"
                   >
@@ -412,13 +456,13 @@ export default function ProductDetailPage() {
       >
         <div className="flex items-center gap-3 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200 shadow-2xl p-2 pl-4">
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-slate-500 truncate">{product.name}</p>
-            <p className="text-base font-black text-slate-900">PKR {(product.price * quantity).toLocaleString()}</p>
+            <p className="text-xs text-slate-500 truncate">{product.name} {selectedVariant ? `(${selectedVariant.title})` : ''}</p>
+            <p className="text-base font-black text-slate-900">PKR {((selectedVariant?.price ?? product.price) * quantity).toLocaleString()}</p>
           </div>
           <button
             type="button"
             tabIndex={ctaVisible ? -1 : 0}
-            onClick={() => addToCart(product, quantity)}
+            onClick={() => addToCart(product, quantity, selectedVariant || undefined)}
             disabled={product.stock_quantity <= 0 || !!unavailableLabel(product)}
             className="h-12 px-5 rounded-xl bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 disabled:bg-slate-300 text-white text-sm font-bold flex items-center gap-2 cursor-pointer transition-colors"
           >

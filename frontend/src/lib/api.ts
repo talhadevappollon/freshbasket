@@ -153,24 +153,26 @@ export async function fetchProductBySlug(slug: string): Promise<{ product: Produ
   // Fallback lookup
   const rawList = fallbackData.products as any[];
   const foundIndex = rawList.findIndex(p => p.slug === slug || String(p.external_id) === slug);
+  let resolvedIndex = foundIndex;
   if (foundIndex === -1) {
     // Try partial match
     const altIndex = rawList.findIndex(p => p.slug.includes(slug) || slug.includes(p.slug));
     if (altIndex === -1 && rawList.length > 0) {
       return null;
     }
+    resolvedIndex = altIndex;
   }
 
-  const p = rawList[foundIndex !== -1 ? foundIndex : 0];
+  const p = rawList[resolvedIndex !== -1 ? resolvedIndex : 0];
   const product: Product = {
-    id: p.external_id || 1,
-    category_id: 1,
+    id: p.external_id ? Number(p.external_id) : (p.id ? Number(p.id) : (resolvedIndex !== -1 ? resolvedIndex + 1 : 1)),
+    category_id: p.category_id || 1,
     name: p.name,
     slug: p.slug,
-    sku: p.sku,
+    sku: p.sku || `FB-${p.slug}`,
     barcode: p.barcode,
     description: p.description,
-    short_description: p.description?.slice(0, 120),
+    short_description: p.short_description || p.description?.slice(0, 120),
     brand: p.brand || 'Fresh House',
     price: Number(p.price) || 150,
     compare_at_price: p.compare_at_price ? Number(p.compare_at_price) : null,
@@ -179,11 +181,12 @@ export async function fetchProductBySlug(slug: string): Promise<{ product: Produ
     unit: p.unit || '1 unit',
     primary_image: p.primary_image,
     is_featured: true,
-    images: (p.images || []).map((img: string, idx: number) => ({
+    images: (p.images && p.images.length > 0 ? p.images : [p.primary_image].filter(Boolean)).map((img: string, idx: number) => ({
       id: idx + 1,
       image_url: img,
       is_primary: idx === 0,
     })),
+    variants: p.variants || undefined,
   };
 
   const related: Product[] = rawList.slice(0, 4).map((rp, i) => ({

@@ -68,4 +68,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Leads / Customer Inquiries
     Route::get('/leads', [AdminController::class, 'leads'])->name('leads');
     Route::post('/leads/{id}', [AdminController::class, 'updateLead'])->name('leads.update');
+
+    // Customer Reviews Management (Edit, Delete, Toggle Approval)
+    Route::get('/reviews', [AdminController::class, 'reviews'])->name('reviews');
+    Route::post('/reviews/{id}/update', [AdminController::class, 'updateReview'])->name('reviews.update');
+    Route::post('/reviews/{id}/toggle', [AdminController::class, 'toggleReviewStatus'])->name('reviews.toggle');
+    Route::post('/reviews/{id}/delete', [AdminController::class, 'deleteReview'])->name('reviews.delete');
 });

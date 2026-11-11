@@ -126,43 +126,52 @@ export default function CartDrawer() {
                 </button>
               </div>
             ) : (
-              items.map(item => (
-                <div key={item.product.id} className="py-4 flex items-center justify-between gap-3">
-                  <Link
-                    href={`/products/${item.product.slug}`}
-                    onClick={() => setIsCartOpen(false)}
-                    className="shrink-0"
-                  >
-                    <img
-                      src={item.product.primary_image || PLACEHOLDER_IMG}
-                      alt={item.product.name}
-                      className="w-14 h-14 object-contain rounded-xl border border-gray-100 p-1 hover:scale-105 transition"
-                    />
-                  </Link>
-
-                  <div className="flex-1 min-w-0">
+              items.map(item => {
+                const itemKey = item.variant ? `${item.product.id}-${item.variant.id}` : `${item.product.id}`;
+                const itemPrice = item.variant?.price ?? item.product.price;
+                return (
+                  <div key={itemKey} className="py-4 flex items-center justify-between gap-3">
                     <Link
                       href={`/products/${item.product.slug}`}
                       onClick={() => setIsCartOpen(false)}
-                      className="text-sm font-bold text-gray-900 truncate block hover:text-fresh-600 transition"
+                      className="shrink-0"
                     >
-                      {item.product.name}
+                      <img
+                        src={item.variant?.image || item.product.primary_image || PLACEHOLDER_IMG}
+                        alt={item.product.name}
+                        className="w-14 h-14 object-contain rounded-xl border border-gray-100 p-1 hover:scale-105 transition"
+                      />
                     </Link>
-                    <p className="text-[11px] text-gray-400">{item.product.unit || '1 unit'}</p>
-                    <p className="text-xs font-bold text-emerald-800 mt-0.5">
-                      PKR {item.product.price.toLocaleString()}
-                    </p>
-                  </div>
 
-                  <QuantityStepper
-                    value={item.quantity}
-                    min={0}
-                    max={item.product.stock_quantity > 0 ? item.product.stock_quantity : 99}
-                    label={item.product.name}
-                    onChange={q => updateQuantity(item.product.id, q)}
-                  />
-                </div>
-              ))
+                    <div className="flex-1 min-w-0">
+                      <Link
+                        href={`/products/${item.product.slug}`}
+                        onClick={() => setIsCartOpen(false)}
+                        className="text-sm font-bold text-gray-900 truncate block hover:text-fresh-600 transition"
+                      >
+                        {item.product.name}
+                      </Link>
+                      {item.variant && (
+                        <span className="inline-block px-1.5 py-0.5 mt-0.5 rounded bg-fresh-50 text-fresh-800 text-[10px] font-bold border border-fresh-200">
+                          {item.variant.title}
+                        </span>
+                      )}
+                      <p className="text-[11px] text-gray-400">{item.variant?.unit || item.product.unit || '1 unit'}</p>
+                      <p className="text-xs font-bold text-emerald-800 mt-0.5">
+                        PKR {itemPrice.toLocaleString()}
+                      </p>
+                    </div>
+
+                    <QuantityStepper
+                      value={item.quantity}
+                      min={0}
+                      max={item.product.stock_quantity > 0 ? item.product.stock_quantity : 99}
+                      label={item.product.name}
+                      onChange={q => updateQuantity(item.product.id, q, item.variant?.id)}
+                    />
+                  </div>
+                );
+              })
             )}
           </div>
 

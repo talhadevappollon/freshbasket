@@ -13,6 +13,16 @@ export interface Category {
   preview_images?: string[];
 }
 
+export interface ProductVariant {
+  id: number;
+  title: string; // e.g. "Small", "Medium", "Large", "Extra Large" or "Weekly (4 Boxes)"
+  price: number;
+  compare_at_price?: number | null;
+  unit?: string;
+  image?: string;
+  sku?: string;
+}
+
 export interface Product {
   id: number;
   category_id: number;
@@ -34,11 +44,13 @@ export interface Product {
   availability?: 'available' | 'out_of_stock' | 'out_of_season';
   category?: Category;
   images?: { id: number; image_url: string; is_primary: boolean }[];
+  variants?: ProductVariant[];
 }
 
 export interface CartItem {
   product: Product;
   quantity: number;
+  variant?: ProductVariant;
 }
 
 export interface OrderCustomer {

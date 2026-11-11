@@ -688,31 +688,40 @@ export default function CheckoutModal() {
 
               {/* Scrollable Items List */}
               <div className="max-h-60 overflow-y-auto divide-y divide-gray-200/60 pr-1 space-y-2">
-                {items.map(item => (
-                  <div key={item.product.id} className="pt-2 flex items-center gap-3">
-                    <div className="relative w-14 h-14 shrink-0 rounded-xl bg-white border border-gray-200 overflow-hidden flex items-center justify-center p-1">
-                      <img
-                        src={item.product.primary_image}
-                        alt={item.product.name}
-                        className="max-h-full max-w-full object-contain"
-                      />
-                      <span className="absolute -top-1 -right-1 bg-gray-600 text-white text-[10px] font-black rounded-full w-4 h-4 flex items-center justify-center shadow-xs">
-                        {item.quantity}
-                      </span>
+                {items.map(item => {
+                  const itemPrice = item.variant?.price ?? item.product.price;
+                  const itemKey = item.variant ? `${item.product.id}-${item.variant.id}` : `${item.product.id}`;
+                  return (
+                    <div key={itemKey} className="pt-2 flex items-center gap-3">
+                      <div className="relative w-14 h-14 shrink-0 rounded-xl bg-white border border-gray-200 overflow-hidden flex items-center justify-center p-1">
+                        <img
+                          src={item.variant?.image || item.product.primary_image}
+                          alt={item.product.name}
+                          className="max-h-full max-w-full object-contain"
+                        />
+                        <span className="absolute -top-1 -right-1 bg-gray-600 text-white text-[10px] font-black rounded-full w-4 h-4 flex items-center justify-center shadow-xs">
+                          {item.quantity}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-gray-800 line-clamp-2 leading-tight">
+                          {item.product.name}
+                        </p>
+                        {item.variant && (
+                          <span className="inline-block px-1.5 py-0.2 rounded bg-fresh-50 text-fresh-800 text-[10px] font-bold border border-fresh-200 mt-0.5">
+                            {item.variant.title}
+                          </span>
+                        )}
+                        <p className="text-[11px] text-gray-500">{item.variant?.unit || item.product.unit}</p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-xs font-bold text-gray-900">
+                          PKR {(itemPrice * item.quantity).toLocaleString()}
+                        </p>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-bold text-gray-800 line-clamp-2 leading-tight">
-                        {item.product.name}
-                      </p>
-                      <p className="text-[11px] text-gray-500">{item.product.unit}</p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <p className="text-xs font-bold text-gray-900">
-                        PKR {(item.product.price * item.quantity).toLocaleString()}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {/* Discount Code Input */}

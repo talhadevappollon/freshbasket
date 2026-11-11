@@ -14,13 +14,14 @@ import { fetchCategories, fetchProductBySlug } from '@/lib/api';
 import { unavailableLabel } from '@/lib/availability';
 import { Category, Product } from '@/types';
 import recipes from '@/data/recipes.json';
-import { ChevronRight, Clock, Users, ShoppingBasket, Check, ArrowLeft } from 'lucide-react';
+import { ChevronRight, Clock, Users, ShoppingBasket, Check, ArrowLeft, Loader2 } from 'lucide-react';
 
 export default function RecipeClient({ slug }: { slug: string }) {
   const recipe = recipes.find(r => r.slug === slug);
-  const { addToCart, setIsCartOpen } = useCart();
+  const { addMultipleToCart, setIsCartOpen } = useCart();
   const [categories, setCategories] = useState<Category[]>([]);
   const [products, setProducts] = useState<Product[] | null>(null);
+  const [isAdding, setIsAdding] = useState(false);
   const [added, setAdded] = useState<number | null>(null);
 
   useEffect(() => {
@@ -41,9 +42,13 @@ export default function RecipeClient({ slug }: { slug: string }) {
   const orderable = (products ?? []).filter(p => !unavailableLabel(p));
 
   const addAll = () => {
-    orderable.forEach(p => addToCart(p, 1));
-    setAdded(orderable.length);
-    setIsCartOpen(true);
+    if (orderable.length === 0 || isAdding) return;
+    setIsAdding(true);
+    setTimeout(() => {
+      addMultipleToCart(orderable.map(p => ({ product: p, quantity: 1 })));
+      setIsAdding(false);
+      setAdded(orderable.length);
+    }, 350);
   };
 
   return (
@@ -144,11 +149,19 @@ export default function RecipeClient({ slug }: { slug: string }) {
                 <button
                   type="button"
                   onClick={addAll}
-                  disabled={orderable.length === 0}
-                  className="mt-6 h-12 px-7 rounded-xl bg-fresh-600 hover:bg-fresh-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold flex items-center gap-2 active:scale-95 transition cursor-pointer"
+                  disabled={orderable.length === 0 || isAdding}
+                  className="mt-6 h-12 px-7 rounded-xl bg-fresh-600 hover:bg-fresh-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold flex items-center gap-2 active:scale-95 transition cursor-pointer shadow-sm shadow-fresh-600/30"
                 >
-                  {added !== null ? <Check className="w-5 h-5" /> : <ShoppingBasket className="w-5 h-5" />}
-                  Add All to Cart{orderable.length > 0 ? ` (${orderable.length})` : ''}
+                  {isAdding ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : added !== null ? (
+                    <Check className="w-5 h-5" />
+                  ) : (
+                    <ShoppingBasket className="w-5 h-5" />
+                  )}
+                  {isAdding
+                    ? 'Adding to Cart…'
+                    : `Add All to Cart${orderable.length > 0 ? ` (${orderable.length})` : ''}`}
                 </button>
                 {added !== null && (
                   <p className="mt-2 text-sm font-semibold text-fresh-800" role="status">

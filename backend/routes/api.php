@@ -9,11 +9,14 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\PosController;
 use App\Http\Controllers\Api\CrmController;
 use App\Http\Controllers\Api\AccountController;
+use App\Http\Controllers\Api\ReviewController;
 
 Route::prefix('v1')->group(function () {
     // Products
     Route::get('/products', [ProductController::class, 'index']);
     Route::get('/products/{slug}', [ProductController::class, 'show']);
+    Route::get('/products/{slug}/reviews', [ReviewController::class, 'index']);
+    Route::post('/products/{slug}/reviews', [ReviewController::class, 'store']);
 
     // Categories
     Route::get('/categories', [CategoryController::class, 'index']);

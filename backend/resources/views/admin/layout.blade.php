@@ -270,6 +270,14 @@
                             </div>
                             <i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i>
                         </a>
+
+                        <a href="{{ route('admin.reviews') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.reviews') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-star w-4 text-center text-amber-300"></i>
+                                <span>Customer Reviews</span>
+                            </div>
+                            <span class="bg-amber-400 text-slate-900 text-[10px] px-2 py-0.5 rounded-full font-black">Reviews</span>
+                        </a>
                     </div>
                 </div>
 

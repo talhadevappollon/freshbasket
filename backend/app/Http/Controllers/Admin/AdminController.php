@@ -13,6 +13,7 @@ use App\Models\Coupon;
 use App\Models\Rider;
 use App\Models\Branch;
 use App\Models\StoreSetting;
+use App\Models\ProductReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -767,5 +768,89 @@ class AdminController extends Controller
         }
 
         return redirect()->back()->with('success', 'Store configuration and delivery rules successfully saved.');
+    }
+
+    /**
+     * Customer Reviews CRM Management
+     */
+    public function reviews(Request $request)
+    {
+        $query = ProductReview::query();
+
+        if ($request->filled('rating')) {
+            $query->where('rating', intval($request->rating));
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('search')) {
+            $term = trim($request->search);
+            $query->where(function ($q) use ($term) {
+                $q->where('customer_name', 'like', "%{$term}%")
+                  ->orWhere('customer_email', 'like', "%{$term}%")
+                  ->orWhere('product_name', 'like', "%{$term}%")
+                  ->orWhere('product_slug', 'like', "%{$term}%")
+                  ->orWhere('review_title', 'like', "%{$term}%")
+                  ->orWhere('review_body', 'like', "%{$term}%");
+            });
+        }
+
+        $reviews = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
+
+        $totalReviews = ProductReview::count();
+        $fiveStarReviews = ProductReview::where('rating', 5)->count();
+        $avgRating = $totalReviews > 0 ? round(ProductReview::avg('rating'), 2) : 5.0;
+        $pendingReviews = ProductReview::where('status', 'pending')->count();
+
+        return view('admin.reviews', compact(
+            'reviews',
+            'totalReviews',
+            'fiveStarReviews',
+            'avgRating',
+            'pendingReviews'
+        ));
+    }
+
+    public function updateReview(Request $request, $id)
+    {
+        $review = ProductReview::findOrFail($id);
+
+        $request->validate([
+            'customer_name' => 'required|string|max:100',
+            'rating' => 'required|integer|min:1|max:5',
+            'review_title' => 'required|string|max:191',
+            'review_body' => 'required|string',
+            'status' => 'required|in:approved,pending,rejected',
+        ]);
+
+        $review->update([
+            'customer_name' => trim($request->customer_name),
+            'rating' => intval($request->rating),
+            'review_title' => trim($request->review_title),
+            'review_body' => trim($request->review_body),
+            'status' => $request->status,
+        ]);
+
+        return redirect()->back()->with('success', "Review #{$review->id} updated successfully.");
+    }
+
+    public function toggleReviewStatus($id)
+    {
+        $review = ProductReview::findOrFail($id);
+        $review->status = $review->status === 'approved' ? 'rejected' : 'approved';
+        $review->save();
+
+        return redirect()->back()->with('success', "Review #{$review->id} status changed to {$review->status}.");
+    }
+
+    public function deleteReview($id)
+    {
+        $review = ProductReview::findOrFail($id);
+        $reviewId = $review->id;
+        $review->delete();
+
+        return redirect()->back()->with('success', "Review #{$reviewId} deleted permanently.");
     }
 }

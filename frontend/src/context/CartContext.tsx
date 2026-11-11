@@ -1,13 +1,14 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Product, CartItem, OrderResponse } from '@/types';
+import { Product, ProductVariant, CartItem, OrderResponse } from '@/types';
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Product, quantity?: number) => void;
-  removeFromCart: (productId: number) => void;
-  updateQuantity: (productId: number, quantity: number) => void;
+  addToCart: (product: Product, quantity?: number, variant?: ProductVariant) => void;
+  addMultipleToCart: (batch: { product: Product; quantity?: number; variant?: ProductVariant }[]) => void;
+  removeFromCart: (productId: number, variantId?: number) => void;
+  updateQuantity: (productId: number, quantity: number, variantId?: number) => void;
   clearCart: () => void;
   totalItems: number;
   subtotal: number;
@@ -60,38 +61,81 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const clampToStock = (product: Product, quantity: number) =>
     product.stock_quantity > 0 ? Math.min(quantity, product.stock_quantity) : quantity;
 
-  const addToCart = (product: Product, quantity = 1) => {
-    if (product.availability && product.availability !== 'available') return; // out of stock / out of season
+  const addToCart = (product: Product, quantity = 1, variant?: ProductVariant) => {
+    if (product.availability && product.availability !== 'available') return;
     setItems(prev => {
-      const existing = prev.find(item => item.product.id === product.id);
-      if (existing) {
-        return prev.map(item =>
-          item.product.id === product.id
+      const existingIdx = prev.findIndex(item =>
+        item.product.id === product.id &&
+        (variant ? item.variant?.id === variant.id : !item.variant)
+      );
+      if (existingIdx !== -1) {
+        return prev.map((item, idx) =>
+          idx === existingIdx
             ? { ...item, quantity: clampToStock(product, item.quantity + quantity) }
             : item
         );
       }
-      return [...prev, { product, quantity: clampToStock(product, quantity) }];
+      return [...prev, { product, quantity: clampToStock(product, quantity), variant }];
     });
-    // Confirm with a toast instead of throwing the whole basket drawer over the page on every tap
     setLastAdded({ id: Date.now(), product, quantity });
+  };
+
+  const addMultipleToCart = (batch: { product: Product; quantity?: number; variant?: ProductVariant }[]) => {
+    if (!batch || batch.length === 0) return;
+    setItems(prev => {
+      let updated = [...prev];
+      for (const entry of batch) {
+        const prod = entry.product;
+        if (prod.availability && prod.availability !== 'available') continue;
+        const qty = entry.quantity || 1;
+        const varId = entry.variant?.id;
+        const matchIdx = updated.findIndex(it =>
+          it.product.id === prod.id && (varId ? it.variant?.id === varId : !it.variant)
+        );
+        if (matchIdx !== -1) {
+          updated[matchIdx] = {
+            ...updated[matchIdx],
+            quantity: clampToStock(prod, updated[matchIdx].quantity + qty),
+          };
+        } else {
+          updated.push({
+            product: prod,
+            quantity: clampToStock(prod, qty),
+            variant: entry.variant,
+          });
+        }
+      }
+      return updated;
+    });
+    setIsCartOpen(true);
   };
 
   const dismissLastAdded = () => setLastAdded(null);
 
-  const removeFromCart = (productId: number) => {
-    setItems(prev => prev.filter(item => item.product.id !== productId));
+  const removeFromCart = (productId: number, variantId?: number) => {
+    setItems(prev =>
+      prev.filter(item =>
+        variantId
+          ? !(item.product.id === productId && item.variant?.id === variantId)
+          : item.product.id !== productId
+      )
+    );
   };
 
-  const updateQuantity = (productId: number, quantity: number) => {
+  const updateQuantity = (productId: number, quantity: number, variantId?: number) => {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(productId, variantId);
       return;
     }
     setItems(prev =>
-      prev.map(item =>
-        item.product.id === productId ? { ...item, quantity: clampToStock(item.product, quantity) } : item
-      )
+      prev.map(item => {
+        const matches = variantId
+          ? item.product.id === productId && item.variant?.id === variantId
+          : item.product.id === productId;
+        return matches
+          ? { ...item, quantity: clampToStock(item.product, quantity) }
+          : item;
+      })
     );
   };
 
@@ -101,7 +145,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => sum + (item.variant?.price ?? item.product.price) * item.quantity,
     0
   );
 
@@ -115,6 +159,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       value={{
         items,
         addToCart,
+        addMultipleToCart,
         removeFromCart,
         updateQuantity,
         clearCart,
@@ -140,10 +185,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 }
 
 export function useCart() {
-  const context = useContext(CartContext);
-  if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
-  }
-  return context;
+  const ctx = useContext(CartContext);
+  if (!ctx) throw new Error('useCart must be used inside CartProvider');
+  return ctx;
 }
-
