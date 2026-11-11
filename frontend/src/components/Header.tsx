@@ -629,15 +629,14 @@ export default function Header({ categories }: HeaderProps) {
             <div className="order-3 md:order-4 flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => openAuth(account ? 'account' : 'register')}
-                aria-haspopup="dialog"
-                aria-label={account ? 'Fresh House Membership Club: open my account' : 'Join the Fresh House Membership Club'}
+                onClick={() => router.push('/membership-plans')}
+                aria-label="Fresh House Membership Club: view membership plans"
                 className="hidden md:flex relative items-center h-[32px] rounded-full bg-[#b3e4b9] text-fresh-950 border border-[#d9b25a]/70 shadow-[0_0_0_2px_rgba(217,178,90,0.18)] hover:shadow-[0_0_0_2px_rgba(217,178,90,0.4)] transition-shadow duration-300 cursor-pointer"
               >
                 <Crown className="absolute -top-2.5 right-4 w-4 h-4 text-[#d9ac4e] drop-shadow" strokeWidth={1.8} aria-hidden="true" />
                 <span className="pl-3.5 pr-2.5 text-xs font-semibold whitespace-nowrap">Membership Club</span>
                 <span className="h-[26px] mr-[3px] px-3 rounded-full bg-fresh-950 text-white text-xs font-bold flex items-center whitespace-nowrap">
-                  {account ? 'My account' : 'Join Now'}
+                  Join Now
                 </span>
               </button>
               <AccountButton />
