@@ -70,9 +70,9 @@ export default function MobileTabBar({ onCategories, categoriesOpen }: Props) {
             onClick={() => openAuth()}
             aria-haspopup="dialog"
             aria-label={account ? `Account, signed in as ${account.name}` : 'Account, sign in or create one'}
-            className={`${item} ${tone(authOpen || pathname === '/account')}`}
+            className={`${item} ${tone(authOpen || ['/account', '/login', '/register'].includes(pathname))}`}
           >
-            <UserRound className={icon(authOpen || pathname === '/account')} aria-hidden="true" />
+            <UserRound className={icon(authOpen || ['/account', '/login', '/register'].includes(pathname))} aria-hidden="true" />
             Account
             {account && dot}
           </button>

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Account,
   AccountError,
@@ -9,6 +10,7 @@ import {
   loginAccount,
   logoutAccount,
   registerAccount,
+  rememberAuthReturn,
   setToken,
 } from '@/lib/account';
 
@@ -21,7 +23,7 @@ interface AuthContextType {
   modalOpen: boolean;
   view: AuthView;
   setView: (view: AuthView) => void;
-  /** Opens the sign-in window, or the account window when already signed in */
+  /** Opens the sign-in window, or the account window when already signed in. Phones go to the /login or /register page instead. */
   openAuth: (view?: AuthView) => void;
   closeAuth: () => void;
   signIn: (login: string, password: string) => Promise<void>;
@@ -37,6 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [view, setView] = useState<AuthView>('login');
+  const router = useRouter();
 
   const refreshAccount = useCallback(async () => {
     if (!getToken()) {
@@ -61,10 +64,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const openAuth = useCallback(
     (next?: AuthView) => {
-      setView(next ?? (account ? 'account' : 'login'));
+      const target = next ?? (account ? 'account' : 'login');
+      // Phones sign in and register on their own pages rather than in a popup
+      if (target !== 'account' && window.matchMedia('(max-width: 767px)').matches) {
+        const here = window.location.pathname;
+        if (here !== '/login' && here !== '/register') rememberAuthReturn(here + window.location.search + window.location.hash);
+        router.push(target === 'register' ? '/register' : '/login');
+        return;
+      }
+      setView(target);
       setModalOpen(true);
     },
-    [account]
+    [account, router]
   );
 
   const closeAuth = useCallback(() => setModalOpen(false), []);

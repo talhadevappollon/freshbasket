@@ -87,3 +87,24 @@ export const fetchAccount = () => request<{ account: Account }>('/me', { auth: t
 export const logoutAccount = () => request<{ success: boolean }>('/logout', { method: 'POST', auth: true });
 
 export const fetchAccountOrders = () => request<{ orders: AccountOrder[] }>('/orders', { auth: true });
+
+// Phones sign in on /login and /register; this remembers where to go back to afterwards.
+const AUTH_RETURN_KEY = 'fb_auth_return';
+
+export function rememberAuthReturn(path: string) {
+  try {
+    sessionStorage.setItem(AUTH_RETURN_KEY, path);
+  } catch {}
+}
+
+/** The page to return to after signing in, once. Only same-site paths are trusted. */
+export function takeAuthReturn(): string | null {
+  try {
+    const p = sessionStorage.getItem(AUTH_RETURN_KEY);
+    sessionStorage.removeItem(AUTH_RETURN_KEY);
+    if (!p || !p.startsWith('/') || p.startsWith('//') || /^\/(login|register)\b/.test(p)) return null;
+    return p;
+  } catch {
+    return null;
+  }
+}
