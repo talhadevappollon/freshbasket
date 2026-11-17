@@ -476,11 +476,7 @@ export default function Header({ categories }: HeaderProps) {
     <>
       <header
         ref={headerRef}
-        className={`header-tuck sticky top-0 z-40 border-b md:border-b-0 md:pt-2 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-500 ${
-          scrolled
-            ? 'bg-[#cfeed4]/80 backdrop-blur-xl max-md:border-transparent max-md:shadow-none md:bg-transparent md:backdrop-blur-none md:shadow-none md:border-transparent'
-            : 'bg-gradient-to-r from-fresh-950 to-[#0f3a26] border-[#d9b25a]/40 md:bg-none md:bg-transparent md:border-transparent'
-        }`}
+        className="sticky top-0 z-40 pt-2"
         onMouseLeave={() => {
           closeMega();
           setMenuKey(null);
@@ -488,12 +484,12 @@ export default function Header({ categories }: HeaderProps) {
         onMouseEnter={() => hoverTimer.current && clearTimeout(hoverTimer.current)}
       >
         {/* Main bar */}
-        <div className="max-w-[1200px] mx-auto px-4 py-2 sm:py-3 md:py-0">
+        <div className="max-w-[1200px] mx-auto px-3 md:px-4">
           <div
-            className={`flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2 md:gap-4 md:px-5 md:py-2 md:rounded-2xl md:border md:transition-all md:duration-500 ${
+            className={`flex flex-wrap md:flex-nowrap items-center gap-x-3 gap-y-2 md:gap-4 pl-3.5 pr-2 py-1.5 md:px-5 md:py-2 rounded-2xl border transition-all duration-500 ${
               scrolled
-                ? 'md:bg-[#cfeed4]/80 md:backdrop-blur-xl md:border-[#8fcf9b]/60 md:shadow-[0_12px_28px_-16px_rgba(8,40,24,0.3)]'
-                : 'md:bg-gradient-to-r md:from-fresh-950 md:to-[#0f3a26] md:border-[#d9b25a]/40 md:shadow-[0_10px_24px_-14px_rgba(8,40,24,0.6)]'
+                ? 'bg-[#cfeed4]/80 backdrop-blur-xl border-[#8fcf9b]/60 shadow-[0_12px_28px_-16px_rgba(8,40,24,0.3)]'
+                : 'bg-gradient-to-r from-fresh-950 to-[#0f3a26] border-[#d9b25a]/40 shadow-[0_10px_24px_-14px_rgba(8,40,24,0.6)]'
             }`}
           >
             <button
@@ -624,7 +620,7 @@ export default function Header({ categories }: HeaderProps) {
             scrolled ? 'max-md:opacity-100 max-md:translate-y-0' : 'max-md:opacity-0 max-md:-translate-y-2 max-md:invisible max-md:pointer-events-none'
           }`}
         >
-          <div className="max-w-[1200px] mx-auto px-4 mt-0.5 max-md:mt-0 max-md:pt-1.5 max-md:pb-2 max-md:bg-[#d7f0dc] max-md:border-b max-md:border-[#8fcf9b]/60 max-md:shadow-card">
+          <div className="max-w-[1200px] mx-auto px-4 max-md:px-3 mt-0.5 max-md:mt-1.5">
           <div className={`h-[44px] px-4 max-md:h-[42px] max-md:px-1.5 rounded-2xl flex items-center gap-3 transition-colors duration-500 ${scrolled ? 'bg-white/90 backdrop-blur-xl border border-slate-200/80 shadow-xs' : 'bg-[#f3f4ef] border border-slate-200/70'}`}>
             <ul className="flex-1 min-w-0 flex items-center gap-2 max-md:gap-1 overflow-x-scroll max-md:overflow-x-auto pb-0.5 max-md:pb-0 cat-scroll">
               {FEATURED_AISLES.map(aisle => {
