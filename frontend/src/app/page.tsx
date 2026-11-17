@@ -98,7 +98,7 @@ export default function Home() {
 
         <FaqSection />
         <NewsletterBanner />
-        <div className="max-md:hidden -mb-16 relative">
+        <div className="-mb-32 sm:-mb-16 relative">
           <CommitmentBar />
         </div>
       </main>
