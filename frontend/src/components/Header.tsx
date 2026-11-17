@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import { flushSync } from 'react-dom';
 import { useCart } from '@/context/CartContext';
 import { Product, Category } from '@/types';
 import { fetchProducts } from '@/lib/api';
@@ -17,7 +18,6 @@ import {
   ShoppingBag,
   Search,
   Phone,
-  Clock,
   X,
   Plus,
   Menu,
@@ -30,7 +30,6 @@ import {
   CupSoda,
   Baby,
   ShoppingBasket,
-  Truck,
   ShieldCheck,
   Loader2,
   PackageSearch,
@@ -53,12 +52,6 @@ interface AisleGroup {
   children: Category[];
   Icon: React.ComponentType<{ className?: string }>;
 }
-
-const ANNOUNCEMENTS = [
-  'Same-day 2-hour delivery across Karachi',
-  'Free delivery on orders over PKR 2,500',
-  'Cash on delivery – pay when it arrives',
-];
 
 const POPULAR_SEARCHES = ['Mushrooms', 'Cheese', 'Milk', 'Honey', 'Coffee', 'Almond'];
 
@@ -331,9 +324,10 @@ export default function Header({ categories }: HeaderProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [activeGroupKey, setActiveGroupKey] = useState<string>('');
   const [openAccordion, setOpenAccordion] = useState<string>('');
-  const [announceIdx, setAnnounceIdx] = useState(0);
   const [bumpKey, setBumpKey] = useState(0);
-  // Phones: the search row tucks away while reading down the page and returns on the way back up
+  // Phones: search is a small icon; tapping it opens the search row under the logo bar.
+  // While that row is open it still tucks away on the way down the page and returns on the way back up.
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [searchTucked, setSearchTucked] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const tuckLock = useRef(0); // scroll events before this time (ms, performance.now) must not change the tucked state
@@ -422,13 +416,29 @@ export default function Header({ categories }: HeaderProps) {
     if (!el) return;
     const apply = () => {
       const phone = window.matchMedia('(max-width: 767px)').matches;
-      const tucked = phone && searchTucked && !searchFocused;
+      const tucked = phone && mobileSearchOpen && searchTucked && !searchFocused;
       document.documentElement.style.setProperty('--header-visible', `${el.offsetHeight - (tucked ? 48 : 0)}px`);
     };
     apply();
     window.addEventListener('resize', apply);
     return () => window.removeEventListener('resize', apply);
-  }, [searchTucked, searchFocused]);
+  }, [mobileSearchOpen, searchTucked, searchFocused]);
+
+  // Popular-search chips fill the search box; on phones the hidden search row has to open first
+  useEffect(() => {
+    const onFill = () => {
+      if (!window.matchMedia('(max-width: 767px)').matches) return;
+      flushSync(() => setMobileSearchOpen(true));
+      searchInputRef.current?.focus();
+    };
+    window.addEventListener('fb:search', onFill);
+    return () => window.removeEventListener('fb:search', onFill);
+  }, []);
+
+  // A new page closes the phone search row
+  useEffect(() => {
+    setMobileSearchOpen(false);
+  }, [pathname]);
 
   // Keep anchor scrolling in sync with the real header height
   useEffect(() => {
@@ -439,12 +449,6 @@ export default function Header({ categories }: HeaderProps) {
     const ro = new ResizeObserver(apply);
     ro.observe(el);
     return () => ro.disconnect();
-  }, []);
-
-  // Rotating announcement
-  useEffect(() => {
-    const t = setInterval(() => setAnnounceIdx(i => (i + 1) % ANNOUNCEMENTS.length), 4200);
-    return () => clearInterval(t);
   }, []);
 
   // Cart badge bump when quantity rises
@@ -462,10 +466,21 @@ export default function Header({ categories }: HeaderProps) {
         megaTriggerRef.current?.focus();
       }
       if (drawerOpen) setDrawerOpen(false);
+      if (mobileSearchOpen) setMobileSearchOpen(false);
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [megaOpen, drawerOpen]);
+  }, [megaOpen, drawerOpen, mobileSearchOpen]);
+
+  // Render the row first, then focus in the same tap so phones bring up the keyboard
+  const openMobileSearch = () => {
+    flushSync(() => {
+      setMobileSearchOpen(true);
+      setSearchTucked(false);
+    });
+    tuckLock.current = performance.now() + 600;
+    searchInputRef.current?.focus();
+  };
 
   // Drawer locks page scroll and takes focus
   useEffect(() => {
@@ -501,54 +516,9 @@ export default function Header({ categories }: HeaderProps) {
 
   return (
     <>
-      {/* Announcement bar: ordinary page content above the sticky header, so it scrolls away by itself.
-          (Collapsing it inside the sticky header changed the page height mid-scroll and made the header flicker.) */}
-      <div
-        data-surface="dark"
-        className="bg-fresh-950 text-white md:hidden"
-      >
-        <div className="max-w-[1200px] mx-auto px-4 h-9 flex items-center justify-between gap-4 text-xs">
-          <p className="hidden md:block flex-1 text-center font-medium tracking-wide text-emerald-50">
-            Daily Harvest <span className="mx-1.5 text-emerald-300/60">|</span> Free Delivery Across Karachi on Orders Rs. 2,500+
-          </p>
-          <div className="md:hidden relative h-5 flex-1 min-w-0 overflow-hidden" role="status" aria-live="off">
-            {ANNOUNCEMENTS.map((text, i) => (
-              <p
-                key={text}
-                className={`absolute inset-0 flex items-center gap-2 font-medium text-emerald-50 transition-all duration-500 ease-out-expo ${
-                  i === announceIdx ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3 pointer-events-none'
-                }`}
-              >
-                <Truck className="w-3.5 h-3.5 text-emerald-300 shrink-0" />
-                <span className="truncate">{text}</span>
-              </p>
-            ))}
-          </div>
-
-          <div className="hidden items-center gap-5 text-emerald-100/90 shrink-0">
-            <span className="flex items-center gap-1.5">
-              <Clock className="w-3.5 h-3.5 text-emerald-300" />
-              8 AM – 11 PM daily
-            </span>
-            <a href="tel:+9221111373742" className="flex items-center gap-1.5 h-9 hover:text-white transition-colors">
-              <Phone className="w-3.5 h-3.5 text-emerald-300" />
-              +92 21 111-373-742
-            </a>
-            <Link href="/track" className="flex items-center gap-1.5 h-9 hover:text-white transition-colors">
-              <PackageSearch className="w-3.5 h-3.5 text-emerald-300" />
-              Track order
-            </Link>
-            <a href="/admin" className="flex items-center gap-1.5 h-9 text-emerald-200/70 hover:text-white transition-colors">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              Staff login
-            </a>
-          </div>
-        </div>
-      </div>
-
       <header
         ref={headerRef}
-        data-tucked={searchTucked && !searchFocused ? 'true' : 'false'}
+        data-tucked={mobileSearchOpen && searchTucked && !searchFocused ? 'true' : 'false'}
         className={`header-tuck sticky top-0 z-40 border-b md:border-b-0 md:pt-2 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-500 ${
           scrolled
             ? 'bg-[#cfeed4]/90 backdrop-blur-xl border-[#8fcf9b]/60 shadow-card md:bg-transparent md:backdrop-blur-none md:shadow-none md:border-transparent'
@@ -574,7 +544,7 @@ export default function Header({ categories }: HeaderProps) {
               onClick={() => setDrawerOpen(true)}
               aria-label="Open category menu"
               aria-expanded={drawerOpen}
-              className="lg:hidden order-1 w-11 h-11 -ml-2 rounded-xl text-slate-800 hover:bg-slate-100 flex items-center justify-center cursor-pointer transition-colors"
+              className="hidden md:flex lg:hidden order-1 w-11 h-11 -ml-2 rounded-xl text-slate-800 hover:bg-slate-100 flex items-center justify-center cursor-pointer transition-colors"
             >
               <Menu className="w-6 h-6" />
             </button>
@@ -620,12 +590,24 @@ export default function Header({ categories }: HeaderProps) {
             <div
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
-              // Desktop: nudged 28px right of centre; the nudge eases down to 0 on narrow laptops so it never crowds the Membership button. Phones are untouched.
+              // Desktop: nudged 28px right of centre; the nudge eases down to 0 on narrow laptops so it never crowds the Membership button.
+              // Phones: hidden until the search icon is tapped, then a full row with a Cancel button.
               className={`order-4 md:order-3 w-full md:w-auto md:flex-1 md:max-w-[460px] md:mx-auto md:relative md:left-[clamp(0px,calc((100vw_-_1040px)_/_2),28px)] max-md:transition-[opacity,transform,visibility] max-md:duration-300 ${
-                searchTucked && !searchFocused ? 'max-md:opacity-0 max-md:-translate-y-2 max-md:invisible max-md:pointer-events-none' : ''
+                mobileSearchOpen
+                  ? `max-md:flex max-md:items-center max-md:gap-2 ${searchTucked && !searchFocused ? 'max-md:opacity-0 max-md:-translate-y-2 max-md:invisible max-md:pointer-events-none' : ''}`
+                  : 'max-md:hidden'
               }`}
             >
-              <SearchBox inputRef={searchInputRef} />
+              <div className="flex-1 min-w-0">
+                <SearchBox inputRef={searchInputRef} />
+              </div>
+              <button
+                type="button"
+                onClick={() => setMobileSearchOpen(false)}
+                className="md:hidden shrink-0 h-10 px-1.5 text-sm font-semibold text-slate-600 hover:text-fresh-800 cursor-pointer"
+              >
+                Cancel
+              </button>
             </div>
 
             <div className="order-3 md:order-4 flex items-center gap-2">
@@ -641,6 +623,15 @@ export default function Header({ categories }: HeaderProps) {
                   <Crown className="absolute -top-[13px] left-1/2 -translate-x-1/2 w-4 h-4 text-[#d9ac4e] drop-shadow" strokeWidth={1.8} aria-hidden="true" />
                   Join Now
                 </span>
+              </button>
+              <button
+                type="button"
+                onClick={mobileSearchOpen ? () => setMobileSearchOpen(false) : openMobileSearch}
+                aria-label={mobileSearchOpen ? 'Close search' : 'Search products'}
+                aria-expanded={mobileSearchOpen}
+                className="md:hidden flex items-center justify-center w-9 h-9 shrink-0 rounded-xl border border-slate-200 bg-white hover:bg-fresh-50 hover:border-fresh-300 text-slate-700 hover:text-fresh-800 active:scale-95 shadow-xs transition-all duration-200 cursor-pointer"
+              >
+                <Search className="w-4 h-4" aria-hidden="true" />
               </button>
               <AccountButton />
               <button
