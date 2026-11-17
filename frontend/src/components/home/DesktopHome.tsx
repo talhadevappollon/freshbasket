@@ -402,7 +402,7 @@ export function CommitmentBar() {
                 key={i}
                 aria-hidden={i >= COMMITMENTS.length ? 'true' : undefined}
                 data-surface="dark"
-                className="w-[200px] h-[182px] shrink-0 bg-[#023038] text-[#bbe96f] px-5 pt-[46px] flex flex-col"
+                className="w-[200px] h-[182px] shrink-0 bg-[#102415] text-[#bbe96f] px-5 pt-[46px] flex flex-col"
                 style={{ clipPath: 'path("M0 182 V48 C0 35 8 29 22 26 C70 14 130 14 178 26 C192 29 200 35 200 48 V182 Z")' }}
               >
                 <span className="text-[15px] font-semibold leading-snug">{c.label}</span>
