@@ -29,25 +29,25 @@ const hrefFor = (name: string, fallbackSlug?: string) => `/category/${REFERENCE_
 
 function CategoryGrid() {
   return (
-    <ul className="grid grid-cols-5 gap-x-1 gap-y-5" aria-label="Categories">
+    <ul className="grid grid-cols-5 gap-x-1 gap-y-3" aria-label="Categories">
       {ICON_CATEGORIES.map((name, i) => (
         <li key={name}>
           <Link
             href={hrefFor(name)}
             prefetch={false}
-            className="group flex flex-col items-center gap-1.5 px-0.5 py-1 rounded-2xl text-center active:scale-95 active:bg-fresh-50 transition-all duration-150 animate-card-entrance"
+            className="group flex flex-col items-center gap-1 px-0.5 py-0.5 rounded-xl text-center active:scale-95 active:bg-fresh-50 transition-all duration-150 animate-card-entrance"
             style={{ animationDelay: `${Math.min(i, 9) * 30}ms` }}
           >
             <img
               src={CATEGORY_ICONS[name]}
               alt=""
-              width={48}
-              height={48}
+              width={36}
+              height={36}
               loading={i < 5 ? 'eager' : 'lazy'}
               decoding="async"
-              className="w-12 h-12 object-contain transition-transform duration-200 group-active:scale-110"
+              className="w-9 h-9 object-contain transition-transform duration-200 group-active:scale-110"
             />
-            <span className="block text-[12.5px] max-[359px]:text-[11px] leading-[1.2] font-semibold text-slate-800 group-active:text-fresh-800">{name}</span>
+            <span className="block text-[11.5px] max-[359px]:text-[10.5px] leading-[1.2] font-semibold text-slate-800 group-active:text-fresh-800">{name}</span>
           </Link>
         </li>
       ))}
