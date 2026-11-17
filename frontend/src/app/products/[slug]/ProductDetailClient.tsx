@@ -18,7 +18,7 @@ import { fetchCategories, fetchProductBySlug } from '@/lib/api';
 import { Product, Category, ProductVariant } from '@/types';
 import { unavailableLabel } from '@/lib/availability';
 import {
-  ShoppingBag,
+  ShoppingCart,
   Truck,
   ShieldCheck,
   Banknote,
@@ -292,25 +292,25 @@ export default function ProductDetailPage() {
                     onChange={setQuantity}
                   />
 
-                  {/* Add to Cart */}
-                  <button
-                    onClick={() => addToCart(product, quantity, selectedVariant || undefined)}
-                    disabled={!!unavailableLabel(product)}
-                    className="sm:flex-1 min-w-0 h-12 bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 disabled:bg-[#fff4d6] disabled:text-[#8a5a00] disabled:shadow-none disabled:cursor-not-allowed text-white px-5 rounded-2xl font-bold text-sm whitespace-nowrap shadow-xl shadow-fresh-600/25 flex items-center justify-center gap-2 transition cursor-pointer"
-                  >
-                    <ShoppingBag className="w-4 h-4 shrink-0" />
-                    <span>{unavailableLabel(product) ?? 'Add to cart'}</span>
-                  </button>
+                  {/* Add to Cart + Buy it now: pill buttons side by side on every screen, as on the reference store */}
+                  <div className="flex gap-3 sm:flex-1 min-w-0">
+                    <button
+                      onClick={() => addToCart(product, quantity, selectedVariant || undefined)}
+                      disabled={!!unavailableLabel(product)}
+                      className="flex-1 min-w-0 h-12 px-4 rounded-full bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 disabled:bg-[#fff4d6] disabled:text-[#8a5a00] disabled:shadow-none disabled:cursor-not-allowed text-white text-[15px] font-bold whitespace-nowrap shadow-lg shadow-fresh-600/25 flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                    >
+                      <ShoppingCart className="w-[18px] h-[18px] shrink-0 fill-current" aria-hidden="true" />
+                      <span className="truncate">{unavailableLabel(product) ?? 'Add to Cart'}</span>
+                    </button>
 
-                  {/* Buy Now COD */}
-                  <button
-                    onClick={handleBuyNow}
-                    disabled={!!unavailableLabel(product)}
-                    className="sm:flex-1 min-w-0 h-12 disabled:opacity-40 disabled:cursor-not-allowed bg-fresh-950 hover:bg-black text-white px-5 rounded-2xl font-bold text-sm whitespace-nowrap shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
-                  >
-                    <Banknote className="w-4 h-4 text-fresh-400 shrink-0" />
-                    <span>Buy It Now</span>
-                  </button>
+                    <button
+                      onClick={handleBuyNow}
+                      disabled={!!unavailableLabel(product)}
+                      className="flex-1 min-w-0 h-12 px-4 rounded-full bg-[#bbe96f] hover:bg-[#addf5a] active:bg-[#a1d64c] disabled:opacity-40 disabled:cursor-not-allowed text-fresh-900 text-[15px] font-semibold whitespace-nowrap flex items-center justify-center transition-colors cursor-pointer"
+                    >
+                      Buy it now
+                    </button>
+                  </div>
                 </div>
 
                 {/* Karachi Assurance Badges */}
@@ -379,10 +379,10 @@ export default function ProductDetailPage() {
             tabIndex={ctaVisible ? -1 : 0}
             onClick={() => addToCart(product, quantity, selectedVariant || undefined)}
             disabled={product.stock_quantity <= 0 || !!unavailableLabel(product)}
-            className="h-12 px-5 rounded-xl bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 disabled:bg-slate-300 text-white text-sm font-bold flex items-center gap-2 cursor-pointer transition-colors"
+            className="h-12 px-5 rounded-full bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 disabled:bg-slate-300 text-white text-sm font-bold flex items-center gap-2 cursor-pointer transition-colors"
           >
-            <ShoppingBag className="w-4 h-4" />
-            {unavailableLabel(product) ?? 'Add to cart'}
+            <ShoppingCart className="w-4 h-4 fill-current" aria-hidden="true" />
+            {unavailableLabel(product) ?? 'Add to Cart'}
           </button>
         </div>
       </div>
