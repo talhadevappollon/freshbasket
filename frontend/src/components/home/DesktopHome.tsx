@@ -176,7 +176,7 @@ function OfferRail({ id, title, offers, tileLabel, tileIcon, viewAll }: { id?: s
 
 /** 5th: Fresh House Family Membership */
 export function MembershipSection() {
-  return <OfferRail id="membership" title="Family Membership – fresh boxes every week" offers={PLANS} tileLabel="Membership" tileIcon="crown" viewAll="/membership-plans" />;
+  return <OfferRail id="membership" title="Family Membership Plans" offers={PLANS} tileLabel="Membership" tileIcon="crown" viewAll="/membership-plans" />;
 }
 
 /** 6th and 7th: Bundles, then Gift Baskets */
