@@ -307,3 +307,9 @@ h1, h2, h3 {
   .m-hscroll::-webkit-scrollbar-track { background: #e3ecdf; border-radius: 9999px; margin: 0 16px; }
   .m-hscroll::-webkit-scrollbar-thumb { background: #3a7538; border-radius: 9999px; }
 }
+
+/* Phones: the category icon bar in the header swipes without the desktop scrollbar */
+@media (max-width: 767px) {
+  .cat-scroll { scrollbar-width: none; }
+  .cat-scroll::-webkit-scrollbar { display: none; }
+}

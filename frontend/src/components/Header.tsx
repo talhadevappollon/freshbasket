@@ -325,12 +325,8 @@ export default function Header({ categories }: HeaderProps) {
   const [activeGroupKey, setActiveGroupKey] = useState<string>('');
   const [openAccordion, setOpenAccordion] = useState<string>('');
   const [bumpKey, setBumpKey] = useState(0);
-  // Phones: search is a small icon; tapping it opens the search row under the logo bar.
-  // While that row is open it still tucks away on the way down the page and returns on the way back up.
+  // Phones: search is a small icon; tapping it opens the search row under the logo bar until Cancel, Escape or a new page.
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const [searchTucked, setSearchTucked] = useState(false);
-  const [searchFocused, setSearchFocused] = useState(false);
-  const tuckLock = useRef(0); // scroll events before this time (ms, performance.now) must not change the tucked state
 
   const headerRef = useRef<HTMLElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -370,59 +366,21 @@ export default function Header({ categories }: HeaderProps) {
 
   // Condense on scroll
   useEffect(() => {
-    let lastY = window.scrollY;
-    let travel = 0; // signed distance scrolled since the direction last changed
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 24);
-      const dy = y - lastY;
-      lastY = y;
-      if (y < 120) {
-        setSearchTucked(false);
-        travel = 0;
-        return;
-      }
-      // Collapsing the row shifts the page a little; ignore that and only react to a deliberate 40px swipe
-      if (performance.now() < tuckLock.current) return;
-      travel = Math.sign(dy) === Math.sign(travel) ? travel + dy : dy;
-      if (travel > 40) {
-        setSearchTucked(true);
-        travel = 0;
-        tuckLock.current = performance.now() + 400;
-      } else if (travel < -40) {
-        setSearchTucked(false);
-        travel = 0;
-        tuckLock.current = performance.now() + 400;
-      }
-    };
-    // In-page jumps (category chips on the phone home page) tuck the header and hold it there while the page scrolls
-    const onForceTuck = () => {
-      if (window.scrollY < 120) return;
-      setSearchTucked(true);
-      tuckLock.current = performance.now() + 1400;
-    };
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('fb:header-tuck', onForceTuck);
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('fb:header-tuck', onForceTuck);
-    };
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   // How much of the header is on screen right now, so sticky bars below it can sit flush against it
   useEffect(() => {
     const el = headerRef.current;
     if (!el) return;
-    const apply = () => {
-      const phone = window.matchMedia('(max-width: 767px)').matches;
-      const tucked = phone && mobileSearchOpen && searchTucked && !searchFocused;
-      document.documentElement.style.setProperty('--header-visible', `${el.offsetHeight - (tucked ? 48 : 0)}px`);
-    };
+    const apply = () => document.documentElement.style.setProperty('--header-visible', `${el.offsetHeight}px`);
     apply();
     window.addEventListener('resize', apply);
     return () => window.removeEventListener('resize', apply);
-  }, [mobileSearchOpen, searchTucked, searchFocused]);
+  }, [mobileSearchOpen]);
 
   // Popular-search chips fill the search box; on phones the hidden search row has to open first
   useEffect(() => {
@@ -474,11 +432,7 @@ export default function Header({ categories }: HeaderProps) {
 
   // Render the row first, then focus in the same tap so phones bring up the keyboard
   const openMobileSearch = () => {
-    flushSync(() => {
-      setMobileSearchOpen(true);
-      setSearchTucked(false);
-    });
-    tuckLock.current = performance.now() + 600;
+    flushSync(() => setMobileSearchOpen(true));
     searchInputRef.current?.focus();
   };
 
@@ -518,7 +472,6 @@ export default function Header({ categories }: HeaderProps) {
     <>
       <header
         ref={headerRef}
-        data-tucked={mobileSearchOpen && searchTucked && !searchFocused ? 'true' : 'false'}
         className={`header-tuck sticky top-0 z-40 border-b md:border-b-0 md:pt-2 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-500 ${
           scrolled
             ? 'bg-[#cfeed4]/80 backdrop-blur-xl border-[#8fcf9b]/60 shadow-card md:bg-transparent md:backdrop-blur-none md:shadow-none md:border-transparent'
@@ -590,13 +543,11 @@ export default function Header({ categories }: HeaderProps) {
             </Link>
 
             <div
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
               // Desktop: nudged 28px right of centre; the nudge eases down to 0 on narrow laptops so it never crowds the Membership button.
               // Phones: hidden until the search icon is tapped, then a full row with a Cancel button.
               className={`order-4 md:order-3 w-full md:w-auto md:flex-1 md:max-w-[460px] md:mx-auto md:relative md:left-[clamp(0px,calc((100vw_-_1040px)_/_2),28px)] max-md:transition-[opacity,transform,visibility] max-md:duration-300 ${
                 mobileSearchOpen
-                  ? `max-md:flex max-md:items-center max-md:gap-2 ${searchTucked && !searchFocused ? 'max-md:opacity-0 max-md:-translate-y-2 max-md:invisible max-md:pointer-events-none' : ''}`
+                  ? 'max-md:flex max-md:items-center max-md:gap-2'
                   : 'max-md:hidden'
               }`}
             >
@@ -663,10 +614,10 @@ export default function Header({ categories }: HeaderProps) {
         </div>
 
         {/* Category icon row, like the reference store: the all-categories menu, then each top-level category with its icon */}
-        <nav aria-label="Shop by category" className="hidden lg:block">
-          <div className="max-w-[1200px] mx-auto px-4 mt-0.5">
-          <div className={`h-[44px] px-4 rounded-2xl flex items-center gap-3 transition-colors duration-500 ${scrolled ? 'bg-white/90 backdrop-blur-xl border border-slate-200/80 shadow-xs' : 'bg-[#f3f4ef] border border-slate-200/70'}`}>
-            <ul className="flex-1 min-w-0 flex items-center gap-2 overflow-x-scroll pb-0.5 cat-scroll">
+        <nav aria-label="Shop by category">
+          <div className="max-w-[1200px] mx-auto px-4 mt-0.5 max-md:mt-0 max-md:pb-2">
+          <div className={`h-[44px] px-4 max-md:h-[42px] max-md:px-1.5 rounded-2xl flex items-center gap-3 transition-colors duration-500 ${scrolled ? 'bg-white/90 backdrop-blur-xl border border-slate-200/80 shadow-xs' : 'bg-[#f3f4ef] border border-slate-200/70'}`}>
+            <ul className="flex-1 min-w-0 flex items-center gap-2 max-md:gap-1 overflow-x-scroll max-md:overflow-x-auto pb-0.5 max-md:pb-0 cat-scroll">
               {FEATURED_AISLES.map(aisle => {
                 const icon = CATEGORY_ICONS[aisle.name];
                 const isActive = activeCategory !== undefined && activeCategory.slug === resolveCategory(categories, aisle.slug)?.slug;
@@ -675,7 +626,7 @@ export default function Header({ categories }: HeaderProps) {
                     <Link
                       href={`/category/${aisle.slug}`}
                       aria-current={isActive ? 'true' : undefined}
-                      className={`group flex items-center gap-2 h-[34px] px-3 rounded-xl text-[14px] font-semibold whitespace-nowrap transition-colors duration-200 ${
+                      className={`group flex items-center gap-2 max-md:gap-1.5 h-[34px] px-3 max-md:px-2 rounded-xl text-[14px] max-md:text-[13px] font-semibold whitespace-nowrap transition-colors duration-200 ${
                         isActive ? 'bg-white text-fresh-800 ring-1 ring-fresh-200 shadow-xs' : menuKey === aisle.slug ? 'text-fresh-600' : 'text-slate-800 hover:text-fresh-800 active:bg-fresh-50'
                       }`}
                     >
@@ -687,7 +638,7 @@ export default function Header({ categories }: HeaderProps) {
                           height={36}
                           loading="lazy"
                           decoding="async"
-                          className={`w-7 h-7 object-contain transition-all duration-300 group-hover:scale-110 group-hover:grayscale-0 group-hover:saturate-150 ${isActive ? '' : 'grayscale contrast-125 brightness-75'}`}
+                          className={`w-7 h-7 max-md:w-6 max-md:h-6 object-contain transition-all duration-300 group-hover:scale-110 group-hover:grayscale-0 group-hover:saturate-150 ${isActive ? '' : 'grayscale contrast-125 brightness-75'}`}
                         />
                       ) : (
                         <CupSoda
