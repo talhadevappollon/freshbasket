@@ -310,17 +310,23 @@ class AdminController extends Controller
             'price' => 'required|numeric|min:0',
             'compare_at_price' => 'nullable|numeric|min:0',
             'cost_price' => 'nullable|numeric|min:0',
-            'stock_quantity' => 'required|integer|min:0',
+            // Editing never touches stock: stock changes go through the stock actions so they are logged
+            'stock_quantity' => $id ? 'exclude' : 'required|integer|min:0',
             'barcode' => 'nullable|string|max:100',
             'unit' => 'nullable|string|max:50',
             'primary_image' => 'nullable|url',
-            'description' => 'nullable|string',
+            // Shown on the storefront product page: short_description beside the price, description under "Product Details"
+            'short_description' => 'nullable|string|max:1000',
+            'description' => 'nullable|string|max:20000',
         ]);
 
         if ($id) {
             $product = Product::findOrFail($id);
             $product->update($validated);
-            $msg = "Product '{$product->name}' updated successfully!";
+            // The storefront's category payload carries product previews (name, price, image)
+            Cache::forget('api.categories.index.v3');
+
+            return redirect()->back()->with('success', "Product '{$product->name}' updated. The website shows the change straight away.");
         } else {
             $validated['slug'] = Str::slug($validated['name']) . '-' . rand(1000, 9999);
             $validated['sku'] = 'FB-' . strtoupper(Str::random(6));
@@ -345,6 +351,8 @@ class AdminController extends Controller
 
             $msg = "Product '{$product->name}' created successfully with SKU {$product->sku}!";
         }
+
+        Cache::forget('api.categories.index.v3');
 
         return redirect()->route('admin.products')->with('success', $msg);
     }

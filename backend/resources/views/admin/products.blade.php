@@ -167,6 +167,16 @@
 
                         <td class="px-6 text-right">
                             <div class="inline-flex items-center space-x-1.5">
+                                <button type="button"
+                                    onclick="openEditProduct(this)"
+                                    data-action="{{ route('admin.products.save', $product->id) }}"
+                                    data-product="{{ json_encode($product->only(['name', 'category_id', 'unit', 'price', 'compare_at_price', 'cost_price', 'primary_image', 'short_description', 'description'])) }}"
+                                    class="px-2.5 py-1 rounded-lg bg-fresh-600 hover:bg-fresh-700 text-white text-xs font-bold transition flex items-center gap-1"
+                                    title="Edit name, price, image and the Product Details text shown on the website">
+                                    <i class="fa-solid fa-pen"></i>
+                                    <span>Edit</span>
+                                </button>
+
                                 <form action="{{ route('admin.products.adjust_stock', $product->id) }}" method="POST" class="inline">
                                     @csrf
                                     <input type="hidden" name="change_qty" value="10">
@@ -245,7 +255,105 @@
     </div>
 </div>
 
+<!-- Modal: edit a product's details (what the website's product page shows) -->
+<div id="editProductModal" role="dialog" aria-modal="true" aria-labelledby="editProductTitle" class="fixed inset-0 bg-black/60 backdrop-blur-xs hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-gray-100 max-h-[calc(100dvh-2rem)] overflow-y-auto">
+        <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
+            <div>
+                <h3 class="font-black text-gray-900 text-lg" id="editProductTitle">Edit Product</h3>
+                <p class="text-xs text-gray-500">Saved changes appear on the website's product page straight away</p>
+            </div>
+            <button type="button" onclick="closeEditProduct()" aria-label="Close" class="w-11 h-11 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form id="editProductForm" method="POST" action="" class="space-y-4">
+            @csrf
+            <div>
+                <label for="ep_name" class="block text-xs font-bold text-gray-700 mb-1">Product Title</label>
+                <input id="ep_name" type="text" name="name" required maxlength="191" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label for="ep_category_id" class="block text-xs font-bold text-gray-700 mb-1">Category</label>
+                    <select id="ep_category_id" name="category_id" required class="w-full px-3 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none bg-white font-medium">
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label for="ep_unit" class="block text-xs font-bold text-gray-700 mb-1">Pack Unit / Weight</label>
+                    <input id="ep_unit" type="text" name="unit" maxlength="50" placeholder="e.g. 500g, 1 kg, 1 dozen" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+                <div>
+                    <label for="ep_price" class="block text-xs font-bold text-gray-700 mb-1">Retail Price (PKR)</label>
+                    <input id="ep_price" type="number" step="0.01" min="0" name="price" required class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none font-bold text-emerald-800">
+                </div>
+                <div>
+                    <label for="ep_compare_at_price" class="block text-xs font-bold text-gray-700 mb-1">Was Price (PKR)</label>
+                    <input id="ep_compare_at_price" type="number" step="0.01" min="0" name="compare_at_price" placeholder="Optional" title="Shown crossed out when higher than the retail price" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
+                </div>
+                <div>
+                    <label for="ep_cost_price" class="block text-xs font-bold text-gray-700 mb-1">Cost Price (PKR)</label>
+                    <input id="ep_cost_price" type="number" step="0.01" min="0" name="cost_price" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
+                </div>
+            </div>
+
+            <div>
+                <label for="ep_primary_image" class="block text-xs font-bold text-gray-700 mb-1">Image URL</label>
+                <input id="ep_primary_image" type="url" name="primary_image" placeholder="https://cdn.shopify.com/..." class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
+            </div>
+
+            <div>
+                <label for="ep_short_description" class="block text-xs font-bold text-gray-700 mb-1">Short Description</label>
+                <textarea id="ep_short_description" name="short_description" rows="2" maxlength="1000" placeholder="One or two lines shown beside the price" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none"></textarea>
+            </div>
+
+            <div>
+                <label for="ep_description" class="block text-xs font-bold text-gray-700 mb-1">Product Details</label>
+                <textarea id="ep_description" name="description" rows="8" maxlength="20000" placeholder="Shown on the product page under &quot;Product Details&quot;. Line breaks are kept." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs leading-relaxed focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none"></textarea>
+            </div>
+
+            <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+                <button type="button" onclick="closeEditProduct()" class="px-4 h-11 rounded-xl text-xs font-bold text-gray-500 hover:bg-gray-100">Cancel</button>
+                <button type="submit" class="px-6 h-11 rounded-xl text-xs font-bold bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 text-white shadow-lg shadow-fresh-600/30">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    function openEditProduct(btn) {
+        const p = JSON.parse(btn.dataset.product);
+        const form = document.getElementById('editProductForm');
+        form.action = btn.dataset.action;
+        ['name', 'category_id', 'unit', 'price', 'compare_at_price', 'cost_price', 'primary_image', 'short_description', 'description'].forEach(function (key) {
+            const field = document.getElementById('ep_' + key);
+            if (field) field.value = p[key] === null || p[key] === undefined ? '' : p[key];
+        });
+        document.getElementById('editProductTitle').innerText = 'Edit: ' + p.name;
+        const modal = document.getElementById('editProductModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.getElementById('ep_name').focus();
+    }
+
+    function closeEditProduct() {
+        const modal = document.getElementById('editProductModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeEditProduct();
+    });
+
     function openStockModal(productId, productName, currentStock) {
         document.getElementById('modalProductName').innerText = productName;
         document.getElementById('modalCurrentStock').innerText = 'Current Balance: ' + currentStock + ' units';

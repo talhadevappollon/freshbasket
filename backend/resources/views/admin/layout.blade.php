@@ -427,6 +427,25 @@
                 </div>
             @endif
 
+            <!-- Validation errors (e.g. a product form that could not be saved) -->
+            @if($errors->any())
+                <div id="toastErrors" role="alert" class="mx-6 sm:mx-8 mt-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 flex items-start justify-between shadow-sm">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 shrink-0 rounded-xl bg-rose-500 text-white flex items-center justify-center font-bold text-sm shadow-xs">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <ul class="text-xs font-bold space-y-1 pt-1.5">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <button onclick="document.getElementById('toastErrors').remove()" aria-label="Dismiss" class="text-rose-700 hover:text-rose-900 w-9 h-9 shrink-0 rounded-lg hover:bg-rose-100">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            @endif
+
             <!-- Main Content Container -->
             <main id="admin-main" tabindex="-1" class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 focus:outline-none">
                 @yield('content')
@@ -500,6 +519,16 @@
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Image URL</label>
                     <input type="url" name="primary_image" placeholder="https://cdn.shopify.com/..." class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Short Description</label>
+                    <textarea name="short_description" rows="2" maxlength="1000" placeholder="One or two lines shown beside the price" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Product Details</label>
+                    <textarea name="description" rows="5" maxlength="20000" placeholder="Shown on the product page under &quot;Product Details&quot;. Line breaks are kept." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs leading-relaxed focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none"></textarea>
                 </div>
 
                 <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
