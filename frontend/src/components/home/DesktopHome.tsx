@@ -104,7 +104,7 @@ export function OfferCard({ offer }: { offer: Offer }) {
   const plan = offer.kind === 'plan';
   return (
     <article className="relative h-full group [filter:drop-shadow(0_1px_1.5px_rgba(23,60,42,0.13))]">
-      <div className="h-full flex flex-col bg-white p-[15px] text-center" style={CARD_MASK}>
+      <div className="h-full flex flex-col bg-white rounded-lg p-[15px] text-center" style={CARD_MASK}>
         <Link href={`/products/${offer.key}`} className="block group-hover:opacity-95 transition-opacity">
           <div className="relative rounded-2xl bg-[#f8f4ec] aspect-square flex items-center justify-center overflow-hidden">
             {off && <span className="absolute top-2 left-2 text-[11px] font-bold text-white bg-[#cf6c4d] rounded-full px-2.5 py-1 z-10">Save</span>}
@@ -123,7 +123,7 @@ export function OfferCard({ offer }: { offer: Offer }) {
         <Link
           href={`/products/${offer.key}`}
           style={BLOCK_MASK}
-          className="h-[44px] bg-[#f0f4ea] hover:bg-[#bbea70] text-[#3e872a] text-[12px] font-extrabold tracking-wide uppercase flex items-center justify-center transition-colors duration-300"
+          className="h-[44px] rounded-md bg-[#f0f4ea] hover:bg-[#bbea70] text-[#3e872a] text-[12px] font-extrabold tracking-wide uppercase flex items-center justify-center transition-colors duration-300"
         >
           {plan ? 'View Plan & Sizes' : 'Select Size & Options'}
         </Link>

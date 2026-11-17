@@ -50,7 +50,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
   return (
     // the drop shadow follows the masked shape, giving the white card a hairline edge on the light page
     <article className="relative h-full group [filter:drop-shadow(0_1px_1.5px_rgba(23,60,42,0.13))]">
-      <div className="h-full flex flex-col bg-white p-[15px] text-center" style={CARD_MASK}>
+      <div className="h-full flex flex-col bg-white rounded-lg p-[15px] text-center" style={CARD_MASK}>
         {discount && (
           <span className="absolute top-2.5 left-2.5 z-10 bg-rose-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-full pointer-events-none">-{discount}%</span>
         )}
@@ -106,11 +106,11 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         {/* "+" block */}
         <div className="mt-2.5">
           {unavailable ? (
-            <span role="status" className="h-[44px] flex items-center justify-center text-sm font-bold bg-[#fff1cc] text-[#8a5a00] cursor-not-allowed select-none" style={BLOCK_MASK}>
+            <span role="status" className="h-[44px] rounded-md flex items-center justify-center text-sm font-bold bg-[#fff1cc] text-[#8a5a00] cursor-not-allowed select-none" style={BLOCK_MASK}>
               {unavailable}
             </span>
           ) : cartItem ? (
-            <div className="h-[44px] bg-[#bbea70] flex items-center" style={BLOCK_MASK}>
+            <div className="h-[44px] rounded-md bg-[#bbea70] flex items-center" style={BLOCK_MASK}>
               <div className="w-full h-[34px] px-2.5 flex items-center justify-between">
                 <button
                   type="button"
@@ -138,7 +138,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
               type="button"
               onClick={handleAdd}
               style={BLOCK_MASK}
-              className="w-full h-[44px] bg-[#f0f4ea] hover:bg-[#bbea70] text-[#3e872a] flex items-center justify-center transition-colors duration-300 cursor-pointer"
+              className="w-full h-[44px] rounded-md bg-[#f0f4ea] hover:bg-[#bbea70] text-[#3e872a] flex items-center justify-center transition-colors duration-300 cursor-pointer"
               aria-label={`Add ${product.name} to basket`}
             >
               {justAdded ? <Check className="w-6 h-6" strokeWidth={3} /> : <Plus className="w-6 h-6" strokeWidth={3} />}
