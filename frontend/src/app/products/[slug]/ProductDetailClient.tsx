@@ -24,10 +24,8 @@ import {
   Banknote,
   CheckCircle2,
   ArrowLeft,
-  Share2,
   Clock,
   Sparkles,
-  Barcode,
   Loader2,
   Star,
 } from 'lucide-react';
@@ -46,7 +44,6 @@ export default function ProductDetailPage() {
   const [quantity, setQuantity] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'delivery'>('desc');
-  const [copied, setCopied] = useState<boolean>(false);
   const [ctaVisible, setCtaVisible] = useState<boolean>(true);
   const ctaRef = useRef<HTMLDivElement>(null);
 
@@ -78,14 +75,6 @@ export default function ProductDetailPage() {
       setIsLoading(false);
     });
   }, [slug]);
-
-  const handleShare = () => {
-    if (typeof window !== 'undefined') {
-      navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
 
   const handleBuyNow = () => {
     if (!product) return;
@@ -187,19 +176,6 @@ export default function ProductDetailPage() {
             {/* Right Column: Information & Actions */}
             <div className="flex flex-col justify-between space-y-6">
               <div>
-                <div className="flex items-center justify-between gap-4 mb-2">
-                  <span className="bg-emerald-50 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-wider">
-                    {product.brand || 'Fresh House'}
-                  </span>
-                  <button
-                    onClick={handleShare}
-                    className="text-xs text-gray-500 hover:text-fresh-600 flex items-center gap-1 font-semibold h-11 px-2 -mr-2 rounded-lg cursor-pointer"
-                  >
-                    <Share2 className="w-3.5 h-3.5" />
-                    <span>{copied ? 'Link Copied!' : 'Share'}</span>
-                  </button>
-                </div>
-
                 <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight leading-snug">
                   {product.name}
                 </h1>
@@ -216,17 +192,8 @@ export default function ProductDetailPage() {
                   </a>
                 </div>
 
-                {/* SKU, Barcode, Stock */}
+                {/* Stock */}
                 <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100">
-                  <span className="flex items-center gap-1 font-mono">
-                    <Barcode className="w-4 h-4 text-gray-500" />
-                    <span>SKU: {product.sku}</span>
-                  </span>
-                  {product.barcode && (
-                    <span className="font-mono text-gray-500">
-                      Barcode: {product.barcode}
-                    </span>
-                  )}
                   <span className="inline-flex items-center gap-1 text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-full">
                     <CheckCircle2 className="w-3.5 h-3.5 text-fresh-600" />
                     {product.stock_quantity > 0 ? `In Stock (${product.stock_quantity} available)` : 'Low Stock'}
@@ -339,7 +306,7 @@ export default function ProductDetailPage() {
                     className="sm:flex-1 min-w-0 h-12 disabled:opacity-40 disabled:cursor-not-allowed bg-fresh-950 hover:bg-black text-white px-5 rounded-2xl font-bold text-sm whitespace-nowrap shadow-md transition flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Banknote className="w-4 h-4 text-fresh-400 shrink-0" />
-                    <span>Buy Now (COD)</span>
+                    <span>Buy It Now</span>
                   </button>
                 </div>
 
@@ -415,14 +382,6 @@ export default function ProductDetailPage() {
                   <div className="p-3 bg-gray-50 rounded-xl flex justify-between">
                     <span className="text-gray-400 font-semibold">Brand / Vendor</span>
                     <span className="font-bold text-gray-900">{product.brand || 'Fresh House'}</span>
-                  </div>
-                  <div className="p-3 bg-gray-50 rounded-xl flex justify-between">
-                    <span className="text-gray-400 font-semibold">SKU Code</span>
-                    <span className="font-bold font-mono text-gray-900">{product.sku}</span>
-                  </div>
-                  <div className="p-3 bg-gray-50 rounded-xl flex justify-between">
-                    <span className="text-gray-400 font-semibold">Barcode (EAN/UPC)</span>
-                    <span className="font-bold font-mono text-gray-900">{product.barcode || 'N/A'}</span>
                   </div>
                   <div className="p-3 bg-gray-50 rounded-xl flex justify-between">
                     <span className="text-gray-400 font-semibold">Pack Unit / Weight</span>
