@@ -521,8 +521,8 @@ export default function Header({ categories }: HeaderProps) {
         data-tucked={mobileSearchOpen && searchTucked && !searchFocused ? 'true' : 'false'}
         className={`header-tuck sticky top-0 z-40 border-b md:border-b-0 md:pt-2 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-500 ${
           scrolled
-            ? 'bg-[#cfeed4]/90 backdrop-blur-xl border-[#8fcf9b]/60 shadow-card md:bg-transparent md:backdrop-blur-none md:shadow-none md:border-transparent'
-            : 'bg-white border-slate-100 md:bg-transparent md:border-transparent'
+            ? 'bg-[#cfeed4]/80 backdrop-blur-xl border-[#8fcf9b]/60 shadow-card md:bg-transparent md:backdrop-blur-none md:shadow-none md:border-transparent'
+            : 'bg-gradient-to-r from-fresh-950 to-[#0f3a26] border-[#d9b25a]/40 md:bg-none md:bg-transparent md:border-transparent'
         }`}
         onMouseLeave={() => {
           closeMega();
@@ -544,7 +544,9 @@ export default function Header({ categories }: HeaderProps) {
               onClick={() => setDrawerOpen(true)}
               aria-label="Open category menu"
               aria-expanded={drawerOpen}
-              className="hidden md:flex lg:hidden order-1 w-11 h-11 -ml-2 rounded-xl text-slate-800 hover:bg-slate-100 flex items-center justify-center cursor-pointer transition-colors"
+              className={`hidden md:flex lg:hidden order-1 w-11 h-11 -ml-2 rounded-xl items-center justify-center cursor-pointer transition-colors ${
+                scrolled ? 'text-slate-800 hover:bg-slate-100' : 'text-emerald-50 hover:bg-white/10'
+              }`}
             >
               <Menu className="w-6 h-6" />
             </button>
@@ -571,7 +573,7 @@ export default function Header({ categories }: HeaderProps) {
                 />
                 <span
                   aria-hidden="true"
-                  className={`hidden md:block absolute inset-0 transition-opacity duration-500 ${
+                  className={`block absolute inset-0 transition-opacity duration-500 ${
                     scrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'
                   }`}
                   style={{
@@ -604,7 +606,7 @@ export default function Header({ categories }: HeaderProps) {
               <button
                 type="button"
                 onClick={() => setMobileSearchOpen(false)}
-                className="md:hidden shrink-0 h-10 px-1.5 text-sm font-semibold text-slate-600 hover:text-fresh-800 cursor-pointer"
+                className={`md:hidden shrink-0 h-10 px-1.5 text-sm font-semibold cursor-pointer ${scrolled ? 'text-slate-600 hover:text-fresh-800' : 'text-emerald-50 hover:text-white'}`}
               >
                 Cancel
               </button>
@@ -638,21 +640,21 @@ export default function Header({ categories }: HeaderProps) {
                 type="button"
                 onClick={() => setIsCartOpen(true)}
                 aria-label={`Open basket, ${totalItems} item${totalItems === 1 ? '' : 's'}, PKR ${subtotal.toLocaleString()}`}
-                className={`flex items-center gap-3 h-11 px-3 sm:px-4 rounded-xl active:scale-[0.97] text-white transition-all duration-300 cursor-pointer sheen bg-fresh-700 hover:bg-fresh-800 shadow-lg shadow-fresh-700/20 md:rounded-full md:w-[34px] md:h-[34px] md:px-0 md:justify-center md:bg-white md:text-slate-900 md:hover:bg-fresh-50 md:shadow-none`}
+                className={`flex items-center gap-3 h-9 px-2.5 sm:px-3 rounded-xl border border-slate-200 bg-white text-slate-900 hover:bg-fresh-50 shadow-xs active:scale-[0.97] transition-all duration-300 cursor-pointer md:border-0 md:rounded-full md:w-[34px] md:h-[34px] md:px-0 md:justify-center md:shadow-none`}
               >
                 <span className="relative">
                   <ShoppingBag className="w-4 h-4" />
                   {totalItems > 0 && (
                     <span
                       key={bumpKey}
-                      className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-1 rounded-full bg-brand-600 text-white ring-2 ring-fresh-700 md:ring-white text-[10px] font-black flex items-center justify-center animate-bump"
+                      className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-1 rounded-full bg-brand-600 text-white ring-2 ring-white text-[10px] font-black flex items-center justify-center animate-bump"
                     >
                       {totalItems}
                     </span>
                   )}
                 </span>
                 <span className="hidden sm:block md:hidden text-left leading-tight">
-                  <span className="block text-[11px] text-emerald-200 font-medium">My basket</span>
+                  <span className="block text-[11px] text-slate-500 font-medium">My basket</span>
                   <span className="block text-sm font-bold tabular-nums">PKR {subtotal.toLocaleString()}</span>
                 </span>
               </button>
