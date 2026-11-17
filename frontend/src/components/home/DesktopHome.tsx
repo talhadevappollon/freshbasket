@@ -235,7 +235,7 @@ export function Bestsellers({ onQuickView }: { onQuickView: (p: Product) => void
           </button>
         ))}
       </div>
-      <div className="m-vscroll mt-4 md:mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+      <div className="m-hscroll max-md:-mx-4 max-md:px-4 max-md:pb-3 max-md:grid-cols-none max-md:grid-flow-col max-md:auto-cols-[46%] max-md:overflow-x-auto max-md:overscroll-x-contain max-md:snap-x max-md:snap-proximity max-md:scroll-px-4 max-md:[&>*]:snap-start mt-4 md:mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
         {tab === 'gifts' ? (
           [...PLANS.slice(0, 3), ...GIFTS.slice(0, 3)].map(o => <OfferCard key={o.key} offer={o} />)
         ) : shown ? (
@@ -282,7 +282,7 @@ export function CategoryShowcase({
           View All <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
-      <div className="m-vscroll grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
+      <div className="m-hscroll max-md:-mx-4 max-md:px-4 max-md:pb-3 max-md:grid-cols-none max-md:grid-flow-col max-md:auto-cols-[46%] max-md:overflow-x-auto max-md:overscroll-x-contain max-md:snap-x max-md:snap-proximity max-md:scroll-px-4 max-md:[&>*]:snap-start grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
         <Link
           href={`/category/${slug}`}
           className={`hidden lg:block row-span-2 row-start-1 rounded-3xl overflow-hidden shadow-card relative group ${side === 'left' ? 'col-start-1' : 'col-start-5'}`}
