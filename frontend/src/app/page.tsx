@@ -80,8 +80,7 @@ export default function Home() {
           <CategoryShowcase title="Fresh Fruits" slug="fruits" banner="/home/banner-fruits.webp" bannerAlt="Fresh fruits, nature's best delivered fresh" side="left" onQuickView={setQuickViewProduct} />
           <CategoryShowcase title="Fresh Vegetables" slug="vegetables" banner="/home/banner-vegetables.webp" bannerAlt="Fresh vegetables handpicked daily for your family" side="right" onQuickView={setQuickViewProduct} />
           <CategoryShowcase
-            title="Premium Nuts & Dry Fruits in Karachi"
-            description="Almonds, cashews, walnuts, pine nuts, figs and dried berries, chosen for quality and freshness. Perfect for snacking, gifting and healthy breakfasts."
+            title="Premium Nuts & Dry Fruits"
             slug="karachi-nuts-and-dates"
             banner="/home/banner-nuts.webp"
             bannerAlt="Premium nuts, healthy snacking starts here"
