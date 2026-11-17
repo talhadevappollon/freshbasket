@@ -87,7 +87,7 @@ Route::prefix('v1')->group(function () {
     });
 
     // CRM / Support Leads
-    Route::post('/crm/inquiries', [CrmController::class, 'storeInquiry']);
+    Route::post('/crm/inquiries', [CrmController::class, 'storeInquiry'])->middleware('throttle:5,1');
 
     // POS Integration Endpoints (For future physical store counter)
     Route::prefix('pos')->middleware('pos.enabled')->group(function () {

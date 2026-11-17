@@ -73,7 +73,7 @@
                         </td>
 
                         <td class="px-4 max-w-sm">
-                            <p class="text-xs text-gray-700 leading-relaxed">{{ $lead->message }}</p>
+                            <p class="text-xs text-gray-700 leading-relaxed whitespace-pre-line">{{ $lead->message }}</p>
                             @if($lead->agent_notes)
                                 <p class="text-[11px] text-gray-500 italic mt-1 bg-gray-50 p-1.5 rounded-lg border border-gray-200">
                                     <strong>Admin Note:</strong> {{ $lead->agent_notes }}
