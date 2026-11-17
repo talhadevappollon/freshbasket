@@ -619,7 +619,8 @@ export default function Header({ categories }: HeaderProps) {
             <div
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
-              className={`order-4 md:order-3 w-full md:w-auto md:flex-1 md:max-w-[460px] md:mx-auto max-md:transition-[opacity,transform,visibility] max-md:duration-300 ${
+              // Desktop: nudged 28px right of centre; the nudge eases down to 0 on narrow laptops so it never crowds the Membership button. Phones are untouched.
+              className={`order-4 md:order-3 w-full md:w-auto md:flex-1 md:max-w-[460px] md:mx-auto md:relative md:left-[clamp(0px,calc((100vw_-_1040px)_/_2),28px)] max-md:transition-[opacity,transform,visibility] max-md:duration-300 ${
                 searchTucked && !searchFocused ? 'max-md:opacity-0 max-md:-translate-y-2 max-md:invisible max-md:pointer-events-none' : ''
               }`}
             >
