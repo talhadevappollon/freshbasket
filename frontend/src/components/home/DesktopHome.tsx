@@ -217,11 +217,11 @@ export function Bestsellers({ onQuickView }: { onQuickView: (p: Product) => void
   const shown = cache[active.slug] ?? null;
 
   return (
-    <section id="bestsellers" ref={ref} className={`${SHELL} pt-12 scroll-mt-[var(--header-offset,120px)]`}>
-      <h2 className="text-4xl font-black tracking-tight text-fresh-950">
+    <section id="bestsellers" ref={ref} className={`${SHELL} pt-8 md:pt-12 scroll-mt-[var(--header-offset,120px)]`}>
+      <h2 className="text-[1.6rem] md:text-4xl font-black tracking-tight text-fresh-950">
         Weekly Bestsellers
       </h2>
-      <div className="flex flex-wrap gap-3 mt-6" role="tablist" aria-label="Bestseller groups">
+      <div className="flex gap-2 md:gap-3 mt-4 md:mt-6 -mx-4 px-4 overflow-x-auto no-scrollbar md:mx-0 md:px-0 md:flex-wrap md:overflow-visible" role="tablist" aria-label="Bestseller groups">
         {TABS.map(t => (
           <button
             key={t.key}
@@ -229,13 +229,13 @@ export function Bestsellers({ onQuickView }: { onQuickView: (p: Product) => void
             role="tab"
             aria-selected={tab === t.key}
             onClick={() => setTab(t.key)}
-            className={`h-12 px-7 rounded-full text-lg font-semibold transition cursor-pointer ${tab === t.key ? 'bg-fresh-600 text-white shadow-md' : 'bg-white text-slate-800 hover:bg-fresh-50'}`}
+            className={`shrink-0 whitespace-nowrap h-10 px-4 text-sm md:h-12 md:px-7 md:text-lg rounded-full font-semibold transition cursor-pointer ${tab === t.key ? 'bg-fresh-600 text-white shadow-md' : 'bg-white text-slate-800 hover:bg-fresh-50'}`}
           >
             {t.label}
           </button>
         ))}
       </div>
-      <div className="mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="mt-4 md:mt-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
         {tab === 'gifts' ? (
           [...PLANS.slice(0, 3), ...GIFTS.slice(0, 3)].map(o => <OfferCard key={o.key} offer={o} />)
         ) : shown ? (
@@ -272,17 +272,17 @@ export function CategoryShowcase({
   const [ref, near] = useNear<HTMLElement>();
   const items = useCategoryProducts(slug, 8, near);
   return (
-    <section ref={ref} className={`${SHELL} pt-14`} aria-labelledby={`sc-${slug}`}>
-      <div className="flex items-end justify-between gap-6 mb-5">
+    <section ref={ref} className={`${SHELL} pt-10 md:pt-14`} aria-labelledby={`sc-${slug}`}>
+      <div className="flex items-end justify-between gap-4 md:gap-6 mb-4 md:mb-5">
         <div>
-          <h2 id={`sc-${slug}`} className="text-[1.9rem] font-black tracking-tight text-fresh-950">{title}</h2>
+          <h2 id={`sc-${slug}`} className="text-[1.5rem] md:text-[1.9rem] leading-tight font-black tracking-tight text-fresh-950">{title}</h2>
           {description && <p className="text-sm text-slate-600 mt-1.5 max-w-3xl">{description}</p>}
         </div>
         <Link href={`/category/${slug}`} className="shrink-0 text-[15px] font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1.5">
           View All <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
         <Link
           href={`/category/${slug}`}
           className={`hidden lg:block row-span-2 row-start-1 rounded-3xl overflow-hidden shadow-card relative group ${side === 'left' ? 'col-start-1' : 'col-start-5'}`}
@@ -309,7 +309,7 @@ export function RecipeIdeas() {
   return (
     <section className={`${SHELL} pt-16`} aria-labelledby="recipe-ideas">
       <div className="flex items-end justify-between mb-5">
-        <h2 id="recipe-ideas" className="text-[1.9rem] font-black tracking-tight text-fresh-950">Recipe Ideas</h2>
+        <h2 id="recipe-ideas" className="text-[1.5rem] md:text-[1.9rem] font-black tracking-tight text-fresh-950">Recipe Ideas</h2>
         <Link href="/recipes" className="text-[15px] font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1.5">
           Explore All Recipes <ArrowRight className="w-4 h-4" />
         </Link>
@@ -348,24 +348,24 @@ export function RecipeIdeas() {
 
 export function NutTiles() {
   return (
-    <section className={`${SHELL} pt-16`} aria-label="Nuts, dates, mixed nuts, seeds and snack packs">
-      <ul className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+    <section className={`${SHELL} pt-12 md:pt-16`} aria-label="Nuts, dates, mixed nuts, seeds and snack packs">
+      <ul className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
         {NUT_TILES.map(t => (
           <li key={t.name}>
             <Link
               href={`/category/${t.slug}`}
-              className="group relative block h-[340px] rounded-3xl overflow-hidden hover:-translate-y-1 hover:shadow-xl transition duration-300"
+              className="group relative block h-[250px] md:h-[340px] rounded-3xl overflow-hidden hover:-translate-y-1 hover:shadow-xl transition duration-300"
               style={{ backgroundColor: t.bg }}
             >
-              <span className="absolute top-3 left-0 bg-[#24150a] rounded-r-xl px-4 py-1.5 text-[1.7rem] font-extrabold" style={{ color: t.ink }}>
+              <span className="absolute top-3 left-0 bg-[#24150a] rounded-r-xl px-3 md:px-4 py-1 md:py-1.5 text-[1.2rem] md:text-[1.7rem] font-extrabold" style={{ color: t.ink }}>
                 {t.name}
               </span>
-              <span className="absolute left-5 right-4 top-[76px] text-[15px] leading-snug text-[#2a1b0c]/90">{t.blurb}</span>
+              <span className="absolute left-3 md:left-5 right-3 md:right-4 top-[56px] md:top-[76px] text-[12.5px] md:text-[15px] leading-snug text-[#2a1b0c]/90">{t.blurb}</span>
               <img
                 src={t.image}
                 alt=""
                 loading="lazy"
-                className="absolute left-1/2 -translate-x-1/2 -bottom-10 w-[190px] h-[190px] rounded-full object-cover shadow-xl ring-8 ring-black/10 group-hover:scale-105 transition-transform duration-500"
+                className="absolute left-1/2 -translate-x-1/2 -bottom-6 md:-bottom-10 w-[130px] h-[130px] md:w-[190px] md:h-[190px] rounded-full object-cover shadow-xl ring-8 ring-black/10 group-hover:scale-105 transition-transform duration-500"
               />
             </Link>
           </li>

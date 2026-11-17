@@ -67,12 +67,15 @@ export default function Home() {
       <main id="main-content" className="flex-1 pb-16 sm:pb-0">
         <HeroBanner />
 
-        {/* Phones: every category with its products, in place */}
-        <MobileCatalogue categories={categories} />
+        {/* Phones: the Shop by Category icon grid */}
+        <MobileCatalogue />
 
-        {/* Desktop: the sections of the Fresh House web update, in order */}
         <div className="max-md:hidden">
           <PromoBanner />
+        </div>
+
+        {/* The sections of the Fresh House web update, in the same order on phones and desktop */}
+        <div>
           <Bestsellers onQuickView={setQuickViewProduct} />
           <CategoryShowcase title="Fresh Fruits" slug="fruits" banner="/home/banner-fruits.webp" bannerAlt="Fresh fruits, nature's best delivered fresh" side="left" onQuickView={setQuickViewProduct} />
           <CategoryShowcase title="Fresh Vegetables" slug="vegetables" banner="/home/banner-vegetables.webp" bannerAlt="Fresh vegetables handpicked daily for your family" side="right" onQuickView={setQuickViewProduct} />
