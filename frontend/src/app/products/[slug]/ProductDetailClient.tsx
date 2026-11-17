@@ -43,7 +43,6 @@ export default function ProductDetailPage() {
   const [activeImage, setActiveImage] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [activeTab, setActiveTab] = useState<'desc' | 'specs' | 'delivery'>('desc');
   const [ctaVisible, setCtaVisible] = useState<boolean>(true);
   const ctaRef = useRef<HTMLDivElement>(null);
 
@@ -115,6 +114,8 @@ export default function ProductDetailPage() {
     product.compare_at_price && product.compare_at_price > product.price
       ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
       : null;
+
+  const details = (product.description || product.short_description || '').trim();
 
   const galleryImages = product.images && product.images.length > 0
     ? product.images.map(img => img.image_url)
@@ -269,10 +270,12 @@ export default function ProductDetailPage() {
                   </span>
                 </div>
 
-                {/* Short Overview */}
-                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                  {product.short_description || product.description || 'Premium quality fresh grocery directly sourced by Fresh House.'}
-                </p>
+                {/* Short Overview (admin: Short description) */}
+                {(product.short_description || product.description) && (
+                  <p className="text-xs sm:text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+                    {product.short_description || product.description}
+                  </p>
+                )}
               </div>
 
               {/* Purchase Actions */}
@@ -329,76 +332,15 @@ export default function ProductDetailPage() {
             </div>
           </div>
 
-          {/* Product Tabs: Description, Specs, Delivery */}
-          <div className="mt-12 pt-8 border-t border-gray-200">
-            <div className="flex space-x-4 border-b border-gray-200 text-sm font-bold mb-6">
-              <button
-                onClick={() => setActiveTab('desc')}
-                className={`pb-3 px-2 transition border-b-2 ${
-                  activeTab === 'desc'
-                    ? 'border-fresh-600 text-fresh-700'
-                    : 'border-transparent text-gray-400 hover:text-gray-600'
-                }`}
-              >
-                Product Details
-              </button>
-              <button
-                onClick={() => setActiveTab('specs')}
-                className={`pb-3 px-2 transition border-b-2 ${
-                  activeTab === 'specs'
-                    ? 'border-fresh-600 text-fresh-700'
-                    : 'border-transparent text-gray-400 hover:text-gray-600'
-                }`}
-              >
-                Specifications
-              </button>
-              <button
-                onClick={() => setActiveTab('delivery')}
-                className={`pb-3 px-2 transition border-b-2 ${
-                  activeTab === 'delivery'
-                    ? 'border-fresh-600 text-fresh-700'
-                    : 'border-transparent text-gray-400 hover:text-gray-600'
-                }`}
-              >
-                Karachi Delivery & COD Policy
-              </button>
+          {/* Product Details: exactly the text saved in the admin panel (Products → Edit → Product details) */}
+          {details && (
+            <div className="mt-12 pt-8 border-t border-gray-200">
+              <div className="flex border-b border-gray-200 text-sm font-bold mb-6">
+                <h2 className="pb-3 px-2 border-b-2 border-fresh-600 text-fresh-700">Product Details</h2>
+              </div>
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-4xl whitespace-pre-line">{details}</p>
             </div>
-
-            <div className="text-xs sm:text-sm text-gray-600 leading-relaxed max-w-4xl">
-              {activeTab === 'desc' && (
-                <div className="space-y-4">
-                  <p>{product.description || 'Sourced with care from authentic growers and top suppliers for Fresh House.'}</p>
-                  <div className="bg-fresh-50 p-4 rounded-2xl border border-fresh-200 text-fresh-900 text-xs">
-                    <h4 className="font-bold mb-1 flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-fresh-600" /> Freshness Guarantee
-                    </h4>
-                    <p>If you are ever unsatisfied with any fresh produce or perishable item delivered, our rider will immediately replace it or refund on the spot.</p>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'specs' && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                  <div className="p-3 bg-gray-50 rounded-xl flex justify-between">
-                    <span className="text-gray-400 font-semibold">Brand / Vendor</span>
-                    <span className="font-bold text-gray-900">{product.brand || 'Fresh House'}</span>
-                  </div>
-                  <div className="p-3 bg-gray-50 rounded-xl flex justify-between">
-                    <span className="text-gray-400 font-semibold">Pack Unit / Weight</span>
-                    <span className="font-bold text-gray-900">{product.unit || '1 unit'}</span>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'delivery' && (
-                <div className="space-y-3">
-                  <p><strong>Express Karachi Delivery:</strong> Orders placed before 9:00 PM are delivered within 60 to 90 minutes across all major Karachi zones (DHA, Clifton, Gulshan, PECHS, Nazimabad, Malir Cantt, etc.).</p>
-                  <p><strong>Cash On Delivery:</strong> No credit card needed. Pay cash directly to the courier upon delivery.</p>
-                  <p><strong>Free Delivery:</strong> Orders over PKR 2,500 automatically receive FREE express delivery.</p>
-                </div>
-              )}
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Customer Reviews Section */}
