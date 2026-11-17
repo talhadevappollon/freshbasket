@@ -219,7 +219,7 @@ export function Bestsellers({ onQuickView }: { onQuickView: (p: Product) => void
   return (
     <section id="bestsellers" ref={ref} className={`${SHELL} pt-12 scroll-mt-[var(--header-offset,120px)]`}>
       <h2 className="text-4xl font-black tracking-tight text-fresh-950">
-        Weekly <span className="bg-fresh-600 text-white px-1.5 ml-1 rounded-sm">Bestsellers</span>
+        Weekly Bestsellers
       </h2>
       <div className="flex flex-wrap gap-3 mt-6" role="tablist" aria-label="Bestseller groups">
         {TABS.map(t => (
