@@ -349,7 +349,7 @@ export function RecipeIdeas() {
 export function NutTiles() {
   return (
     <section className={`${SHELL} pt-12 md:pt-16`} aria-label="Nuts, dates, mixed nuts, seeds and snack packs">
-      <ul className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
+      <ul className="m-hscroll max-md:-mx-4 max-md:px-4 max-md:pb-3 max-md:grid-cols-none max-md:grid-flow-col max-md:auto-cols-[46%] max-md:overflow-x-auto max-md:overscroll-x-contain max-md:snap-x max-md:snap-proximity max-md:scroll-px-4 max-md:[&>*]:snap-start grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4">
         {NUT_TILES.map(t => (
           <li key={t.name}>
             <Link
