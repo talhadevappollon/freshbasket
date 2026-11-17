@@ -84,9 +84,9 @@ export default function Footer() {
         <div className="mt-10 grid grid-cols-2 lg:grid-cols-[1fr_1fr_1.1fr_1.1fr_1.6fr] gap-x-8 gap-y-10">
           <ul>
             <li>
-              <a href="https://wa.me/923001234567" target="_blank" rel="noreferrer" className={linkCls}>
+              <Link href="/contact" className={linkCls}>
                 Contact Us
-              </a>
+              </Link>
             </li>
             <li>
               <Link href="/recipes" className={linkCls}>

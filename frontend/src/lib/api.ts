@@ -305,3 +305,36 @@ export async function trackOrder(
     return { order: null, error: 'network' };
   }
 }
+
+export interface ContactInquiry {
+  name: string;
+  phone: string;
+  email?: string;
+  subject: string;
+  order_number?: string;
+  message: string;
+  /** Honeypot: hidden from people, so it stays empty unless a bot fills it in */
+  website?: string;
+}
+
+export type ContactResult =
+  | { ok: true; message: string }
+  | { ok: false; error: 'validation' | 'rate_limited' | 'network' | 'server'; fields?: Record<string, string[]> };
+
+/** Contact Us form. Each message lands in the admin panel under Leads. */
+export async function submitContactInquiry(data: ContactInquiry): Promise<ContactResult> {
+  try {
+    const res = await fetch(`${API_BASE}/crm/inquiries`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(data),
+    });
+    const json = await res.json().catch(() => ({}));
+    if (res.ok) return { ok: true, message: json.message || '' };
+    if (res.status === 422) return { ok: false, error: 'validation', fields: json.errors };
+    if (res.status === 429) return { ok: false, error: 'rate_limited' };
+    return { ok: false, error: 'server' };
+  } catch {
+    return { ok: false, error: 'network' };
+  }
+}

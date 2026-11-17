@@ -35,6 +35,7 @@ import {
   Loader2,
   PackageSearch,
   Crown,
+  MessageSquare,
 } from 'lucide-react';
 
 interface HeaderProps {
@@ -952,6 +953,9 @@ export default function Header({ categories }: HeaderProps) {
             <div className="shrink-0 border-t border-slate-100 p-4 space-y-2 text-sm">
               <Link href="/track" onClick={() => setDrawerOpen(false)} className="flex items-center gap-2 text-slate-800 font-semibold h-11">
                 <PackageSearch className="w-4 h-4 text-fresh-600" /> Track your order
+              </Link>
+              <Link href="/contact" onClick={() => setDrawerOpen(false)} className="flex items-center gap-2 text-slate-800 font-semibold h-11">
+                <MessageSquare className="w-4 h-4 text-fresh-600" /> Contact us
               </Link>
               <a href="tel:+9221111373742" className="flex items-center gap-2 text-slate-700 h-11">
                 <Phone className="w-4 h-4 text-fresh-600" /> +92 21 111-373-742
