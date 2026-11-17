@@ -402,7 +402,11 @@ export default function Header({ categories }: HeaderProps) {
   useEffect(() => {
     const el = headerRef.current;
     if (!el || typeof ResizeObserver === 'undefined') return;
-    const apply = () => document.documentElement.style.setProperty('--header-offset', `${el.offsetHeight + 8}px`);
+    const apply = () => {
+      const bar = el.querySelector<HTMLElement>('nav[aria-label="Shop by category"]');
+      const hanging = bar && window.matchMedia('(max-width: 767px)').matches ? bar.offsetHeight : 0;
+      document.documentElement.style.setProperty('--header-offset', `${el.offsetHeight + hanging + 8}px`);
+    };
     apply();
     const ro = new ResizeObserver(apply);
     ro.observe(el);
@@ -474,7 +478,7 @@ export default function Header({ categories }: HeaderProps) {
         ref={headerRef}
         className={`header-tuck sticky top-0 z-40 border-b md:border-b-0 md:pt-2 transition-[background-color,box-shadow,border-color,backdrop-filter] duration-500 ${
           scrolled
-            ? 'bg-[#cfeed4]/80 backdrop-blur-xl border-[#8fcf9b]/60 shadow-card md:bg-transparent md:backdrop-blur-none md:shadow-none md:border-transparent'
+            ? 'bg-[#cfeed4]/80 backdrop-blur-xl max-md:border-transparent max-md:shadow-none md:bg-transparent md:backdrop-blur-none md:shadow-none md:border-transparent'
             : 'bg-gradient-to-r from-fresh-950 to-[#0f3a26] border-[#d9b25a]/40 md:bg-none md:bg-transparent md:border-transparent'
         }`}
         onMouseLeave={() => {
@@ -614,8 +618,13 @@ export default function Header({ categories }: HeaderProps) {
         </div>
 
         {/* Category icon row, like the reference store: the all-categories menu, then each top-level category with its icon */}
-        <nav aria-label="Shop by category">
-          <div className="max-w-[1200px] mx-auto px-4 mt-0.5 max-md:mt-0 max-md:pb-2">
+        <nav
+          aria-label="Shop by category"
+          className={`max-md:absolute max-md:inset-x-0 max-md:top-full max-md:transition-[opacity,transform,visibility] max-md:duration-300 ${
+            scrolled ? 'max-md:opacity-100 max-md:translate-y-0' : 'max-md:opacity-0 max-md:-translate-y-2 max-md:invisible max-md:pointer-events-none'
+          }`}
+        >
+          <div className="max-w-[1200px] mx-auto px-4 mt-0.5 max-md:mt-0 max-md:pt-1.5 max-md:pb-2 max-md:bg-[#d7f0dc] max-md:border-b max-md:border-[#8fcf9b]/60 max-md:shadow-card">
           <div className={`h-[44px] px-4 max-md:h-[42px] max-md:px-1.5 rounded-2xl flex items-center gap-3 transition-colors duration-500 ${scrolled ? 'bg-white/90 backdrop-blur-xl border border-slate-200/80 shadow-xs' : 'bg-[#f3f4ef] border border-slate-200/70'}`}>
             <ul className="flex-1 min-w-0 flex items-center gap-2 max-md:gap-1 overflow-x-scroll max-md:overflow-x-auto pb-0.5 max-md:pb-0 cat-scroll">
               {FEATURED_AISLES.map(aisle => {
