@@ -272,8 +272,11 @@ class AdminController extends Controller
     {
         $product = Product::findOrFail($id);
         $request->validate([
-            'change_qty' => 'required|integer',
-            'reason' => 'required|string',
+            'change_qty' => 'required|integer|between:-100000,100000|not_in:0',
+            'reason' => 'required|string|in:restock,adjustment,damage,return',
+            'notes' => 'nullable|string|max:500',
+        ], [
+            'change_qty.not_in' => 'Enter how many units to add or remove.',
         ]);
 
         $change = intval($request->change_qty);
@@ -287,8 +290,8 @@ class AdminController extends Controller
             'reason' => $request->reason,
             'reference_id' => 'ADMIN-ADJ-' . strtoupper(Str::random(4)),
             'balance_after' => $newBalance,
-            'operator_name' => 'Store Admin',
-            'notes' => $request->notes ?? 'Manual inventory adjustment via CRM',
+            'operator_name' => $request->user()?->name ?: 'Store Admin',
+            'notes' => $request->notes ?: 'Manual inventory adjustment via CRM',
         ]);
 
         return redirect()->back()->with('success', "Stock updated for {$product->name}. New balance: {$newBalance} units");
@@ -693,16 +696,47 @@ class AdminController extends Controller
     }
 
     /**
-     * Inventory Logs (POS & Online synchronization audit)
+     * Inventory: "Stock" (what is on the shelf now, with add / remove) and "History" (every stock change in plain words).
      */
     public function inventoryLogs(Request $request)
     {
-        $logs = InventoryLog::with('product')->latest()->paginate(25);
-        $totalLogsCount = InventoryLog::count();
-        $onlineDeductions = InventoryLog::where('reason', 'online_order')->count();
-        $posDeductions = InventoryLog::where('reason', 'pos_sale')->count();
+        $tab = $request->query('tab') === 'history' ? 'history' : 'stock';
+        $search = trim((string) $request->query('search', ''));
 
-        return view('admin.inventory_logs', compact('logs', 'totalLogsCount', 'onlineDeductions', 'posDeductions'));
+        $tracked = Product::where('track_stock', true);
+        $counts = [
+            'tracked' => (clone $tracked)->count(),
+            'low' => (clone $tracked)->where('stock_quantity', '>', 0)->whereColumn('stock_quantity', '<=', 'low_stock_threshold')->count(),
+            'out' => (clone $tracked)->where('stock_quantity', '<=', 0)->count(),
+        ];
+
+        $products = null;
+        $logs = null;
+        if ($tab === 'stock') {
+            $show = in_array($request->query('show'), ['low', 'out', 'untracked'], true) ? $request->query('show') : 'all';
+            $products = Product::query()
+                ->when($search !== '', fn ($q) => $q->where(fn ($w) => $w->where('name', 'like', "%$search%")->orWhere('sku', 'like', "%$search%")->orWhere('barcode', 'like', "%$search%")))
+                ->when($show === 'low', fn ($q) => $q->where('track_stock', true)->where('stock_quantity', '>', 0)->whereColumn('stock_quantity', '<=', 'low_stock_threshold'))
+                ->when($show === 'out', fn ($q) => $q->where('track_stock', true)->where('stock_quantity', '<=', 0))
+                ->when($show === 'untracked', fn ($q) => $q->where('track_stock', false))
+                ->orderBy('name')
+                ->paginate(30)
+                ->withQueryString();
+        } else {
+            $show = in_array($request->query('show'), ['sold', 'added', 'removed', 'cancelled'], true) ? $request->query('show') : 'all';
+            $logs = InventoryLog::with('product:id,name,sku')
+                ->when($search !== '', fn ($q) => $q->where(fn ($w) => $w->where('reference_id', 'like', "%$search%")
+                    ->orWhereHas('product', fn ($p) => $p->where('name', 'like', "%$search%")->orWhere('sku', 'like', "%$search%"))))
+                ->when($show === 'sold', fn ($q) => $q->whereIn('reason', ['online_order', 'pos_sale', 'order_reinstated']))
+                ->when($show === 'added', fn ($q) => $q->where('change_qty', '>', 0)->whereNotIn('reason', ['order_cancelled']))
+                ->when($show === 'removed', fn ($q) => $q->whereIn('reason', ['damage', 'adjustment'])->where('change_qty', '<', 0))
+                ->when($show === 'cancelled', fn ($q) => $q->where('reason', 'order_cancelled'))
+                ->latest('id')
+                ->paginate(30)
+                ->withQueryString();
+        }
+
+        return view('admin.inventory_logs', compact('tab', 'search', 'show', 'counts', 'products', 'logs'));
     }
 
     /**

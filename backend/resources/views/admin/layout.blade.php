@@ -239,7 +239,7 @@
                         <a href="{{ route('admin.inventory_logs') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.inventory_logs') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-clock-rotate-left w-4 text-center"></i>
-                                <span>{{ config('features.pos') ? 'POS & ' : '' }}Stock Audit Trail</span>
+                                <span>Inventory</span>
                             </div>
                             <i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i>
                         </a>
