@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\PosController;
 use App\Http\Controllers\Api\CrmController;
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\HomeController;
 
 Route::prefix('v1')->group(function () {
     // Products
@@ -19,6 +20,9 @@ Route::prefix('v1')->group(function () {
     Route::post('/products/{slug}/reviews', [ReviewController::class, 'store']);
 
     // Categories
+    // Home page banners edited in Admin → Homepage Banners
+    Route::get('/home/banners', [HomeController::class, 'banners']);
+
     Route::get('/categories', [CategoryController::class, 'index']);
     Route::get('/categories/{slug}', [CategoryController::class, 'show']);
 

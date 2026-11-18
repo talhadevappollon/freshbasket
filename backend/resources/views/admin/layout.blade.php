@@ -219,6 +219,13 @@
                             <span class="text-[10px] text-emerald-300 font-mono">36</span>
                         </a>
 
+                        <a href="{{ route('admin.banners') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.banners') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-images w-4 text-center text-fresh-300"></i>
+                                <span>Homepage Banners</span>
+                            </div>
+                        </a>
+
                         <a href="{{ route('admin.products.barcode_sheet') }}" target="_blank" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.products.barcode_sheet') ? 'bg-fresh-600 text-white' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-barcode w-4 text-center text-fresh-300"></i>

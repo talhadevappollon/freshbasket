@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use App\Support\HomeBanners;
 
 class AdminController extends Controller
 {
@@ -406,6 +407,86 @@ class AdminController extends Controller
         $file->move(public_path('uploads/' . $folder), $name);
 
         return '/uploads/' . $folder . '/' . $name;
+    }
+
+    /**
+     * Homepage Banners: the slider, the green promo banner and the pictures beside the
+     * Fresh Fruits / Fresh Vegetables / Premium Nuts sections.
+     */
+    public function banners()
+    {
+        return view('admin.banners', ['banners' => HomeBanners::get(), 'showcaseNames' => HomeBanners::SHOWCASE]);
+    }
+
+    public function saveBanners(Request $request)
+    {
+        $imageRef = ['nullable', 'string', 'max:2048', 'regex:/^(https?:\/\/|\/)/'];
+        $linkRef = ['nullable', 'string', 'max:500', 'regex:/^(https?:\/\/|\/|#)/'];
+        $upload = 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:8192';
+
+        $request->validate([
+            'hero' => 'nullable|array|max:20',
+            'hero.*.image' => $imageRef,
+            'hero.*.image_mobile' => $imageRef,
+            'hero.*.image_file' => $upload,
+            'hero.*.image_mobile_file' => $upload,
+            'hero.*.alt' => 'nullable|string|max:300',
+            'hero.*.link' => $linkRef,
+            'hero.*.order' => 'nullable|integer|min:0|max:999',
+            'hero.*.remove' => 'nullable|boolean',
+            'promo.title' => 'nullable|string|max:200',
+            'promo.text' => 'nullable|string|max:400',
+            'promo.button_label' => 'nullable|string|max:60',
+            'promo.button_link' => $linkRef,
+            'showcase' => 'nullable|array',
+            'showcase.*.image' => $imageRef,
+            'showcase.*.image_file' => $upload,
+            'showcase.*.alt' => 'nullable|string|max:300',
+            'showcase.*.link' => $linkRef,
+        ], [
+            'regex' => 'Pictures and links must be a web address (https://...), a page on this site (/...) or an uploaded file.',
+        ]);
+
+        // Slider: kept rows in the chosen order; an upload replaces the address typed for it
+        $slides = [];
+        foreach ((array) $request->input('hero', []) as $i => $row) {
+            if (! empty($row['remove'])) {
+                continue;
+            }
+            $image = $request->hasFile("hero.$i.image_file") ? $this->storeUpload($request->file("hero.$i.image_file"), 'banners') : trim((string) ($row['image'] ?? ''));
+            if ($image === '') {
+                continue; // an empty "new slide" row
+            }
+            $mobile = $request->hasFile("hero.$i.image_mobile_file") ? $this->storeUpload($request->file("hero.$i.image_mobile_file"), 'banners') : trim((string) ($row['image_mobile'] ?? ''));
+            $slides[] = [
+                'order' => (int) ($row['order'] ?? 0),
+                'i' => (int) $i,
+                'image' => $image,
+                'image_mobile' => $mobile,
+                'alt' => trim((string) ($row['alt'] ?? '')),
+                'link' => trim((string) ($row['link'] ?? '')),
+            ];
+        }
+        usort($slides, fn ($a, $b) => [$a['order'], $a['i']] <=> [$b['order'], $b['i']]);
+        $slides = array_map(fn ($s) => array_diff_key($s, ['order' => 1, 'i' => 1]), $slides);
+
+        $showcase = [];
+        foreach (array_keys(HomeBanners::SHOWCASE) as $key) {
+            $row = (array) $request->input("showcase.$key", []);
+            $showcase[$key] = [
+                'image' => $request->hasFile("showcase.$key.image_file") ? $this->storeUpload($request->file("showcase.$key.image_file"), 'banners') : trim((string) ($row['image'] ?? '')),
+                'alt' => trim((string) ($row['alt'] ?? '')),
+                'link' => trim((string) ($row['link'] ?? '')),
+            ];
+        }
+
+        HomeBanners::save([
+            'hero' => $slides,
+            'promo' => array_map(fn ($v) => trim((string) $v), (array) $request->input('promo', [])),
+            'showcase' => $showcase,
+        ]);
+
+        return redirect()->route('admin.banners')->with('success', 'Homepage banners saved. The website shows them straight away.');
     }
 
     /**

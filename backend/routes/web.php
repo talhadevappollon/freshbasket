@@ -30,6 +30,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/products/{id}/availability', [AdminController::class, 'setAvailability'])->name('products.availability');
     Route::post('/products/save/{id?}', [AdminController::class, 'saveProduct'])->name('products.save');
 
+    // Homepage banners (slider, promo banner, section pictures)
+    Route::get('/banners', [AdminController::class, 'banners'])->name('banners');
+    Route::post('/banners', [AdminController::class, 'saveBanners'])->name('banners.save');
+
     // Categories & Collections
     Route::get('/categories', [AdminController::class, 'categories'])->name('categories');
     Route::post('/categories/save/{id?}', [AdminController::class, 'saveCategory'])->name('categories.save');
