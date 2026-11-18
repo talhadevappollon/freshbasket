@@ -1,3 +1,12 @@
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php84” package as the default “PHP” programming language.
+# (Kept in the repo on purpose: every deploy resets this file, so a version picked in MultiPHP Manager would not stay.
+#  The shop needs PHP 8.3 or newer.)
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php84 .php .php8 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit
+
 DirectoryIndex index.html index.php
 
 # 1. Gzip Compression
