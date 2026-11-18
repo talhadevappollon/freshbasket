@@ -6,6 +6,15 @@ use App\Mail\OrderPlacedCustomer;
 use App\Mail\OrderPlacedStaff;
 use App\Mail\OrderStatusChanged;
 use App\Mail\TestEmail;
+use App\Mail\ContactReceivedCustomer;
+use App\Mail\ContactReceivedStaff;
+use App\Mail\LowStockStaff;
+use App\Mail\ReviewSubmittedStaff;
+use App\Mail\WelcomeCustomer;
+use App\Models\CrmLead;
+use App\Models\CustomerAccount;
+use App\Models\Product;
+use App\Models\ProductReview;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Mail\Mailable;
@@ -22,6 +31,11 @@ class EmailPreviews
         'order_customer' => 'Order confirmation',
         'order_staff' => 'New order alert',
         'status_customer' => 'Order status update',
+        'contact_staff' => 'Contact form message',
+        'contact_customer' => '"We got your message" reply',
+        'welcome_customer' => 'Welcome email',
+        'review_staff' => 'New review alert',
+        'low_stock_staff' => 'Low stock alert',
     ];
 
     public static function make(string $type): Mailable
@@ -30,8 +44,35 @@ class EmailPreviews
             'order_customer' => new OrderPlacedCustomer(self::order()),
             'order_staff' => new OrderPlacedStaff(self::order()),
             'status_customer' => new OrderStatusChanged(tap(self::order(), fn ($o) => $o->order_status = request('status', 'dispatched'))),
+            'contact_staff' => new ContactReceivedStaff(self::lead()),
+            'contact_customer' => new ContactReceivedCustomer(self::lead()),
+            'welcome_customer' => new WelcomeCustomer(CustomerAccount::latest('id')->first() ?? new CustomerAccount(['name' => 'Ayesha Khan', 'phone' => '0321 9876543', 'email' => 'ayesha@example.com'])),
+            'review_staff' => new ReviewSubmittedStaff(ProductReview::latest('id')->first() ?? new ProductReview(['product_name' => 'Fresh Mango Sindhri', 'product_slug' => 'fresh-mango-sindhri', 'customer_name' => 'Bilal Ahmed', 'customer_email' => 'bilal@example.com', 'rating' => 4, 'review_title' => 'Sweet and fresh', 'review_body' => 'Arrived the same day and every mango was ripe. Will order again.'])),
+            'low_stock_staff' => new LowStockStaff(self::lowStock(), 'FB-SAMPLE'),
             default => new TestEmail('Store Manager'),
         };
+    }
+
+    private static function lead(): CrmLead
+    {
+        $lead = CrmLead::latest('id')->first();
+        if ($lead) {
+            return $lead;
+        }
+        $lead = new CrmLead(['name' => 'Hamza Tariq', 'phone' => '0300 1234567', 'email' => 'hamza@example.com', 'subject' => 'Delivery question · Order FB-SAMPLE', 'message' => "Assalam-o-Alaikum, can my order come after 6 pm today?\nThank you."]);
+        $lead->created_at = now();
+
+        return $lead;
+    }
+
+    private static function lowStock(): array
+    {
+        $products = Product::where('track_stock', true)->orderBy('stock_quantity')->limit(2)->get();
+        if ($products->isEmpty()) {
+            return [['name' => 'Organic Tomatoes', 'sku' => 'FH-0001', 'stock' => 3, 'threshold' => 5]];
+        }
+
+        return $products->map(fn ($p) => ['name' => $p->name, 'sku' => $p->sku, 'stock' => (int) $p->stock_quantity, 'threshold' => (int) $p->low_stock_threshold])->all();
     }
 
     /** The latest order, or a sample one (never saved). */

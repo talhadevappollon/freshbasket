@@ -89,6 +89,8 @@ class ReviewController extends Controller
             'status' => 'approved', // auto-approved for instant satisfaction, admin can edit/reject
         ]);
 
+        \App\Support\ShopMailer::staffLater(new \App\Mail\ReviewSubmittedStaff($review), 'review_staff', $review->product_name);
+
         return response()->json([
             'success' => true,
             'message' => 'Thank you! Your review has been submitted successfully.',

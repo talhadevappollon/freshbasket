@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ContactReceivedCustomer;
+use App\Mail\ContactReceivedStaff;
 use App\Models\CrmLead;
+use App\Support\ShopMailer;
 use Illuminate\Http\Request;
 
 class CrmController extends Controller
@@ -35,6 +38,12 @@ class CrmController extends Controller
             'message' => $validated['message'],
             'status' => 'new',
         ]);
+
+        // Staff alert (reply goes to the customer) and an automatic "we got it" reply (Admin → Email Setup)
+        ShopMailer::staffLater(new ContactReceivedStaff($lead), 'contact_staff', 'Lead #' . $lead->id);
+        if (filter_var($lead->email, FILTER_VALIDATE_EMAIL)) {
+            ShopMailer::later($lead->email, new ContactReceivedCustomer($lead), 'contact_customer', 'Lead #' . $lead->id);
+        }
 
         return response()->json([
             'success' => true,

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\WelcomeCustomer;
 use App\Models\CustomerAccount;
+use App\Support\ShopMailer;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -41,6 +43,10 @@ class AccountController extends Controller
             'email' => !empty($data['email']) ? strtolower(trim($data['email'])) : null,
             'password' => $data['password'],
         ]);
+
+        if ($account->email) {
+            ShopMailer::later($account->email, new WelcomeCustomer($account), 'welcome_customer', 'Account #' . $account->id);
+        }
 
         return response()->json($this->session($account), 201);
     }

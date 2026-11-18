@@ -43,7 +43,8 @@ class CheckoutController extends Controller
         $hasSlotColumns = Schema::hasColumn('orders', 'delivery_window');
         $account = Schema::hasColumn('orders', 'customer_account_id') ? $request->user('sanctum') : null; // signed-in shopper, if any
 
-        $order = DB::transaction(function () use ($validated, $request, $hasSlotColumns, $account) {
+        $lowStock = []; // products this order takes down to their low-stock level
+        $order = DB::transaction(function () use ($validated, $request, $hasSlotColumns, $account, &$lowStock) {
             // 1. Sync / Find Customer (CRM 360)
             $customer = Customer::firstOrCreate(
                 ['phone' => $validated['customer_phone']],
@@ -85,7 +86,12 @@ class CheckoutController extends Controller
 
                 // Deduct stock if tracking enabled
                 if ($product->track_stock) {
+                    $before = (int) $product->stock_quantity;
                     $newBalance = max(0, $product->stock_quantity - $qty);
+                    $threshold = (int) ($product->low_stock_threshold ?? 0);
+                    if ($before > $threshold && $newBalance <= $threshold) {
+                        $lowStock[] = ['name' => $product->name, 'sku' => $product->sku, 'stock' => $newBalance, 'threshold' => $threshold];
+                    }
                     $product->stock_quantity = $newBalance;
                     $product->save();
 
@@ -170,6 +176,9 @@ class CheckoutController extends Controller
 
         // Confirmation to the customer and an alert to staff, sent after the response (Admin → Email Setup)
         OrderEmails::placed($order);
+        if ($lowStock) {
+            \App\Support\ShopMailer::staffLater(new \App\Mail\LowStockStaff($lowStock, $order->order_number), 'low_stock_staff', $order->order_number);
+        }
 
         return response()->json([
             'success' => true,
