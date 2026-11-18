@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\AuthController;
+use App\Http\Controllers\Admin\EmailSettingsController;
 
 Route::get('/', function () {
     if (file_exists(public_path('index.html'))) {
@@ -46,6 +47,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin.password'])->
     // Homepage banners (slider, promo banner, section pictures)
     Route::get('/banners', [AdminController::class, 'banners'])->name('banners');
     Route::post('/banners', [AdminController::class, 'saveBanners'])->name('banners.save');
+
+    // Email Setup: SMTP account, staff inboxes, which emails are sent, test email, previews, log
+    Route::get('/email', [EmailSettingsController::class, 'index'])->name('email');
+    Route::post('/email', [EmailSettingsController::class, 'save'])->name('email.save')->middleware('throttle:20,1');
+    Route::get('/email/preview/{type}', [EmailSettingsController::class, 'preview'])->name('email.preview');
 
     // Categories & Collections
     Route::get('/categories', [AdminController::class, 'categories'])->name('categories');
