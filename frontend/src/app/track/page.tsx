@@ -59,15 +59,22 @@ export default function TrackOrderPage() {
   useEffect(() => {
     document.title = 'Track your order — Fresh House';
     fetchCategories().then(setCategories);
-    // Prefill from this device's last order and look it up straight away
+    // From an email link (/track?order=FB-ABC123): fill in that order number; the phone stays the shopper's to type,
+    // unless this device already looked that order up. Otherwise prefill this device's last order and look it up.
+    const fromLink = (new URLSearchParams(window.location.search).get('order') || '').trim().toUpperCase().slice(0, 40);
     try {
       const saved = JSON.parse(localStorage.getItem(LAST_ORDER_KEY) || 'null');
-      if (saved?.n && saved?.p) {
+      if (fromLink && !(saved?.n === fromLink && saved?.p)) {
+        setOrderNumber(fromLink);
+        setTimeout(() => document.getElementById('track-phone')?.focus(), 0);
+      } else if (saved?.n && saved?.p) {
         setOrderNumber(saved.n);
         setPhone(saved.p);
         run(saved.n, saved.p);
       }
-    } catch {}
+    } catch {
+      if (fromLink) setOrderNumber(fromLink);
+    }
   }, [run]);
 
   // Keep an open order fresh until it is finished

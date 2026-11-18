@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use App\Support\DeliverySlots;
+use App\Support\OrderEmails;
 
 class CheckoutController extends Controller
 {
@@ -42,7 +43,7 @@ class CheckoutController extends Controller
         $hasSlotColumns = Schema::hasColumn('orders', 'delivery_window');
         $account = Schema::hasColumn('orders', 'customer_account_id') ? $request->user('sanctum') : null; // signed-in shopper, if any
 
-        return DB::transaction(function () use ($validated, $request, $hasSlotColumns, $account) {
+        $order = DB::transaction(function () use ($validated, $request, $hasSlotColumns, $account) {
             // 1. Sync / Find Customer (CRM 360)
             $customer = Customer::firstOrCreate(
                 ['phone' => $validated['customer_phone']],
@@ -164,12 +165,17 @@ class CheckoutController extends Controller
                 ->whereNull('reference_id')
                 ->update(['reference_id' => $orderNumber]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Your order has been placed successfully with Cash on Delivery!',
-                'order' => $order->load('items'),
-            ], 201);
+            return $order;
         });
+
+        // Confirmation to the customer and an alert to staff, sent after the response (Admin → Email Setup)
+        OrderEmails::placed($order);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Your order has been placed successfully with Cash on Delivery!',
+            'order' => $order->load('items'),
+        ], 201);
     }
 }
 

@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Support\HomeBanners;
+use App\Support\OrderEmails;
 
 class AdminController extends Controller
 {
@@ -141,11 +142,13 @@ class AdminController extends Controller
 
         $orders = Order::whereIn('id', $request->order_ids)->get();
         foreach ($orders as $order) {
+            $previous = $order->order_status;
             $order->order_status = $request->new_status;
             if ($request->new_status === 'delivered') {
                 $order->payment_status = 'paid';
             }
             $order->save();
+            OrderEmails::statusChanged($order, $previous); // customer email, when switched on
         }
 
         return redirect()->back()->with('success', count($orders) . " orders successfully updated to " . strtoupper($request->new_status) . "!");
@@ -198,8 +201,10 @@ class AdminController extends Controller
     public function updateOrderStatus(Request $request, $id)
     {
         $order = Order::findOrFail($id);
-        
+        $previous = $order->order_status;
+
         if ($request->has('order_status')) {
+            $request->validate(['order_status' => 'in:pending,processing,dispatched,delivered,cancelled']);
             $order->order_status = $request->order_status;
             if ($request->order_status === 'delivered' && $order->payment_status === 'unpaid') {
                 $order->payment_status = 'paid';
@@ -211,6 +216,7 @@ class AdminController extends Controller
         }
 
         $order->save();
+        OrderEmails::statusChanged($order, $previous); // customer email, when switched on
 
         return redirect()->back()->with('success', "Order #{$order->order_number} status updated to " . strtoupper($order->order_status) . "!");
     }
