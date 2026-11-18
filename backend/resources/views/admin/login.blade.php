@@ -11,12 +11,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] },
+                    fontFamily: { sans: ['Geist', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', 'sans-serif'] },
                     colors: {
                         fresh: { 50: '#f3f7f3', 100: '#e7efe6', 200: '#cde0cc', 300: '#a5cca4', 400: '#6db26c', 500: '#478f45', 600: '#3a7538', 700: '#2e5d2d', 800: '#254724', 900: '#1d361c', 950: '#101e10' },
                     },

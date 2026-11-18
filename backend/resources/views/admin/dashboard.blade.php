@@ -2,43 +2,46 @@
 
 @section('content')
 <div class="space-y-8 max-w-7xl mx-auto">
-    <!-- Top Welcome & Highlights -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-gradient-to-r from-fresh-950 via-fresh-900 to-fresh-800 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-emerald-800/40">
-        <div class="relative z-10 max-w-xl">
-            <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full text-emerald-300 text-xs font-bold uppercase tracking-wider mb-3 border border-white/10">
-                <i class="fa-solid fa-wand-magic-sparkles text-fresh-400"></i>
-                <span>Simple Dashboard</span>
+    <!-- Welcome: styled like the website header (dark green, gold trim, gold logo) -->
+    <section class="relative overflow-hidden rounded-[28px] bg-gradient-to-r from-fresh-950 to-[#0f3a26] border border-[#d9b25a]/40 shadow-[0_18px_40px_-22px_rgba(8,40,24,0.75)] text-white p-6 sm:p-8">
+        <div aria-hidden="true" class="pointer-events-none absolute -right-16 -top-24 w-72 h-72 rounded-full bg-[#dcb355]/15 blur-3xl"></div>
+        <div aria-hidden="true" class="pointer-events-none absolute right-24 -bottom-28 w-64 h-64 rounded-full bg-[#bbe96f]/10 blur-3xl"></div>
+        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div class="max-w-xl">
+                <span class="relative block w-fit mb-4">
+                    <img src="/logo.png" alt="Fresh House" width="150" height="34" class="h-8 w-auto">
+                    <span aria-hidden="true" class="absolute inset-0" style="background:linear-gradient(180deg,#f8e9ae 0%,#dcb355 38%,#a8741f 64%,#efcf7c 100%);-webkit-mask-image:url(/logo.png);mask-image:url(/logo.png);-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;"></span>
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider text-[#f3dc95] bg-white/5 border border-[#d9b25a]/30">
+                    <i class="fa-solid fa-chart-pie text-[10px]"></i> Dashboard
+                </span>
+                <h1 class="mt-3 text-2xl sm:text-3xl font-black tracking-tight leading-tight">Welcome back, {{ strtok(trim(auth()->user()->name ?? ''), ' ') ?: 'there' }}</h1>
+                <p class="text-sm text-fresh-100/80 mt-1.5">Here is how {{ \App\Models\StoreSetting::get('store_name', 'Fresh House') ?: 'Fresh House' }} is doing &middot; {{ now()->timezone('Asia/Karachi')->format('l, d M Y') }}</p>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-black tracking-tight leading-tight">
-                Karachi Central Warehouse{{ config('features.pos') ? ' & POS' : '' }} Command
-            </h1>
-            <p class="text-xs sm:text-sm text-emerald-100/80 mt-2 leading-relaxed">
-                Centralized ERP controlling 745+ grocery items, Cash on Delivery logistics, rider dispatches, customer loyalty{{ config('features.pos') ? ', and real-time physical store POS counter' : '' }}.
-            </p>
-        </div>
 
-        <div class="relative z-10 flex flex-wrap items-center gap-3">
-            <a href="{{ route('admin.orders') }}" class="bg-fresh-500 hover:bg-fresh-600 text-white px-5 py-3 rounded-2xl text-xs font-black shadow-lg shadow-fresh-600/30 flex items-center space-x-2 transition transform hover:-translate-y-0.5">
-                <i class="fa-solid fa-truck-fast"></i>
-                <span>Deliveries ({{ $pendingOrders }} Pending)</span>
-            </a>
+            <div class="flex flex-wrap items-center gap-3">
+                <a href="{{ route('admin.orders', ['status' => 'pending']) }}" class="h-12 px-6 rounded-full bg-[#bbe96f] hover:bg-[#a9dc56] text-fresh-950 text-sm font-black inline-flex items-center gap-2 shadow-lg shadow-black/20 transition hover:-translate-y-0.5">
+                    <i class="fa-solid fa-truck-fast"></i>
+                    <span>Deliveries ({{ $pendingOrders }} pending)</span>
+                </a>
 @if(config('features.pos'))
-            <a href="{{ route('admin.pos') }}" class="bg-amber-400 hover:bg-amber-500 text-slate-950 px-5 py-3 rounded-2xl text-xs font-black shadow-lg shadow-amber-400/20 flex items-center space-x-2 transition transform hover:-translate-y-0.5">
-                <i class="fa-solid fa-cash-register"></i>
-                <span>Open POS Terminal</span>
-            </a>
+                <a href="{{ route('admin.pos') }}" class="h-12 px-6 rounded-full bg-gradient-to-b from-[#f3dc95] to-[#dcb355] text-fresh-950 text-sm font-black inline-flex items-center gap-2 shadow-lg shadow-black/20 transition hover:-translate-y-0.5">
+                    <i class="fa-solid fa-cash-register"></i>
+                    <span>Open POS Terminal</span>
+                </a>
 @endif
-            <a href="{{ route('admin.products.barcode_sheet') }}" target="_blank" class="bg-white/10 hover:bg-white/20 text-white border border-white/20 px-4 py-3 rounded-2xl text-xs font-bold backdrop-blur-md flex items-center space-x-2 transition">
-                <i class="fa-solid fa-barcode text-fresh-300"></i>
-                <span class="hidden sm:inline">Shelf Labels</span>
-            </a>
+                <a href="{{ route('admin.products.barcode_sheet') }}" target="_blank" class="h-12 px-5 rounded-full bg-white/10 hover:bg-white/15 text-white border border-[#d9b25a]/40 text-sm font-bold inline-flex items-center gap-2 transition">
+                    <i class="fa-solid fa-barcode text-[#dcb355]"></i>
+                    <span class="hidden sm:inline">Shelf Labels</span>
+                </a>
+            </div>
         </div>
-    </div>
+    </section>
 
     <!-- 6 KPI Metrics Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
         <!-- Gross Sales -->
-        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-md transition lg:col-span-2">
+        <div class="bg-white p-5 rounded-[22px] border border-slate-200/70 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_8px_24px_-12px_rgb(15_23_42/0.12)] hover:shadow-[0_2px_4px_rgb(15_23_42/0.05),0_24px_48px_-16px_rgb(15_23_42/0.22)] transition lg:col-span-2">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Gross Sales Revenue</span>
                 <div class="w-10 h-10 rounded-2xl bg-fresh-50 text-fresh-600 flex items-center justify-center text-lg">
@@ -55,27 +58,27 @@
         </div>
 
         <!-- COD Collections (Collected vs Pending) -->
-        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-md transition lg:col-span-2">
+        <div class="bg-white p-5 rounded-[22px] border border-slate-200/70 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_8px_24px_-12px_rgb(15_23_42/0.12)] hover:shadow-[0_2px_4px_rgb(15_23_42/0.05),0_24px_48px_-16px_rgb(15_23_42/0.22)] transition lg:col-span-2">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">COD Cash Flow</span>
-                <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg">
+                <div class="w-10 h-10 rounded-2xl bg-[#f7efd6] text-[#a8741f] flex items-center justify-center text-lg">
                     <i class="fa-solid fa-hand-holding-dollar"></i>
                 </div>
             </div>
-            <h3 class="text-2xl sm:text-3xl font-black text-emerald-800 mt-2">
+            <h3 class="text-2xl sm:text-3xl font-black text-slate-900 mt-2">
                 PKR {{ number_format($codCollected, 0) }}
             </h3>
-            <div class="text-xs text-amber-700 font-bold mt-2 flex items-center gap-1">
+            <div class="text-xs text-[#8a6216] font-bold mt-2 flex items-center gap-1">
                 <i class="fa-solid fa-clock"></i>
                 <span>PKR {{ number_format($codPending, 0) }} pending in-transit</span>
             </div>
         </div>
 
         <!-- Average Order Value (AOV) -->
-        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-md transition">
+        <div class="bg-white p-5 rounded-[22px] border border-slate-200/70 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_8px_24px_-12px_rgb(15_23_42/0.12)] hover:shadow-[0_2px_4px_rgb(15_23_42/0.05),0_24px_48px_-16px_rgb(15_23_42/0.22)] transition">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Avg Order Value</span>
-                <div class="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-base">
+                <div class="w-9 h-9 rounded-2xl bg-fresh-50 text-fresh-700 flex items-center justify-center text-base">
                     <i class="fa-solid fa-receipt"></i>
                 </div>
             </div>
@@ -89,10 +92,10 @@
         </div>
 
         <!-- Inventory Alerts -->
-        <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-md transition">
+        <div class="bg-white p-5 rounded-[22px] border border-slate-200/70 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_8px_24px_-12px_rgb(15_23_42/0.12)] hover:shadow-[0_2px_4px_rgb(15_23_42/0.05),0_24px_48px_-16px_rgb(15_23_42/0.22)] transition">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Stock Health</span>
-                <div class="w-9 h-9 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-base">
+                <div class="w-9 h-9 rounded-2xl {{ $lowStockCount > 0 ? 'bg-brand-50 text-brand-600' : 'bg-fresh-50 text-fresh-700' }} flex items-center justify-center text-base">
                     <i class="fa-solid fa-boxes-packing"></i>
                 </div>
             </div>
@@ -150,7 +153,7 @@
     <!-- Charts Section: Revenue Analytics & Order Doughnut -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Sales Velocity Line Chart (2 Cols) -->
-        <div class="lg:col-span-2 bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/80 shadow-xs">
+        <div class="lg:col-span-2 bg-white rounded-[22px] border border-slate-200/70 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_8px_24px_-12px_rgb(15_23_42/0.12)] p-6 sm:p-7">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
                 <div>
                     <h3 class="font-black text-slate-900 text-lg">Weekly Sales Revenue Analytics</h3>
@@ -167,7 +170,7 @@
         </div>
 
         <!-- Order Fulfillment Status Doughnut (1 Col) -->
-        <div class="bg-white p-6 sm:p-7 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
+        <div class="bg-white rounded-[22px] border border-slate-200/70 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_8px_24px_-12px_rgb(15_23_42/0.12)] p-6 sm:p-7 flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
                     <div>
@@ -182,33 +185,37 @@
 
             <div class="grid grid-cols-2 gap-2 text-xs pt-4 border-t border-slate-100 mt-4">
                 <div class="flex items-center space-x-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#dcb355]"></span>
                     <span class="text-slate-600 font-medium">Pending: <strong>{{ $pendingOrders }}</strong></span>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#bbe96f] ring-1 ring-[#9cc95a]"></span>
                     <span class="text-slate-600 font-medium">Processing: <strong>{{ $processingOrders }}</strong></span>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#478f45]"></span>
                     <span class="text-slate-600 font-medium">Dispatched: <strong>{{ $dispatchedOrders }}</strong></span>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#1d361c]"></span>
                     <span class="text-slate-600 font-medium">Delivered: <strong>{{ $deliveredOrders }}</strong></span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#b20f0b]"></span>
+                    <span class="text-slate-600 font-medium">Cancelled: <strong>{{ $cancelledOrders }}</strong></span>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Active Orders Management Table -->
-    <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+    <div class="bg-white rounded-[22px] border border-slate-200/70 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_8px_24px_-12px_rgb(15_23_42/0.12)] overflow-hidden">
         <div class="p-6 border-b border-slate-100 flex items-center justify-between">
             <div>
                 <h3 class="font-black text-slate-900 text-lg">Live Order Fulfillment & Cash Settlement</h3>
                 <p class="text-xs text-slate-500">Fulfill orders, dispatch delivery riders, and reconcile Cash On Delivery (COD)</p>
             </div>
-            <a href="{{ route('admin.orders') }}" class="text-xs font-bold text-fresh-700 hover:text-fresh-800 bg-fresh-50 px-4 py-2 rounded-xl border border-fresh-200 transition">
+            <a href="{{ route('admin.orders') }}" class="text-xs font-bold text-fresh-800 hover:text-fresh-950 bg-fresh-50 hover:bg-fresh-100 px-4 h-9 inline-flex items-center rounded-full border border-fresh-200 transition">
                 View All Orders &rarr;
             </a>
         </div>
@@ -260,7 +267,7 @@
                                     <i class="fa-solid fa-circle-check mr-1 text-[10px]"></i> Cash Collected
                                 </span>
                             @else
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-[#f7efd6] text-[#7a5612]">
                                     <i class="fa-solid fa-clock mr-1 text-[10px]"></i> Pending COD
                                 </span>
                             @endif
@@ -298,9 +305,9 @@
     <!-- Bottom Two Columns: Low Stock Alerts & Customer Inquiries -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Low Stock Alert Box -->
-        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+        <div class="bg-white rounded-[22px] border border-slate-200/70 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_8px_24px_-12px_rgb(15_23_42/0.12)] p-6">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
-                <div class="flex items-center space-x-2 text-rose-600 font-black">
+                <div class="flex items-center space-x-2 text-brand-600 font-black">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     <h3 class="text-base text-slate-900">Critical Stock Depletion (Restock Required)</h3>
                 </div>
@@ -327,7 +334,7 @@
                             @csrf
                             <input type="hidden" name="change_qty" value="25">
                             <input type="hidden" name="reason" value="restock">
-                            <button type="submit" class="px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200 transition" title="Restock +25">
+                            <button type="submit" class="px-3 h-8 rounded-full bg-[#bbe96f] hover:bg-[#a9dc56] text-fresh-950 text-xs font-bold transition" title="Restock +25">
                                 +25 Restock
                             </button>
                         </form>
@@ -343,7 +350,7 @@
         </div>
 
         <!-- Recent Customer Inquiries / Leads -->
-        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs">
+        <div class="bg-white rounded-[22px] border border-slate-200/70 shadow-[0_1px_2px_rgb(15_23_42/0.04),0_8px_24px_-12px_rgb(15_23_42/0.12)] p-6">
             <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
                 <div class="flex items-center space-x-2 text-fresh-700 font-black">
                     <i class="fa-solid fa-headset"></i>
@@ -364,7 +371,7 @@
                         </div>
                         <p class="text-xs text-slate-600 mt-1 line-clamp-1 font-medium">{{ $lead->message }}</p>
                     </div>
-                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $lead->phone) }}?text={{ urlencode('Assalam-o-Alaikum ' . $lead->name . ', thank you for contacting Fresh House.') }}" target="_blank" class="shrink-0 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition">
+                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $lead->phone) }}?text={{ urlencode('Assalam-o-Alaikum ' . $lead->name . ', thank you for contacting Fresh House.') }}" target="_blank" class="shrink-0 bg-fresh-50 text-fresh-800 hover:bg-fresh-100 px-3 h-8 rounded-full text-xs font-bold flex items-center gap-1 transition">
                         <i class="fa-brands fa-whatsapp text-sm"></i>
                         <span>Reply</span>
                     </a>
@@ -382,11 +389,15 @@
 <!-- Chart Scripts & Barcode Checker -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Charts use the website's font and the logo colours
+        Chart.defaults.font.family = "'Geist', system-ui, sans-serif";
+        Chart.defaults.color = '#64748b';
+
         // Sales Trend Chart
         const ctxTrend = document.getElementById('salesTrendChart').getContext('2d');
         const gradient = ctxTrend.createLinearGradient(0, 0, 0, 240);
-        gradient.addColorStop(0, 'rgba(34, 197, 94, 0.4)');
-        gradient.addColorStop(1, 'rgba(34, 197, 94, 0.0)');
+        gradient.addColorStop(0, 'rgba(71, 143, 69, 0.35)');
+        gradient.addColorStop(1, 'rgba(71, 143, 69, 0.0)');
 
         new Chart(ctxTrend, {
             type: 'line',
@@ -395,12 +406,12 @@
                 datasets: [{
                     label: 'Gross Sales (PKR)',
                     data: @json($salesChartValues),
-                    borderColor: '#478f45',
+                    borderColor: '#3a7538',
                     backgroundColor: gradient,
                     borderWidth: 3,
                     fill: true,
                     tension: 0.4,
-                    pointBackgroundColor: '#478f45',
+                    pointBackgroundColor: '#3a7538',
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
                     pointRadius: 4,
@@ -452,11 +463,11 @@
                         {{ $cancelledOrders }}
                     ],
                     backgroundColor: [
-                        '#fbbf24', // Amber
-                        '#a855f7', // Purple
-                        '#3b82f6', // Blue
-                        '#478f45', // Brand green
-                        '#b20f0b'  // Brand red
+                        '#dcb355', // Pending: logo gold
+                        '#bbe96f', // Processing: website lime
+                        '#478f45', // Dispatched: logo green
+                        '#1d361c', // Delivered: deep green
+                        '#b20f0b'  // Cancelled: logo red
                     ],
                     borderWidth: 2,
                     borderColor: '#ffffff',

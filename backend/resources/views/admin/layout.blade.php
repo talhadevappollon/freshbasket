@@ -11,10 +11,10 @@
     <meta name="theme-color" content="#101e10">
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts: Plus Jakarta Sans -->
+    <!-- Google Fonts: Geist, the website's font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..900&family=Geist+Mono:wght@400..700&display=swap" rel="stylesheet">
     <!-- FontAwesome 6 Pro-style icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Chart.js for executive analytics -->
@@ -33,7 +33,8 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
+                        sans: ['Geist', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', 'sans-serif'],
+                        mono: ['"Geist Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
                     },
                     colors: {
                         fresh: FRESH,
@@ -62,7 +63,7 @@
         }
     </script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { font-family: 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
         html { scroll-behavior: smooth; }
         /* Keyboard focus: visible ring on every control, none for mouse clicks */
         :focus-visible { outline: 2px solid #478f45; outline-offset: 2px; }
@@ -127,16 +128,18 @@
         <div id="sidebarBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-xs z-40 hidden lg:hidden"></div>
 
         <!-- Sidebar (Hidden by default on mobile, slide-over drawer) -->
-        <aside id="adminSidebar" class="hidden lg:flex fixed lg:static inset-y-0 left-0 w-72 bg-gradient-to-b from-fresh-950 via-[#17301a] to-[#0b160b] text-white flex-col shrink-0 border-r border-fresh-950 shadow-2xl z-50 lg:z-30 transition-all duration-300">
+        <aside id="adminSidebar" class="hidden lg:flex fixed lg:static inset-y-0 left-0 w-72 bg-gradient-to-b from-fresh-950 to-[#0f3a26] text-white flex-col shrink-0 border-r border-[#d9b25a]/30 shadow-2xl z-50 lg:z-30 transition-all duration-300">
             <!-- Brand Section -->
-            <div class="p-6 border-b border-emerald-900/40 flex items-center justify-between">
+            <div class="p-6 border-b border-[#d9b25a]/20 flex items-center justify-between">
                 <a href="{{ route('admin.dashboard') }}" class="flex flex-col gap-2 group" aria-label="Fresh House admin home">
-                    <span class="bg-white rounded-xl px-3 py-2 shadow-lg shadow-black/20 group-hover:shadow-black/30 transition">
+                    {{-- The gold logo, as in the website header --}}
+                    <span class="relative block w-fit transition-transform duration-300 group-hover:scale-[1.03]">
                         <img src="/logo.png" alt="Fresh House" width="150" height="34" class="h-8 w-auto">
+                        <span aria-hidden="true" class="absolute inset-0" style="background:linear-gradient(180deg,#f8e9ae 0%,#dcb355 38%,#a8741f 64%,#efcf7c 100%);-webkit-mask-image:url(/logo.png);mask-image:url(/logo.png);-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;"></span>
                     </span>
                     <span class="flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-fresh-400 animate-pulse"></span>
-                        <span class="text-[10px] text-fresh-300 font-bold tracking-widest uppercase">Admin CRM{{ config('features.pos') ? ' &amp; POS' : '' }}</span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#bbe96f] animate-pulse"></span>
+                        <span class="text-[10px] text-[#dcb355] font-bold tracking-widest uppercase">Admin CRM{{ config('features.pos') ? ' &amp; POS' : '' }}</span>
                     </span>
                 </a>
                 <button onclick="toggleSidebar()" aria-label="Close menu" class="lg:hidden text-emerald-400/80 hover:text-white w-11 h-11 flex items-center justify-center rounded-xl hover:bg-white/10 transition">
@@ -166,7 +169,7 @@
                         <a href="{{ route('admin.dashboard') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.dashboard') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-chart-pie w-4 text-center"></i>
-                                <span>Simple Dashboard</span>
+                                <span>Dashboard</span>
                             </div>
                             <i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i>
                         </a>
