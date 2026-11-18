@@ -30,7 +30,6 @@ import {
   CupSoda,
   Baby,
   ShoppingBasket,
-  ShieldCheck,
   Loader2,
   PackageSearch,
   Crown,
@@ -908,9 +907,6 @@ export default function Header({ categories }: HeaderProps) {
               </Link>
               <a href="tel:+9221111373742" className="flex items-center gap-2 text-slate-700 h-11">
                 <Phone className="w-4 h-4 text-fresh-600" /> +92 21 111-373-742
-              </a>
-              <a href="/admin" className="flex items-center gap-2 text-slate-500 h-11">
-                <ShieldCheck className="w-4 h-4" /> Staff login
               </a>
             </div>
           </div>

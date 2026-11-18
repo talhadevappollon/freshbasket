@@ -157,7 +157,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-6 border-t border-slate-300/70 flex flex-col sm:flex-row items-center justify-between text-sm text-slate-600 gap-3 text-center sm:text-left pb-28 md:pb-0">
           <p>
-            &copy; {new Date().getFullYear()} Fresh House. All rights reserved. <a href="/admin" className="ml-2 text-slate-400 hover:text-slate-700">Staff login</a>
+            &copy; {new Date().getFullYear()} Fresh House. All rights reserved.
           </p>
           <div className="flex items-center justify-center flex-wrap gap-x-1">
             <span>Crafted with</span>
