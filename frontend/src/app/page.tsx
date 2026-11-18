@@ -77,11 +77,12 @@ export default function Home() {
         {/* The sections of the Fresh House web update, in the same order on phones and desktop */}
         <div>
           <Bestsellers onQuickView={setQuickViewProduct} />
-          <CategoryShowcase title="Fresh Fruits" slug="fruits" banner="/home/banner-fruits.webp" bannerAlt="Fresh fruits, nature's best delivered fresh" side="left" onQuickView={setQuickViewProduct} />
-          <CategoryShowcase title="Fresh Vegetables" slug="vegetables" banner="/home/banner-vegetables.webp" bannerAlt="Fresh vegetables handpicked daily for your family" side="right" onQuickView={setQuickViewProduct} />
+          <CategoryShowcase title="Fresh Fruits" slug="fruits" bannerKey="fruits" banner="/home/banner-fruits.webp" bannerAlt="Fresh fruits, nature's best delivered fresh" side="left" onQuickView={setQuickViewProduct} />
+          <CategoryShowcase title="Fresh Vegetables" slug="vegetables" bannerKey="vegetables" banner="/home/banner-vegetables.webp" bannerAlt="Fresh vegetables handpicked daily for your family" side="right" onQuickView={setQuickViewProduct} />
           <CategoryShowcase
             title="Premium Nuts & Dry Fruits"
             slug="karachi-nuts-and-dates"
+            bannerKey="nuts"
             banner="/home/banner-nuts.webp"
             bannerAlt="Premium nuts, healthy snacking starts here"
             side="left"

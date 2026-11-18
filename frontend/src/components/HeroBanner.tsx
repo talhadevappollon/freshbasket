@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
+import { useHomeBanners } from '@/hooks/useHomeBanners';
 
 /**
  * Home page slider. Every slide is one banner image, so its height is fixed by the picture:
  * the shape never jumps between slides, and phones simply show the whole banner smaller.
  *
- * To add a banner: export it at 1024 x 376 px (the reference store's banner shape), save a 2496-wide and a 1248-wide WebP in public/banners,
- * and add a line below.
+ * The slides are edited in Admin → Homepage Banners; the list below is what the site shows until the store answers
+ * (and if it cannot be reached).
  */
 interface BannerSlide {
   id: string;
@@ -17,6 +18,8 @@ interface BannerSlide {
   small: string;
   /** 2496 px wide (large and high-density screens) */
   large: string;
+  /** where a tap on the slide goes (optional) */
+  link?: string;
 }
 
 const BANNER_WIDTH = 2496;
@@ -49,7 +52,12 @@ export default function HeroBanner() {
   const [userPaused, setUserPaused] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(true); // safe default until we know
   const touchStartX = useRef<number | null>(null);
-  const count = BANNER_SLIDES.length;
+  const banners = useHomeBanners();
+  const slides: BannerSlide[] = banners
+    ? banners.hero.map((h, i) => ({ id: `${i}-${h.image}`, alt: h.alt || '', small: h.image_mobile || h.image, large: h.image, link: h.link || '' }))
+    : BANNER_SLIDES;
+  const count = slides.length;
+  const current = count ? currentSlide % count : 0;
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -78,6 +86,8 @@ export default function HeroBanner() {
     touchStartX.current = null;
   };
 
+  if (count === 0) return null; // every slide was removed in the admin panel
+
   const arrow =
     'hidden sm:flex absolute top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/30 hover:bg-black/55 active:scale-95 text-white items-center justify-center backdrop-blur-md border border-white/30 transition-all duration-200 cursor-pointer opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100';
 
@@ -97,8 +107,23 @@ export default function HeroBanner() {
       >
         {/* All slides share one grid cell, with fixed aspect ratio matching the reference store */}
         <div className="grid w-full h-full" aria-live={autoplay && !isPaused ? 'off' : 'polite'}>
-          {BANNER_SLIDES.map((s, i) => {
-            const active = i === currentSlide;
+          {slides.map((s, i) => {
+            const active = i === current;
+            const picture = (
+              <img
+                src={s.small}
+                srcSet={s.small !== s.large ? `${s.small} 1248w, ${s.large} 2496w` : undefined}
+                sizes="(min-width: 1232px) 1168px, calc(100vw - 32px)"
+                width={BANNER_WIDTH}
+                height={BANNER_HEIGHT}
+                alt={s.alt}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                fetchPriority={i === 0 ? 'high' : 'auto'}
+                decoding="async"
+                draggable={false}
+                className="block w-full h-full object-cover select-none"
+              />
+            );
             return (
               <div
                 key={s.id}
@@ -108,19 +133,13 @@ export default function HeroBanner() {
                 aria-hidden={!active}
                 className={`col-start-1 row-start-1 w-full h-full transition-opacity duration-700 ease-out ${active ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
               >
-                <img
-                  src={s.small}
-                  srcSet={`${s.small} 1248w, ${s.large} 2496w`}
-                  sizes="(min-width: 1232px) 1168px, calc(100vw - 32px)"
-                  width={BANNER_WIDTH}
-                  height={BANNER_HEIGHT}
-                  alt={s.alt}
-                  loading={i === 0 ? 'eager' : 'lazy'}
-                  fetchPriority={i === 0 ? 'high' : 'auto'}
-                  decoding="async"
-                  draggable={false}
-                  className="block w-full h-full object-cover select-none"
-                />
+                {s.link ? (
+                  <a href={s.link} tabIndex={active ? 0 : -1} className="block w-full h-full">
+                    {picture}
+                  </a>
+                ) : (
+                  picture
+                )}
               </div>
             );
           })}
@@ -137,8 +156,8 @@ export default function HeroBanner() {
 
             {/* Slide dots + pause, tucked into the bottom edge so they never hide the artwork text */}
             <div className="absolute bottom-1.5 right-2 sm:right-auto sm:bottom-3 sm:left-1/2 sm:-translate-x-1/2 flex items-center gap-0.5 sm:gap-1 rounded-full bg-black/35 backdrop-blur-md px-1.5 py-0.5 sm:px-2.5 sm:py-1">
-              {BANNER_SLIDES.map((s, idx) => {
-                const isActive = currentSlide === idx;
+              {slides.map((s, idx) => {
+                const isActive = current === idx;
                 return (
                   <button
                     key={s.id}

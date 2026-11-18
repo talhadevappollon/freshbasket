@@ -8,6 +8,7 @@ import { fetchProducts } from '@/lib/api';
 import { Product } from '@/types';
 import recipes from '@/data/recipes.json';
 import { BUNDLES, COMMITMENTS, GIFTS, NUT_TILES, Offer, PLANS, discountOf, whatsappLink } from '@/data/homeOffers';
+import { useHomeBanners } from '@/hooks/useHomeBanners';
 
 /** The desktop home page sections, in the order set out in "Fresh House WebData Updates". */
 
@@ -64,6 +65,7 @@ function GridSkeleton({ n }: { n: number }) {
 /* ------------------------------------------------------------------------------------------ */
 
 export function PromoBanner() {
+  const promo = useHomeBanners()?.promo;
   return (
     <section className={`${SHELL} pt-6`} aria-label="Order groceries">
       <div
@@ -71,10 +73,10 @@ export function PromoBanner() {
         className="relative overflow-hidden rounded-[28px] bg-gradient-to-r from-fresh-950 via-fresh-900 to-fresh-700 text-white min-h-[240px] flex items-center"
       >
         <div className="relative z-10 px-8 lg:px-14 py-10 max-w-xl">
-          <h2 className="text-3xl lg:text-[2.6rem] font-black leading-[1.15] tracking-tight">Order groceries &amp; more for same-day delivery</h2>
-          <p className="mt-3 text-emerald-100/90 text-base">Fresh fruit, vegetables, dry fruits and pantry staples across Karachi.</p>
-          <a href="#bestsellers" className="inline-flex mt-6 h-12 items-center px-7 rounded-xl bg-white text-fresh-900 font-bold hover:bg-fresh-50 active:scale-95 transition">
-            Order today
+          <h2 className="text-3xl lg:text-[2.6rem] font-black leading-[1.15] tracking-tight">{promo?.title || 'Order groceries & more for same-day delivery'}</h2>
+          <p className="mt-3 text-emerald-100/90 text-base">{promo?.text || 'Fresh fruit, vegetables, dry fruits and pantry staples across Karachi.'}</p>
+          <a href={promo?.button_link || '#bestsellers'} className="inline-flex mt-6 h-12 items-center px-7 rounded-xl bg-white text-fresh-900 font-bold hover:bg-fresh-50 active:scale-95 transition">
+            {promo?.button_label || 'Order today'}
           </a>
         </div>
         <div className="hidden md:flex absolute right-6 lg:right-14 top-1/2 -translate-y-1/2 items-center" aria-hidden="true">
@@ -259,6 +261,7 @@ export function CategoryShowcase({
   banner,
   bannerAlt,
   side,
+  bannerKey,
   onQuickView,
 }: {
   title: string;
@@ -267,10 +270,17 @@ export function CategoryShowcase({
   banner: string;
   bannerAlt: string;
   side: 'left' | 'right';
+  /** which "section picture" from Admin → Homepage Banners replaces banner/bannerAlt */
+  bannerKey?: 'fruits' | 'vegetables' | 'nuts';
   onQuickView: (p: Product) => void;
 }) {
   const [ref, near] = useNear<HTMLElement>();
   const items = useCategoryProducts(slug, 8, near);
+  const picked = useHomeBanners()?.showcase?.[bannerKey ?? 'fruits'];
+  const fromAdmin = bannerKey ? picked : undefined;
+  const bannerSrc = fromAdmin?.image || banner;
+  const bannerText = fromAdmin?.alt || bannerAlt;
+  const bannerHref = fromAdmin?.link || `/category/${slug}`;
   return (
     <section ref={ref} className={`${SHELL} pt-10 md:pt-14`} aria-labelledby={`sc-${slug}`}>
       <div className="flex items-end justify-between gap-4 md:gap-6 mb-4 md:mb-5">
@@ -284,13 +294,13 @@ export function CategoryShowcase({
       </div>
       <div className="m-hscroll max-md:-mx-4 max-md:px-4 max-md:pb-3 max-md:grid-cols-none max-md:grid-flow-col max-md:auto-cols-[46%] max-md:overflow-x-auto max-md:overscroll-x-contain max-md:snap-x max-md:snap-proximity max-md:scroll-px-4 max-md:[&>*]:snap-start grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
         <Link
-          href={`/category/${slug}`}
+          href={bannerHref}
           className={`hidden lg:block row-span-2 row-start-1 rounded-3xl overflow-hidden shadow-card relative group ${side === 'left' ? 'col-start-1' : 'col-start-5'}`}
           aria-label={`Shop ${title}`}
         >
           {/* blurred copy fills the space around the artwork, which keeps its own proportions */}
-          <img src={banner} alt="" aria-hidden="true" loading="lazy" className="absolute inset-0 w-full h-full object-cover scale-125 blur-2xl opacity-80" />
-          <img src={banner} alt={bannerAlt} loading="lazy" className="absolute inset-0 w-full h-full object-contain group-hover:scale-[1.02] transition-transform duration-500" />
+          <img src={bannerSrc} alt="" aria-hidden="true" loading="lazy" className="absolute inset-0 w-full h-full object-cover scale-125 blur-2xl opacity-80" />
+          <img src={bannerSrc} alt={bannerText} loading="lazy" className="absolute inset-0 w-full h-full object-contain group-hover:scale-[1.02] transition-transform duration-500" />
         </Link>
         {items ? items.map(p => <ProductCard key={p.id} product={p} onQuickView={onQuickView} />) : <GridSkeleton n={8} />}
       </div>

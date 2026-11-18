@@ -338,3 +338,28 @@ export async function submitContactInquiry(data: ContactInquiry): Promise<Contac
     return { ok: false, error: 'network' };
   }
 }
+
+export interface HeroSlideData {
+  image: string;
+  image_mobile?: string | null;
+  alt?: string | null;
+  link?: string | null;
+}
+
+export interface HomeBannersData {
+  hero: HeroSlideData[];
+  promo: { title: string; text: string; button_label: string; button_link: string };
+  showcase: Record<'fruits' | 'vegetables' | 'nuts', { image: string; alt: string; link?: string | null }>;
+}
+
+/** Home page banners as edited in Admin → Homepage Banners (null when the store cannot be reached). */
+export async function fetchHomeBanners(): Promise<HomeBannersData | null> {
+  try {
+    const res = await fetch(`${API_BASE}/home/banners`, { cache: 'no-store', headers: { Accept: 'application/json' } });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data && Array.isArray(data.hero) && data.promo && data.showcase ? (data as HomeBannersData) : null;
+  } catch {
+    return null;
+  }
+}
