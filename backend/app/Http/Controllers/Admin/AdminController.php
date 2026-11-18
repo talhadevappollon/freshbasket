@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class AdminController extends Controller
 {
@@ -227,7 +228,7 @@ class AdminController extends Controller
      */
     public function products(Request $request)
     {
-        $query = Product::with('category')->latest();
+        $query = Product::with(['category', 'images'])->latest();
 
         if ($request->filled('category')) {
             $query->where('category_id', $request->category);
@@ -300,33 +301,55 @@ class AdminController extends Controller
     }
 
     /**
-     * Store or Update Product
+     * Store or Update Product. The edit form covers every product field; stock changes go through the
+     * stock actions so they are logged.
      */
     public function saveProduct(Request $request, $id = null)
     {
+        // An image is either a full web address or a file uploaded to this site (/uploads/...)
+        $imageRef = ['nullable', 'string', 'max:2048', 'regex:/^(https?:\/\/|\/)/'];
+
         $validated = $request->validate([
             'name' => 'required|string|max:191',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
             'compare_at_price' => 'nullable|numeric|min:0',
             'cost_price' => 'nullable|numeric|min:0',
-            // Editing never touches stock: stock changes go through the stock actions so they are logged
             'stock_quantity' => $id ? 'exclude' : 'required|integer|min:0',
+            'slug' => $id ? ['sometimes', 'required', 'alpha_dash', 'max:191', Rule::unique('products', 'slug')->ignore($id)] : 'exclude',
+            'sku' => $id ? ['sometimes', 'required', 'string', 'max:100', Rule::unique('products', 'sku')->ignore($id)] : 'exclude',
             'barcode' => 'nullable|string|max:100',
+            'brand' => 'nullable|string|max:100',
             'unit' => 'nullable|string|max:50',
-            'primary_image' => 'nullable|url',
+            'primary_image' => $imageRef,
+            'primary_image_file' => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:5120',
+            'gallery' => 'nullable|string|max:20000',
+            'gallery_files' => 'nullable|array|max:12',
+            'gallery_files.*' => 'image|mimes:jpg,jpeg,png,webp,gif|max:5120',
             // Shown on the storefront product page: short_description beside the price, description under "Product Details"
             'short_description' => 'nullable|string|max:1000',
             'description' => 'nullable|string|max:20000',
+            'availability' => 'sometimes|in:' . implode(',', array_keys(Product::AVAILABILITY)),
+            'is_active' => 'sometimes|boolean',
+            'is_featured' => 'sometimes|boolean',
+            'track_stock' => 'sometimes|boolean',
+            'low_stock_threshold' => 'sometimes|integer|min:0|max:100000',
+        ], [
+            'primary_image.regex' => 'The image must be a web address (https://...) or an uploaded file.',
+            'slug.alpha_dash' => 'The web address may only use letters, numbers, dashes and underscores.',
         ]);
+
+        // Pictures are checked above but saved separately, not as product columns
+        unset($validated['primary_image_file'], $validated['gallery'], $validated['gallery_files']);
+
+        if ($request->hasFile('primary_image_file')) {
+            $validated['primary_image'] = $this->storeUpload($request->file('primary_image_file'), 'products');
+        }
 
         if ($id) {
             $product = Product::findOrFail($id);
             $product->update($validated);
-            // The storefront's category payload carries product previews (name, price, image)
-            Cache::forget('api.categories.index.v3');
-
-            return redirect()->back()->with('success', "Product '{$product->name}' updated. The website shows the change straight away.");
+            $msg = "Product '{$product->name}' updated. The website shows the change straight away.";
         } else {
             $validated['slug'] = Str::slug($validated['name']) . '-' . rand(1000, 9999);
             $validated['sku'] = 'FB-' . strtoupper(Str::random(6));
@@ -337,7 +360,7 @@ class AdminController extends Controller
                 $validated['cost_price'] = round($validated['price'] * 0.75, 2);
             }
             $product = Product::create($validated);
-            
+
             // Add initial inventory log
             InventoryLog::create([
                 'product_id' => $product->id,
@@ -352,9 +375,37 @@ class AdminController extends Controller
             $msg = "Product '{$product->name}' created successfully with SKU {$product->sku}!";
         }
 
+        // Extra pictures on the product page: the gallery list (one address per line) replaces the old set,
+        // and uploaded files are added after it
+        if ($request->has('gallery') || $request->hasFile('gallery_files')) {
+            $urls = collect(preg_split('/\r\n|\r|\n/', (string) $request->input('gallery', '')))
+                ->map(fn ($u) => trim($u))
+                ->filter(fn ($u) => $u !== '' && preg_match('/^(https?:\/\/|\/)/', $u) && strlen($u) <= 2048)
+                ->values();
+            foreach ((array) $request->file('gallery_files', []) as $file) {
+                $urls->push($this->storeUpload($file, 'products'));
+            }
+            $product->images()->delete();
+            foreach ($urls->unique()->values() as $i => $url) {
+                $product->images()->create(['image_url' => $url, 'is_primary' => false, 'sort_order' => $i]);
+            }
+        }
+
+        // The storefront's category payload carries product previews (name, price, image)
         Cache::forget('api.categories.index.v3');
 
-        return redirect()->route('admin.products')->with('success', $msg);
+        return $id
+            ? redirect()->back()->with('success', $msg)
+            : redirect()->route('admin.products')->with('success', $msg);
+    }
+
+    /** Saves an uploaded picture under public/uploads/<folder> and returns its site path. */
+    private function storeUpload(\Illuminate\Http\UploadedFile $file, string $folder): string
+    {
+        $name = Str::lower(Str::random(24)) . '.' . ($file->extension() ?: 'jpg');
+        $file->move(public_path('uploads/' . $folder), $name);
+
+        return '/uploads/' . $folder . '/' . $name;
     }
 
     /**

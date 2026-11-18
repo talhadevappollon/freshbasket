@@ -170,9 +170,9 @@
                                 <button type="button"
                                     onclick="openEditProduct(this)"
                                     data-action="{{ route('admin.products.save', $product->id) }}"
-                                    data-product="{{ json_encode($product->only(['name', 'category_id', 'unit', 'price', 'compare_at_price', 'cost_price', 'primary_image', 'short_description', 'description'])) }}"
+                                    data-product="{{ json_encode(array_merge($product->only(['name', 'slug', 'sku', 'barcode', 'brand', 'category_id', 'unit', 'price', 'compare_at_price', 'cost_price', 'primary_image', 'short_description', 'description', 'availability', 'is_active', 'is_featured', 'track_stock', 'low_stock_threshold', 'stock_quantity']), ['gallery' => $product->images->sortBy('sort_order')->pluck('image_url')->implode("\n")])) }}"
                                     class="px-2.5 py-1 rounded-lg bg-fresh-600 hover:bg-fresh-700 text-white text-xs font-bold transition flex items-center gap-1"
-                                    title="Edit name, price, image and the Product Details text shown on the website">
+                                    title="Edit everything about this product: text, prices, pictures, codes and visibility">
                                     <i class="fa-solid fa-pen"></i>
                                     <span>Edit</span>
                                 </button>
@@ -268,8 +268,9 @@
             </button>
         </div>
 
-        <form id="editProductForm" method="POST" action="" class="space-y-4">
+        <form id="editProductForm" method="POST" action="" enctype="multipart/form-data" class="space-y-4">
             @csrf
+            <p class="text-[11px] font-black uppercase tracking-wider text-gray-400 pt-2">Basics</p>
             <div>
                 <label for="ep_name" class="block text-xs font-bold text-gray-700 mb-1">Product Title</label>
                 <input id="ep_name" type="text" name="name" required maxlength="191" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
@@ -278,18 +279,34 @@
             <div class="grid grid-cols-2 gap-3">
                 <div>
                     <label for="ep_category_id" class="block text-xs font-bold text-gray-700 mb-1">Category</label>
-                    <select id="ep_category_id" name="category_id" required class="w-full px-3 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none bg-white font-medium">
+                    <select id="ep_category_id" name="category_id" required class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none px-3 bg-white font-medium">
                         @foreach($categories as $cat)
                             <option value="{{ $cat->id }}">{{ $cat->name }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div>
-                    <label for="ep_unit" class="block text-xs font-bold text-gray-700 mb-1">Pack Unit / Weight</label>
-                    <input id="ep_unit" type="text" name="unit" maxlength="50" placeholder="e.g. 500g, 1 kg, 1 dozen" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
+                    <label for="ep_brand" class="block text-xs font-bold text-gray-700 mb-1">Brand</label>
+                    <input id="ep_brand" type="text" name="brand" maxlength="100" placeholder="e.g. Fresh House" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
                 </div>
             </div>
 
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label for="ep_unit" class="block text-xs font-bold text-gray-700 mb-1">Pack Unit / Weight</label>
+                    <input id="ep_unit" type="text" name="unit" maxlength="50" placeholder="e.g. 500g, 1 kg, 1 dozen" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
+                </div>
+                <div>
+                    <label for="ep_availability" class="block text-xs font-bold text-gray-700 mb-1">Availability</label>
+                    <select id="ep_availability" name="availability" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none px-3 bg-white font-medium">
+                        @foreach(\App\Models\Product::AVAILABILITY as $key => $text)
+                            <option value="{{ $key }}">{{ $text }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <p class="text-[11px] font-black uppercase tracking-wider text-gray-400 pt-2">Prices</p>
             <div class="grid grid-cols-3 gap-3">
                 <div>
                     <label for="ep_price" class="block text-xs font-bold text-gray-700 mb-1">Retail Price (PKR)</label>
@@ -305,19 +322,81 @@
                 </div>
             </div>
 
+            <p class="text-[11px] font-black uppercase tracking-wider text-gray-400 pt-2">Pictures</p>
+            <div class="flex gap-3 items-start">
+                <img id="ep_preview" src="" alt="" class="w-20 h-20 rounded-xl border border-gray-100 bg-white object-contain p-1 shrink-0">
+                <div class="flex-1 min-w-0 space-y-2">
+                    <div>
+                        <label for="ep_primary_image" class="block text-xs font-bold text-gray-700 mb-1">Main Picture (web address)</label>
+                        <input id="ep_primary_image" type="text" name="primary_image" maxlength="2048" placeholder="https://... or /uploads/..." class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
+                    </div>
+                    <div>
+                        <label for="ep_primary_image_file" class="block text-xs font-bold text-gray-700 mb-1">…or upload a new main picture</label>
+                        <input id="ep_primary_image_file" type="file" name="primary_image_file" accept="image/jpeg,image/png,image/webp,image/gif" class="block w-full text-xs text-gray-600 file:mr-3 file:px-3 file:py-2 file:rounded-lg file:border-0 file:bg-fresh-50 file:text-fresh-800 file:font-bold">
+                        <span class="text-[11px] text-gray-400 mt-1 block">JPG, PNG, WebP or GIF, up to 5 MB. An upload replaces the address above.</span>
+                    </div>
+                </div>
+            </div>
             <div>
-                <label for="ep_primary_image" class="block text-xs font-bold text-gray-700 mb-1">Image URL</label>
-                <input id="ep_primary_image" type="url" name="primary_image" placeholder="https://cdn.shopify.com/..." class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
+                <label for="ep_gallery" class="block text-xs font-bold text-gray-700 mb-1">Extra Pictures on the Product Page</label>
+                <textarea id="ep_gallery" name="gallery" rows="3" placeholder="One web address per line" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none font-mono"></textarea>
+                <input id="ep_gallery_files" type="file" name="gallery_files[]" multiple accept="image/jpeg,image/png,image/webp,image/gif" class="mt-2 block w-full text-xs text-gray-600 file:mr-3 file:px-3 file:py-2 file:rounded-lg file:border-0 file:bg-fresh-50 file:text-fresh-800 file:font-bold">
+                <span class="text-[11px] text-gray-400 mt-1 block">Delete a line to remove that picture. Uploaded files are added after the list (up to 12 at once).</span>
             </div>
 
+            <p class="text-[11px] font-black uppercase tracking-wider text-gray-400 pt-2">Text on the Website</p>
             <div>
                 <label for="ep_short_description" class="block text-xs font-bold text-gray-700 mb-1">Short Description</label>
                 <textarea id="ep_short_description" name="short_description" rows="2" maxlength="1000" placeholder="One or two lines shown beside the price" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none"></textarea>
             </div>
-
             <div>
                 <label for="ep_description" class="block text-xs font-bold text-gray-700 mb-1">Product Details</label>
-                <textarea id="ep_description" name="description" rows="8" maxlength="20000" placeholder="Shown on the product page under &quot;Product Details&quot;. Line breaks are kept." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs leading-relaxed focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none"></textarea>
+                <textarea id="ep_description" name="description" rows="8" maxlength="20000" placeholder="Shown on the product page under &quot;Product Details&quot;. Line breaks are kept." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none leading-relaxed"></textarea>
+            </div>
+
+            <p class="text-[11px] font-black uppercase tracking-wider text-gray-400 pt-2">Codes &amp; Web Address</p>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label for="ep_sku" class="block text-xs font-bold text-gray-700 mb-1">SKU</label>
+                    <input id="ep_sku" type="text" name="sku" required maxlength="100" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none font-mono">
+                </div>
+                <div>
+                    <label for="ep_barcode" class="block text-xs font-bold text-gray-700 mb-1">Barcode</label>
+                    <input id="ep_barcode" type="text" name="barcode" maxlength="100" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none font-mono">
+                </div>
+            </div>
+            <div>
+                <label for="ep_slug" class="block text-xs font-bold text-gray-700 mb-1">Web Address</label>
+                <div class="flex items-center rounded-xl border border-gray-200 focus-within:border-fresh-500 focus-within:ring-4 focus-within:ring-fresh-500/15">
+                    <span class="pl-3.5 text-xs text-gray-400 shrink-0">/products/</span>
+                    <input id="ep_slug" type="text" name="slug" required maxlength="191" pattern="[A-Za-z0-9_-]+" class="flex-1 min-w-0 px-1 h-11 rounded-xl text-xs font-mono focus:outline-none">
+                </div>
+                <span class="text-[11px] text-gray-400 mt-1 block">Letters, numbers and dashes. Changing it breaks links people saved to the old address.</span>
+                <a id="ep_view" href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-1 mt-1 text-xs font-bold text-fresh-700 hover:underline"><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> View on website</a>
+            </div>
+
+            <p class="text-[11px] font-black uppercase tracking-wider text-gray-400 pt-2">Stock &amp; Visibility</p>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <span class="block text-xs font-bold text-gray-700 mb-1">Stock</span>
+                    <p id="ep_stock" class="h-11 px-3.5 rounded-xl bg-gray-50 border border-gray-100 text-xs font-bold text-gray-700 flex items-center"></p>
+                    <span class="text-[11px] text-gray-400 mt-1 block">Change it with the +10 / +50 / adjust buttons, so every change is logged.</span>
+                </div>
+                <div>
+                    <label for="ep_low_stock_threshold" class="block text-xs font-bold text-gray-700 mb-1">Low-Stock Alert At (units)</label>
+                    <input id="ep_low_stock_threshold" type="number" min="0" step="1" name="low_stock_threshold" class="w-full px-3.5 h-11 rounded-xl border border-gray-200 text-xs focus:border-fresh-500 focus:ring-4 focus:ring-fresh-500/15 focus:outline-none">
+                </div>
+            </div>
+            <div class="grid sm:grid-cols-3 gap-2">
+                <label class="flex items-center gap-2 h-11 px-3.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 cursor-pointer">
+                    <input type="hidden" name="is_active" value="0"><input id="ep_is_active" type="checkbox" name="is_active" value="1" class="rounded text-fresh-600 focus:ring-0"> Show on website
+                </label>
+                <label class="flex items-center gap-2 h-11 px-3.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 cursor-pointer">
+                    <input type="hidden" name="is_featured" value="0"><input id="ep_is_featured" type="checkbox" name="is_featured" value="1" class="rounded text-fresh-600 focus:ring-0"> Featured
+                </label>
+                <label class="flex items-center gap-2 h-11 px-3.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-700 cursor-pointer">
+                    <input type="hidden" name="track_stock" value="0"><input id="ep_track_stock" type="checkbox" name="track_stock" value="1" class="rounded text-fresh-600 focus:ring-0"> Track stock
+                </label>
             </div>
 
             <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
@@ -333,10 +412,18 @@
         const p = JSON.parse(btn.dataset.product);
         const form = document.getElementById('editProductForm');
         form.action = btn.dataset.action;
-        ['name', 'category_id', 'unit', 'price', 'compare_at_price', 'cost_price', 'primary_image', 'short_description', 'description'].forEach(function (key) {
+        ['name', 'slug', 'sku', 'barcode', 'brand', 'category_id', 'unit', 'availability', 'price', 'compare_at_price', 'cost_price', 'primary_image', 'gallery', 'short_description', 'description', 'low_stock_threshold'].forEach(function (key) {
             const field = document.getElementById('ep_' + key);
             if (field) field.value = p[key] === null || p[key] === undefined ? '' : p[key];
         });
+        if (!p.availability) document.getElementById('ep_availability').value = 'available';
+        ['is_active', 'is_featured', 'track_stock'].forEach(function (key) {
+            document.getElementById('ep_' + key).checked = !!Number(p[key]);
+        });
+        ['ep_primary_image_file', 'ep_gallery_files'].forEach(function (id) { document.getElementById(id).value = ''; });
+        document.getElementById('ep_preview').src = p.primary_image || '';
+        document.getElementById('ep_stock').innerText = p.stock_quantity + ' units';
+        document.getElementById('ep_view').href = '/products/' + encodeURIComponent(p.slug);
         document.getElementById('editProductTitle').innerText = 'Edit: ' + p.name;
         const modal = document.getElementById('editProductModal');
         modal.classList.remove('hidden');
