@@ -14,15 +14,21 @@ export PATH=/usr/local/bin:/usr/bin:/bin:$PATH
 # Go to backend directory
 cd "$(dirname "$0")"
 
-# 1. Detect PHP binary in cPanel (Laravel 13 needs PHP 8.3 or newer)
-PHP_BIN="php"
-for candidate in /usr/local/bin/ea-php85 /usr/local/bin/ea-php84 /usr/local/bin/ea-php83 /opt/cpanel/ea-php85/root/usr/bin/php /opt/cpanel/ea-php84/root/usr/bin/php /opt/cpanel/ea-php83/root/usr/bin/php; do
-    if [ -x "$candidate" ]; then
+# 1. Pick a PHP that can run the shop: 8.3 or newer (Laravel 13) with the MySQL driver (pdo_mysql).
+#    A server can have a PHP version installed without its extensions, so each one is tested, not just found.
+PHP_BIN=""
+for candidate in /usr/local/bin/ea-php84 /usr/local/bin/ea-php83 /usr/local/bin/ea-php85 /opt/cpanel/ea-php84/root/usr/bin/php /opt/cpanel/ea-php83/root/usr/bin/php /opt/cpanel/ea-php85/root/usr/bin/php php; do
+    if command -v "$candidate" >/dev/null 2>&1 && "$candidate" -r 'exit(PHP_VERSION_ID >= 80300 && extension_loaded("pdo_mysql") ? 0 : 1);' >/dev/null 2>&1; then
         PHP_BIN="$candidate"
         break
     fi
 done
-echo "Using PHP binary: $PHP_BIN ($($PHP_BIN -r 'echo PHP_VERSION;' 2>/dev/null || echo unknown))"
+if [ -z "$PHP_BIN" ]; then
+    echo "STOP: no PHP 8.3+ with the pdo_mysql extension found. In cPanel → MultiPHP Manager set the site to PHP 8.3 or 8.4,"
+    echo "and in Select PHP Version / PHP Extensions turn on pdo_mysql, then deploy again."
+    exit 1
+fi
+echo "Using PHP binary: $PHP_BIN ($($PHP_BIN -r 'echo PHP_VERSION;'))"
 
 # 2. Composer: a local composer.phar run by the PHP above (the server's own composer may run on an older PHP)
 COMPOSER_CMD=""
