@@ -17,4 +17,16 @@ return [
     */
     'pos' => (bool) env('POS_ENABLED', false),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Delivery riders (Riders & Fleet Dispatch)
+    |--------------------------------------------------------------------------
+    |
+    | Off: the store does not use it. Its pages answer with an empty 404 and its
+    | sidebar link is hidden. The riders' records stay in the database, so
+    | RIDERS_ENABLED=true in .env brings the module back exactly as it was.
+    |
+    */
+    'riders' => (bool) env('RIDERS_ENABLED', false),
+
 ];

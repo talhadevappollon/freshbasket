@@ -166,7 +166,7 @@
                         <a href="{{ route('admin.dashboard') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.dashboard') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-chart-pie w-4 text-center"></i>
-                                <span>Executive Dashboard</span>
+                                <span>Simple Dashboard</span>
                             </div>
                             <i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i>
                         </a>
@@ -179,6 +179,7 @@
                             <span class="bg-amber-400 text-slate-900 text-[10px] px-2 py-0.5 rounded-full font-black">COD</span>
                         </a>
 
+@if(config('features.riders'))
                         <a href="{{ route('admin.riders') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.riders') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-motorcycle w-4 text-center text-emerald-300"></i>
@@ -186,6 +187,7 @@
                             </div>
                             <span class="text-[10px] text-emerald-300 font-mono">Fleet</span>
                         </a>
+@endif
 
 @if(config('features.pos'))
                         <a href="{{ route('admin.pos') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.pos') ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 shadow-lg shadow-amber-500/20' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
@@ -265,7 +267,7 @@
                         <a href="{{ route('admin.customers') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition {{ request()->routeIs('admin.customers') ? 'bg-fresh-600 text-white shadow-lg shadow-fresh-600/30' : 'text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white' }}">
                             <div class="flex items-center space-x-3">
                                 <i class="fa-solid fa-users w-4 text-center"></i>
-                                <span>Customer 360 Directory</span>
+                                <span>Customers</span>
                             </div>
                             <i class="fa-solid fa-chevron-right text-[10px] opacity-60"></i>
                         </a>

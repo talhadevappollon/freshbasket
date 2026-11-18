@@ -8,10 +8,10 @@
             <div class="flex items-center space-x-2 text-xs font-bold text-slate-400 mb-1">
                 <span>Customer Care & CRM</span>
                 <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                <span class="text-fresh-700">Customer 360 Directory</span>
+                <span class="text-fresh-700">Customers</span>
             </div>
-            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Customer Relationship Management (CRM 360)</h2>
-            <p class="text-xs text-slate-500">Shopper directory, lifetime value metrics, delivery preferences & direct WhatsApp customer engagement</p>
+            <h2 class="text-2xl font-black text-slate-900 tracking-tight">Customers</h2>
+            <p class="text-xs text-slate-500">Everyone who has ordered: contact details, delivery address, orders and spend</p>
         </div>
 
         <form action="{{ route('admin.customers') }}" method="GET" class="flex items-center gap-2">
@@ -55,11 +55,11 @@
 
         <div class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs flex items-center justify-between">
             <div>
-                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">VIP Loyalty Shoppers</span>
-                <h3 class="text-xl sm:text-2xl font-black text-amber-600 mt-1">{{ $vipCount }} VIP Members</h3>
+                <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Repeat Customers</span>
+                <h3 class="text-xl sm:text-2xl font-black text-slate-900 mt-1">{{ $repeatCount }} <span class="text-sm font-bold text-slate-500">ordered 2+ times</span></h3>
             </div>
-            <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg">
-                <i class="fa-solid fa-crown"></i>
+            <div class="w-10 h-10 rounded-2xl bg-fresh-50 text-fresh-600 flex items-center justify-center text-lg">
+                <i class="fa-solid fa-rotate"></i>
             </div>
         </div>
     </div>
@@ -75,7 +75,7 @@
                         <th class="px-4">Primary Delivery Address</th>
                         <th class="px-4">Orders Count</th>
                         <th class="px-4">Lifetime Spend (PKR)</th>
-                        <th class="px-4">CRM Tier</th>
+                        <th class="px-4">Status</th>
                         <th class="px-6 text-right">Delivery Notes & Preferences</th>
                     </tr>
                 </thead>
@@ -96,7 +96,7 @@
                             <div class="text-xs font-mono font-bold text-slate-800">{{ $customer->phone }}</div>
                             @php
                                 $cleanPhone = preg_replace('/[^0-9]/', '', $customer->phone);
-                                $waText = urlencode("Assalam-o-Alaikum {$customer->name}! Special greetings from Fresh House. Check out today's fresh arrival organic fruits & vegetables at freshbasket.com.pk");
+                                $waText = urlencode("Assalam-o-Alaikum {$customer->name}! Special greetings from Fresh House. Check out today's fresh arrival organic fruits & vegetables at " . preg_replace("~^https?://~", "", url("/")));
                             @endphp
                             <a href="https://wa.me/{{ $cleanPhone }}?text={{ $waText }}" target="_blank" class="inline-flex items-center text-xs text-emerald-600 hover:text-emerald-700 font-bold mt-1">
                                 <i class="fa-brands fa-whatsapp text-sm mr-1"></i> WhatsApp
@@ -119,10 +119,10 @@
                         <td class="px-4">
                             <form action="{{ route('admin.customers.update', $customer->id) }}" method="POST">
                                 @csrf
-                                <select name="status" onchange="this.form.submit()" class="text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border cursor-pointer
-                                    {{ $customer->status == 'vip' ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-slate-100 text-slate-700 border-slate-200' }}">
-                                    <option value="active" {{ $customer->status === 'active' ? 'selected' : '' }}>Standard</option>
-                                    <option value="vip" {{ $customer->status === 'vip' ? 'selected' : '' }}>VIP Club</option>
+                                {{-- Active / Inactive (an old "vip" status shows as Active) --}}
+                                <select name="status" onchange="this.form.submit()" aria-label="Status of {{ $customer->name }}" class="text-[11px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full border cursor-pointer
+                                    {{ $customer->status === 'inactive' ? 'bg-slate-100 text-slate-500 border-slate-200' : 'bg-fresh-50 text-fresh-800 border-fresh-200' }}">
+                                    <option value="active" {{ $customer->status !== 'inactive' ? 'selected' : '' }}>Active</option>
                                     <option value="inactive" {{ $customer->status === 'inactive' ? 'selected' : '' }}>Inactive</option>
                                 </select>
                             </form>
@@ -135,7 +135,7 @@
                                     type="text"
                                     name="customer_notes"
                                     value="{{ $customer->customer_notes }}"
-                                    placeholder="Add rider note..."
+                                    placeholder="Add delivery note..."
                                     class="px-3 py-1.5 text-xs border border-slate-200 rounded-xl w-48 focus:outline-none focus:border-fresh-500 bg-slate-50"
                                 />
                                 <button type="submit" class="p-2 bg-slate-100 hover:bg-fresh-50 text-slate-600 hover:text-fresh-700 rounded-xl text-xs transition" title="Save Preference Note">

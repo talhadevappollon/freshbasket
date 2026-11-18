@@ -12,9 +12,9 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class EnsurePosEnabled
 {
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, string $feature = 'pos'): Response
     {
-        if (!config('features.pos')) {
+        if (!config("features.$feature")) {
             return response('', 404);
         }
 

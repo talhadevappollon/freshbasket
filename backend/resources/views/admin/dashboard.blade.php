@@ -7,7 +7,7 @@
         <div class="relative z-10 max-w-xl">
             <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full text-emerald-300 text-xs font-bold uppercase tracking-wider mb-3 border border-white/10">
                 <i class="fa-solid fa-wand-magic-sparkles text-fresh-400"></i>
-                <span>Fresh House Executive Operations Hub</span>
+                <span>Simple Dashboard</span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-black tracking-tight leading-tight">
                 Karachi Central Warehouse{{ config('features.pos') ? ' & POS' : '' }} Command

@@ -66,9 +66,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin.password'])->
     Route::post('/coupons/{id}/toggle', [AdminController::class, 'toggleCoupon'])->name('coupons.toggle');
 
     // Riders & Fleet Dispatch
-    Route::get('/riders', [AdminController::class, 'riders'])->name('riders');
-    Route::post('/riders/save/{id?}', [AdminController::class, 'saveRider'])->name('riders.save');
-    Route::post('/riders/{id}/status', [AdminController::class, 'updateRiderStatus'])->name('riders.update_status');
+    // Switched off in config/features.php (RIDERS_ENABLED); the records are kept
+    Route::middleware('pos.enabled:riders')->group(function () {
+        Route::get('/riders', [AdminController::class, 'riders'])->name('riders');
+        Route::post('/riders/save/{id?}', [AdminController::class, 'saveRider'])->name('riders.save');
+        Route::post('/riders/{id}/status', [AdminController::class, 'updateRiderStatus'])->name('riders.update_status');
+    });
 
     // Store Branches & Warehouse Hubs
     Route::get('/branches', [AdminController::class, 'branches'])->name('branches');

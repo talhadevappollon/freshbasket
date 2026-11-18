@@ -672,9 +672,9 @@ class AdminController extends Controller
 
         $customers = $query->paginate(15)->withQueryString();
         $totalCustomerSpend = Customer::sum('total_spent');
-        $vipCount = Customer::where('status', 'vip')->count();
+        $repeatCount = Customer::where('orders_count', '>=', 2)->count();
 
-        return view('admin.customers', compact('customers', 'totalCustomerSpend', 'vipCount'));
+        return view('admin.customers', compact('customers', 'totalCustomerSpend', 'repeatCount'));
     }
 
     /**
@@ -683,8 +683,9 @@ class AdminController extends Controller
     public function updateCustomer(Request $request, $id)
     {
         $customer = Customer::findOrFail($id);
+        $request->validate(['status' => 'nullable|in:active,inactive', 'customer_notes' => 'nullable|string|max:2000']);
         $customer->update([
-            'customer_notes' => $request->customer_notes,
+            'customer_notes' => $request->has('customer_notes') ? $request->customer_notes : $customer->customer_notes,
             'status' => $request->status ?? $customer->status,
         ]);
 
