@@ -65,7 +65,19 @@ if ($githubEvent === 'ping') {
 header('Content-Type: text/plain; charset=utf-8');
 echo "=== Fresh House Automated cPanel Deployment ===\n";
 echo "Timestamp: " . date('Y-m-d H:i:s T') . "\n";
-echo "Trigger Event: " . ($githubEvent ?: 'push / manual') . "\n\n";
+echo "Trigger Event: " . ($githubEvent ?: 'push / manual') . "\n";
+
+// The website's own PHP (cPanel → MultiPHP Manager) can differ from the one deploy.sh uses
+$needed = ['ctype', 'curl', 'dom', 'fileinfo', 'filter', 'hash', 'mbstring', 'openssl', 'pcre', 'pdo', 'pdo_mysql', 'session', 'tokenizer', 'xml'];
+$missing = array_values(array_filter($needed, fn ($ext) => !extension_loaded($ext)));
+echo "Website PHP: " . PHP_VERSION . (PHP_VERSION_ID < 80300 ? '  <-- TOO OLD: set the domain to PHP 8.3 or 8.4 in cPanel → MultiPHP Manager' : '') . "\n";
+echo "Missing PHP extensions: " . ($missing ? implode(', ', $missing) . '  <-- turn these on in cPanel (Select PHP Version / PHP extensions)' : 'none') . "\n";
+foreach (['storage/logs', 'storage/framework/views', 'storage/framework/cache', 'bootstrap/cache'] as $dir) {
+    if (is_dir("$backendDir/$dir") && !is_writable("$backendDir/$dir")) {
+        echo "Not writable by the website: backend/$dir\n";
+    }
+}
+echo "\n";
 
 $disabled = array_map('trim', explode(',', (string) ini_get('disable_functions')));
 if (!function_exists('shell_exec') || in_array('shell_exec', $disabled, true)) {
