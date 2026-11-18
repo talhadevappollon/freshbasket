@@ -1,86 +1,105 @@
 <?php
 /**
- * Fresh Basket - cPanel Automated Git Deployment & Migration Webhook
- * 
- * Usage:
- * Supports:
- * 1. GitHub Webhook with Secret field: freshbasket2026
- * 2. GitHub Webhook with URL: https://freshbasket.aneetakomal.com/cpanel_deploy.php?secret=freshbasket2026
- * 3. Browser / cURL instant triggers
+ * Fresh House - cPanel deployment webhook (GitHub push → update this server).
+ *
+ * Makes the server copy match GitHub's main branch, then runs backend/deploy.sh (composer, migrations, caches).
+ *
+ * Secret: DEPLOY_SECRET in backend/.env. Use it as the GitHub webhook "Secret" (signed requests), or open
+ *   https://<domain>/cpanel_deploy.php?secret=<DEPLOY_SECRET>   to deploy by hand.
+ * A server whose .env has no DEPLOY_SECRET still accepts the original shared secret, so older setups keep working.
  */
 
-$SECRET_TOKEN = 'freshbasket2026';
+// A push deploy can take minutes (composer on the first run); GitHub stops waiting after 10 seconds.
+ignore_user_abort(true);
+@set_time_limit(0);
 
-// Read raw request payload
+$backendDir = dirname(__DIR__);       // .../backend
+$projectRoot = dirname($backendDir);  // the repository (the site's folder)
+
+function deploySecret(string $envPath): string
+{
+    if (is_readable($envPath)) {
+        foreach (file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+            if (preg_match('/^\s*DEPLOY_SECRET\s*=\s*(.*)$/', $line, $m)) {
+                $value = trim($m[1]);
+                if (strlen($value) >= 2 && ($value[0] === '"' || $value[0] === "'") && substr($value, -1) === $value[0]) {
+                    $value = substr($value, 1, -1);
+                }
+                if ($value !== '') {
+                    return $value;
+                }
+            }
+        }
+    }
+
+    return 'freshbasket2026'; // original shared secret, only for servers without DEPLOY_SECRET
+}
+
+$SECRET_TOKEN = deploySecret($backendDir . '/.env');
 $rawPayload = file_get_contents('php://input');
 
-// 1. Verify Secret Key (query param, post param, custom header, or GitHub HMAC-SHA256)
+// 1. Verify the secret (query/post/header value, or GitHub's HMAC-SHA256 signature)
 $isValid = false;
-$providedKey = $_GET['secret'] ?? $_POST['secret'] ?? ($_SERVER['HTTP_X_DEPLOY_SECRET'] ?? '');
-
-if ($providedKey === $SECRET_TOKEN) {
+$providedKey = (string) ($_GET['secret'] ?? $_POST['secret'] ?? ($_SERVER['HTTP_X_DEPLOY_SECRET'] ?? ''));
+if ($providedKey !== '' && hash_equals($SECRET_TOKEN, $providedKey)) {
     $isValid = true;
 } elseif (isset($_SERVER['HTTP_X_HUB_SIGNATURE_256'])) {
-    $signature = $_SERVER['HTTP_X_HUB_SIGNATURE_256'];
     $expected = 'sha256=' . hash_hmac('sha256', $rawPayload, $SECRET_TOKEN);
-    if (hash_equals($expected, $signature)) {
-        $isValid = true;
-    }
+    $isValid = hash_equals($expected, (string) $_SERVER['HTTP_X_HUB_SIGNATURE_256']);
 }
 
 if (!$isValid) {
     http_response_code(403);
     header('Content-Type: application/json');
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Invalid or missing secret key. Pass ?secret=freshbasket2026 or configure GitHub Secret.'
-    ]);
+    echo json_encode(['status' => 'error', 'message' => 'Invalid or missing secret.']);
     exit;
 }
 
-// Handle GitHub Ping event gracefully
 $githubEvent = $_SERVER['HTTP_X_GITHUB_EVENT'] ?? '';
 if ($githubEvent === 'ping') {
     header('Content-Type: application/json');
-    echo json_encode([
-        'status' => 'success',
-        'event' => 'ping',
-        'message' => 'Fresh Basket deployment webhook is active and successfully connected to GitHub!'
-    ]);
+    echo json_encode(['status' => 'success', 'event' => 'ping', 'message' => 'Fresh House deployment webhook is connected.']);
     exit;
 }
 
 header('Content-Type: text/plain; charset=utf-8');
-echo "=== Fresh Basket Automated cPanel Deployment ===\n";
+echo "=== Fresh House Automated cPanel Deployment ===\n";
 echo "Timestamp: " . date('Y-m-d H:i:s T') . "\n";
 echo "Trigger Event: " . ($githubEvent ?: 'push / manual') . "\n\n";
 
-$repoRoot = dirname(__DIR__, 1); // backend directory
-$projectRoot = dirname($repoRoot); // /home2/aneetako/freshbasket.aneetakomal.com
+$disabled = array_map('trim', explode(',', (string) ini_get('disable_functions')));
+if (!function_exists('shell_exec') || in_array('shell_exec', $disabled, true)) {
+    echo "This server does not allow PHP to run commands (shell_exec is disabled).\n";
+    echo "Deploy from cPanel instead: Git Version Control → Manage → Pull or Deploy → Update from Remote, then Deploy HEAD Commit.\n";
+    exit;
+}
 
-// 1. Pull latest code from GitHub
-echo "[1/4] Pulling latest git changes...\n";
+// One deploy at a time: a second push waits here, then deploys the newest code
+$lock = fopen(sys_get_temp_dir() . '/freshhouse-deploy-' . md5($projectRoot) . '.lock', 'c');
+if ($lock) {
+    flock($lock, LOCK_EX);
+}
+
+// 2. Make the server copy match GitHub exactly, so stale or modified build files can never block an update
+echo "[1/2] Updating code from GitHub...\n";
 chdir($projectRoot);
-
-// Clean stale git locks if prior process was interrupted
-$lockFile = $projectRoot . '/.git/index.lock';
+$lockFile = $projectRoot . '/.git/index.lock'; // left behind by an interrupted git command
 if (file_exists($lockFile)) {
     @unlink($lockFile);
 }
+echo shell_exec('git fetch origin main 2>&1 && git reset --hard FETCH_HEAD 2>&1 && git clean -fd backend/public/_next 2>&1') . "\n";
 
-// The server copy is deploy-only: make it match GitHub exactly so stale/modified build files can never block a pull
-$gitOutput = shell_exec('git fetch origin main 2>&1 && git reset --hard FETCH_HEAD 2>&1 && git clean -fd backend/public/_next 2>&1');
-echo $gitOutput . "\n";
-
-// 2. Execute deploy.sh
-echo "[2/4] Executing deploy.sh & Database Migrations...\n";
-$deployScript = $repoRoot . '/deploy.sh';
+// 3. deploy.sh: composer, migrations, caches, first staff account
+echo "[2/2] Running deploy.sh (composer, migrations, caches)...\n";
+$deployScript = $backendDir . '/deploy.sh';
 if (file_exists($deployScript)) {
-    $deployOutput = shell_exec('/bin/bash ' . escapeshellarg($deployScript) . ' 2>&1');
-    echo $deployOutput . "\n";
+    echo shell_exec('/bin/bash ' . escapeshellarg($deployScript) . ' 2>&1') . "\n";
 } else {
     echo "deploy.sh not found at: $deployScript\n";
 }
 
-// 3. Status summary
-echo "=== Deployment Finished Successfully! ===\n";
+if ($lock) {
+    flock($lock, LOCK_UN);
+    fclose($lock);
+}
+echo "=== Deployment finished ===\n";

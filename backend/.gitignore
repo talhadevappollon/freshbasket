@@ -28,3 +28,7 @@ Thumbs.db
 
 # Pictures uploaded from the admin panel live only on the server
 /public/uploads
+
+# Downloaded / written on the server by deploy.sh
+/composer.phar
+/composer_install.log

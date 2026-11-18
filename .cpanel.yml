@@ -2,6 +2,5 @@
 deployment:
   tasks:
     - echo "=== Starting cPanel Automated Deployment ==="
-    - export DEPLOYPATH=/home2/aneetako/freshbasket.aneetakomal.com
     - /bin/bash backend/deploy.sh
     - echo "=== cPanel Deployment & Migrations Complete ==="
