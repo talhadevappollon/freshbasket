@@ -25,6 +25,7 @@ import {
   Sparkles,
   Loader2,
 } from 'lucide-react';
+import { maxOrderQuantity } from '@/lib/availability';
 
 export default function CartPage() {
   const {
@@ -254,7 +255,7 @@ export default function CartPage() {
                         <QuantityStepper
                           value={item.quantity}
                           min={0}
-                          max={item.product.stock_quantity > 0 ? item.product.stock_quantity : 99}
+                          max={maxOrderQuantity(item.product)}
                           label={item.product.name}
                           onChange={q => updateQuantity(item.product.id, q, item.variant?.id)}
                         />

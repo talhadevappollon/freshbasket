@@ -16,7 +16,7 @@ import ProductImageViewer from '@/components/ProductImageViewer';
 import { useCart } from '@/context/CartContext';
 import { fetchCategories, fetchProductBySlug } from '@/lib/api';
 import { Product, Category, ProductVariant } from '@/types';
-import { unavailableLabel } from '@/lib/availability';
+import { maxOrderQuantity, unavailableLabel } from '@/lib/availability';
 import {
   ShoppingCart,
   Truck,
@@ -199,12 +199,18 @@ export default function ProductDetailPage() {
                   </a>
                 </div>
 
-                {/* Stock */}
+                {/* Stock: in stock or not, never how many */}
                 <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100">
-                  <span className="inline-flex items-center gap-1 text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-full">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-fresh-600" />
-                    {product.stock_quantity > 0 ? `In Stock (${product.stock_quantity} available)` : 'Low Stock'}
-                  </span>
+                  {unavailableLabel(product) ? (
+                    <span className="inline-flex items-center gap-1 text-brand-700 font-bold bg-brand-50 px-2.5 py-0.5 rounded-full">
+                      {unavailableLabel(product)}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-full">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-fresh-600" />
+                      In stock
+                    </span>
+                  )}
                 </div>
 
                 {/* Variant / Size Selector */}
@@ -291,7 +297,7 @@ export default function ProductDetailPage() {
                   <QuantityStepper
                     value={quantity}
                     min={1}
-                    max={product.stock_quantity > 0 ? product.stock_quantity : 99}
+                    max={maxOrderQuantity(product)}
                     label="quantity"
                     size="lg"
                     className="w-full sm:w-auto justify-between"
@@ -384,7 +390,7 @@ export default function ProductDetailPage() {
             type="button"
             tabIndex={ctaVisible ? -1 : 0}
             onClick={() => addToCart(product, quantity, selectedVariant || undefined)}
-            disabled={product.stock_quantity <= 0 || !!unavailableLabel(product)}
+            disabled={!!unavailableLabel(product)}
             className="h-12 px-5 rounded-full bg-fresh-600 hover:bg-fresh-700 active:bg-fresh-800 disabled:bg-slate-300 text-white text-sm font-bold flex items-center gap-2 cursor-pointer transition-colors"
           >
             <ShoppingCart className="w-4 h-4 fill-current" aria-hidden="true" />

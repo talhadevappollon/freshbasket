@@ -85,6 +85,8 @@
                                 @if($log->reason == 'online_order') bg-blue-100 text-blue-800
                                 @elseif($log->reason == 'pos_sale') bg-purple-100 text-purple-800
                                 @elseif($log->reason == 'restock') bg-emerald-100 text-emerald-800
+                                @elseif($log->reason == 'order_cancelled') bg-amber-100 text-amber-800
+                                @elseif($log->reason == 'order_reinstated') bg-orange-100 text-orange-800
                                 @else bg-gray-100 text-gray-800 @endif">
                                 {{ str_replace('_', ' ', $log->reason) }}
                             </span>

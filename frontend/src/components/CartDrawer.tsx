@@ -7,6 +7,7 @@ import { useCart } from '@/context/CartContext';
 import QuantityStepper from '@/components/QuantityStepper';
 import AddedToast from '@/components/AddedToast';
 import { X, Trash2, ShoppingBag, Truck, ArrowRight, Banknote } from 'lucide-react';
+import { maxOrderQuantity } from '@/lib/availability';
 
 export default function CartDrawer() {
   const {
@@ -165,7 +166,7 @@ export default function CartDrawer() {
                     <QuantityStepper
                       value={item.quantity}
                       min={0}
-                      max={item.product.stock_quantity > 0 ? item.product.stock_quantity : 99}
+                      max={maxOrderQuantity(item.product)}
                       label={item.product.name}
                       onChange={q => updateQuantity(item.product.id, q, item.variant?.id)}
                     />

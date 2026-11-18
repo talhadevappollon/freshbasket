@@ -42,6 +42,10 @@ export interface Product {
   is_featured: boolean;
   /** Manual switch from the admin: the product stays listed, only its button changes */
   availability?: 'available' | 'out_of_stock' | 'out_of_season';
+  /** Stock is counted for this product (the count itself is never shown to shoppers) */
+  track_stock?: boolean;
+  /** Stock is tracked and none is left: shown as "Out of stock" until stock is added */
+  sold_out?: boolean;
   category?: Category;
   images?: { id: number; image_url: string; is_primary: boolean }[];
   variants?: ProductVariant[];

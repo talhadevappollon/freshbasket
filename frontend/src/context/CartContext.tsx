@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Product, ProductVariant, CartItem, OrderResponse } from '@/types';
+import { maxOrderQuantity, unavailableLabel } from '@/lib/availability';
 
 interface CartContextType {
   items: CartItem[];
@@ -57,12 +58,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [items]);
 
-  // A line never exceeds the shelf stock (when the store reports one)
-  const clampToStock = (product: Product, quantity: number) =>
-    product.stock_quantity > 0 ? Math.min(quantity, product.stock_quantity) : quantity;
+  // A line never exceeds the shelf stock when stock is tracked (the number is never shown)
+  const clampToStock = (product: Product, quantity: number) => Math.min(quantity, maxOrderQuantity(product));
 
   const addToCart = (product: Product, quantity = 1, variant?: ProductVariant) => {
-    if (product.availability && product.availability !== 'available') return;
+    if (unavailableLabel(product)) return; // switched off in the admin, or sold out
     setItems(prev => {
       const existingIdx = prev.findIndex(item =>
         item.product.id === product.id &&

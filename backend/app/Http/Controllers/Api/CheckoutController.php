@@ -77,7 +77,14 @@ class CheckoutController extends Controller
 
                 if (!$product->isOrderable()) {
                     throw \Illuminate\Validation\ValidationException::withMessages([
-                        'items' => ["{$product->name} is currently " . strtolower(Product::AVAILABILITY[$product->availability] ?? 'unavailable') . ". Please remove it from your basket."],
+                        'items' => ["{$product->name} is currently " . strtolower($product->unavailableLabel()) . ". Please remove it from your basket."],
+                    ]);
+                }
+
+                // Never sell more than is on the shelf (the number itself is not shown to shoppers)
+                if ($product->track_stock && $qty > (int) $product->stock_quantity) {
+                    throw \Illuminate\Validation\ValidationException::withMessages([
+                        'items' => ["We do not have enough {$product->name} for {$qty}. Please choose fewer and try again."],
                     ]);
                 }
 

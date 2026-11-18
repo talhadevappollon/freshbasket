@@ -1,6 +1,6 @@
 'use client';
 
-import { unavailableLabel } from '@/lib/availability';
+import { maxOrderQuantity, unavailableLabel } from '@/lib/availability';
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { PLACEHOLDER_IMG } from '@/lib/placeholder';
@@ -43,7 +43,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
       ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
       : null;
   const unavailable = unavailableLabel(product);
-  const inStock = product.stock_quantity > 0 && !unavailable;
+  const inStock = !unavailable; // sold out (tracked stock at 0) is part of unavailableLabel
 
   const handleAdd = () => {
     addToCart(product, qty);
@@ -121,7 +121,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
 
             {/* Quantity + add */}
             <div className="flex items-center gap-3 pt-1">
-              <QuantityStepper value={qty} min={1} max={product.stock_quantity > 0 ? product.stock_quantity : 99} label="quantity" size="lg" onChange={setQty} />
+              <QuantityStepper value={qty} min={1} max={maxOrderQuantity(product)} label="quantity" size="lg" onChange={setQty} />
 
               <button
                 type="button"

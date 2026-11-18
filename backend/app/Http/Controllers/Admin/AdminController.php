@@ -21,6 +21,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use App\Support\HomeBanners;
 use App\Support\OrderEmails;
+use App\Support\OrderStock;
 
 class AdminController extends Controller
 {
@@ -148,6 +149,7 @@ class AdminController extends Controller
                 $order->payment_status = 'paid';
             }
             $order->save();
+            OrderStock::statusChanged($order, $previous, $request->user()?->name ?: 'Store Admin'); // cancelled: stock goes back
             OrderEmails::statusChanged($order, $previous); // customer email, when switched on
         }
 
@@ -216,6 +218,7 @@ class AdminController extends Controller
         }
 
         $order->save();
+        OrderStock::statusChanged($order, $previous, $request->user()?->name ?: 'Store Admin'); // cancelled: stock goes back
         OrderEmails::statusChanged($order, $previous); // customer email, when switched on
 
         return redirect()->back()->with('success', "Order #{$order->order_number} status updated to " . strtoupper($order->order_status) . "!");
