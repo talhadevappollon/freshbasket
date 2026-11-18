@@ -30,12 +30,32 @@ if [ -z "$PHP_BIN" ]; then
 fi
 echo "Using PHP binary: $PHP_BIN ($($PHP_BIN -r 'echo PHP_VERSION;'))"
 
+# One deploy at a time (cPanel's "Deploy HEAD Commit" and the webhook can start together)
+if command -v flock >/dev/null 2>&1; then
+    exec 9>"${HOME}/.freshhouse-deploy.lock"
+    flock 9
+fi
+
 # 2. Composer: a local composer.phar run by the PHP above (the server's own composer may run on an older PHP)
 COMPOSER_CMD=""
+if [ -f "composer.phar" ] && ! $PHP_BIN composer.phar --version --no-interaction >/dev/null 2>&1; then
+    echo "composer.phar is damaged: downloading it again..."
+    rm -f composer.phar
+fi
 if [ ! -f "composer.phar" ]; then
     echo "Downloading composer.phar..."
-    curl -sS https://getcomposer.org/installer | $PHP_BIN -- --quiet || true
+    rm -rf .composer-setup && mkdir -p .composer-setup
+    if curl -sS https://getcomposer.org/installer | $PHP_BIN -- --quiet --install-dir=.composer-setup; then
+        mv -f .composer-setup/composer.phar composer.phar
+    fi
+    rm -rf .composer-setup
 fi
+# Shared hosting limits open files and processes: download and unpack one package at a time
+export COMPOSER_MAX_PARALLEL_HTTP=1
+export COMPOSER_MAX_PARALLEL_PROCESSES=1
+export COMPOSER_MEMORY_LIMIT=-1
+export COMPOSER_NO_INTERACTION=1
+echo "Server limits: open files $(ulimit -n 2>/dev/null), processes $(ulimit -u 2>/dev/null)"
 if [ -f "composer.phar" ]; then
     COMPOSER_CMD="$PHP_BIN composer.phar"
 else
@@ -59,10 +79,15 @@ chmod -R 775 storage bootstrap/cache 2>/dev/null || true
 if [ ! -f "vendor/autoload.php" ] || [ "composer.lock" -nt "vendor/composer/installed.json" ]; then
     echo "Installing composer dependencies (first deploy or composer.lock changed)..."
     if [ -n "$COMPOSER_CMD" ]; then
-        $COMPOSER_CMD install --no-dev --no-interaction --prefer-dist --optimize-autoloader || echo "Notice: Composer install had warnings"
+        $COMPOSER_CMD install --no-dev --no-interaction --no-progress --prefer-dist --optimize-autoloader || echo "Notice: Composer install had warnings"
     else
         echo "Notice: Composer could not be initialized. Run composer install in cPanel Terminal"
     fi
+fi
+
+if [ ! -f "vendor/autoload.php" ]; then
+    echo "STOP: Laravel's libraries (backend/vendor) could not be installed; see the composer messages above."
+    exit 1
 fi
 
 if [ ! -f ".env" ]; then

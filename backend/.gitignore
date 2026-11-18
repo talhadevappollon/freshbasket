@@ -31,4 +31,5 @@ Thumbs.db
 
 # Downloaded / written on the server by deploy.sh
 /composer.phar
+/.composer-setup
 /composer_install.log
