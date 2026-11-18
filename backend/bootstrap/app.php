@@ -15,7 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'pos.enabled' => \App\Http\Middleware\EnsurePosEnabled::class,
+            'admin.password' => \App\Http\Middleware\RequireNewAdminPassword::class,
         ]);
+        // Signed-out visitors to /admin go to the staff sign-in page; signed-in staff skip it.
+        $middleware->redirectGuestsTo(fn () => route('admin.login'));
+        $middleware->redirectUsersTo(fn () => route('admin.dashboard'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

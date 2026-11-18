@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AuthController;
 
 Route::get('/', function () {
     if (file_exists(public_path('index.html'))) {
@@ -10,7 +11,19 @@ Route::get('/', function () {
     return redirect()->route('admin.dashboard');
 });
 
+// Staff sign-in. Every other /admin page needs a signed-in staff account (the `users` table).
 Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [AuthController::class, 'login'])->name('login.attempt')->middleware('throttle:20,1');
+    });
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+});
+
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin.password'])->group(function () {
+    Route::get('/password', [AuthController::class, 'showPassword'])->name('password');
+    Route::post('/password', [AuthController::class, 'updatePassword'])->name('password.update')->middleware('throttle:10,1');
+
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard', [AdminController::class, 'dashboard']);
 

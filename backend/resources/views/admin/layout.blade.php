@@ -321,6 +321,20 @@
 
             <!-- Bottom System Status -->
             <div class="p-4 border-t border-emerald-900/40 space-y-2">
+                @auth
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('admin.password') }}" class="flex-1 min-w-0 flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold text-emerald-100/80 hover:bg-emerald-900/40 hover:text-white transition">
+                        <i class="fa-solid fa-key w-4 text-center text-emerald-300"></i>
+                        <span class="truncate">Change password</span>
+                    </a>
+                    <form method="POST" action="{{ route('admin.logout') }}">
+                        @csrf
+                        <button type="submit" class="flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold text-emerald-100/80 hover:bg-red-900/40 hover:text-white transition">
+                            <i class="fa-solid fa-right-from-bracket"></i> Sign out
+                        </button>
+                    </form>
+                </div>
+                @endauth
                 <div class="bg-black/40 backdrop-blur-md p-3.5 rounded-2xl border border-white/10 text-xs space-y-2">
                     <div class="flex items-center justify-between">
                         <span class="text-emerald-400 font-bold flex items-center gap-1.5">
@@ -406,16 +420,28 @@
                         <span class="hidden md:inline">Storefront</span>
                     </a>
 
-                    <!-- Admin Profile Pill -->
-                    <div class="max-sm:hidden flex items-center space-x-2 pl-2 sm:pl-3 border-l border-slate-200">
-                        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-fresh-500 to-fresh-800 text-white font-black flex items-center justify-center text-xs shadow-sm">
-                            FB
-                        </div>
-                        <div class="hidden lg:block text-left">
-                            <span class="block text-xs font-bold text-slate-900 leading-tight">Admin Manager</span>
-                            <span class="block text-[10px] text-slate-400 leading-tight">Karachi HQ</span>
-                        </div>
+                    <!-- Signed-in staff member + sign out -->
+                    @auth
+                    @php
+                        $staffName = auth()->user()->name ?: auth()->user()->email;
+                        $staffInitials = collect(preg_split('/\s+/', trim($staffName)))->filter()->take(2)->map(fn ($w) => mb_strtoupper(mb_substr($w, 0, 1)))->implode('');
+                    @endphp
+                    <div class="flex items-center space-x-2 pl-2 sm:pl-3 border-l border-slate-200">
+                        <a href="{{ route('admin.password') }}" title="Change password" class="max-sm:hidden flex items-center space-x-2 rounded-xl hover:bg-slate-100 pr-2 transition">
+                            <span class="w-9 h-9 rounded-xl bg-gradient-to-br from-fresh-500 to-fresh-800 text-white font-black flex items-center justify-center text-xs shadow-sm">{{ $staffInitials ?: 'FH' }}</span>
+                            <span class="hidden lg:block text-left">
+                                <span class="block text-xs font-bold text-slate-900 leading-tight max-w-[140px] truncate">{{ $staffName }}</span>
+                                <span class="block text-[10px] text-slate-400 leading-tight">Change password</span>
+                            </span>
+                        </a>
+                        <form method="POST" action="{{ route('admin.logout') }}">
+                            @csrf
+                            <button type="submit" aria-label="Sign out" title="Sign out" class="w-10 h-10 flex items-center justify-center rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition">
+                                <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                            </button>
+                        </form>
                     </div>
+                    @endauth
                 </div>
             </header>
 
