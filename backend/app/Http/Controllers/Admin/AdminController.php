@@ -415,7 +415,7 @@ class AdminController extends Controller
      */
     public function banners()
     {
-        return view('admin.banners', ['banners' => HomeBanners::get(), 'showcaseNames' => HomeBanners::SHOWCASE]);
+        return view('admin.banners', ['banners' => HomeBanners::get(), 'showcaseNames' => HomeBanners::SHOWCASE, 'tileNames' => HomeBanners::TILES]);
     }
 
     public function saveBanners(Request $request)
@@ -443,6 +443,11 @@ class AdminController extends Controller
             'showcase.*.image_file' => $upload,
             'showcase.*.alt' => 'nullable|string|max:300',
             'showcase.*.link' => $linkRef,
+            'tiles' => 'nullable|array',
+            'tiles.*.label' => 'nullable|string|max:60',
+            'tiles.*.image' => $imageRef,
+            'tiles.*.image_file' => $upload,
+            'tiles.*.link' => $linkRef,
         ], [
             'regex' => 'Pictures and links must be a web address (https://...), a page on this site (/...) or an uploaded file.',
         ]);
@@ -480,10 +485,21 @@ class AdminController extends Controller
             ];
         }
 
+        $tiles = [];
+        foreach (array_keys(HomeBanners::TILES) as $key) {
+            $row = (array) $request->input("tiles.$key", []);
+            $tiles[$key] = [
+                'label' => trim((string) ($row['label'] ?? '')),
+                'image' => $request->hasFile("tiles.$key.image_file") ? $this->storeUpload($request->file("tiles.$key.image_file"), 'banners') : trim((string) ($row['image'] ?? '')),
+                'link' => trim((string) ($row['link'] ?? '')),
+            ];
+        }
+
         HomeBanners::save([
             'hero' => $slides,
             'promo' => array_map(fn ($v) => trim((string) $v), (array) $request->input('promo', [])),
             'showcase' => $showcase,
+            'tiles' => $tiles,
         ]);
 
         return redirect()->route('admin.banners')->with('success', 'Homepage banners saved. The website shows them straight away.');

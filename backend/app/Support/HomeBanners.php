@@ -11,6 +11,7 @@ use App\Models\StoreSetting;
  *  hero      the slider at the top: one entry per slide
  *  promo     the green "Order groceries & more" banner under the slider (desktop)
  *  showcase  the tall pictures beside Fresh Fruits, Fresh Vegetables and Premium Nuts & Dry Fruits (large screens)
+ *  tiles     the first tile of the Family Membership, Bundle boxes and Gift Baskets rows (an icon until a picture is set)
  */
 class HomeBanners
 {
@@ -20,6 +21,12 @@ class HomeBanners
         'fruits' => 'Fresh Fruits',
         'vegetables' => 'Fresh Vegetables',
         'nuts' => 'Premium Nuts & Dry Fruits',
+    ];
+
+    public const TILES = [
+        'membership' => 'Family Membership Plans row',
+        'bundles' => 'Bundle boxes row',
+        'gifts' => 'Gift Baskets row',
     ];
 
     public static function defaults(): array
@@ -56,6 +63,11 @@ class HomeBanners
                 'vegetables' => ['image' => '/home/banner-vegetables.webp', 'alt' => 'Fresh vegetables handpicked daily for your family', 'link' => '/category/vegetables'],
                 'nuts' => ['image' => '/home/banner-nuts.webp', 'alt' => 'Premium nuts, healthy snacking starts here', 'link' => '/category/karachi-nuts-and-dates'],
             ],
+            'tiles' => [
+                'membership' => ['label' => 'Membership', 'image' => '', 'link' => '/membership-plans'],
+                'bundles' => ['label' => 'Offers & Bundles', 'image' => '', 'link' => '/bundle-boxes'],
+                'gifts' => ['label' => 'Gift Baskets', 'image' => '', 'link' => '/gift-baskets'],
+            ],
         ];
     }
 
@@ -72,11 +84,16 @@ class HomeBanners
         foreach ($defaults['showcase'] as $key => $original) {
             $showcase[$key] = array_merge($original, array_filter((array) ($saved['showcase'][$key] ?? []), fn ($v) => $v !== null && $v !== ''));
         }
+        $tiles = [];
+        foreach ($defaults['tiles'] as $key => $original) {
+            $tiles[$key] = array_merge($original, array_filter((array) ($saved['tiles'][$key] ?? []), fn ($v) => $v !== null && $v !== ''));
+        }
 
         return [
             'hero' => is_array($saved['hero'] ?? null) ? array_values($saved['hero']) : $defaults['hero'],
             'promo' => array_merge($defaults['promo'], array_filter((array) ($saved['promo'] ?? []), fn ($v) => $v !== null && $v !== '')),
             'showcase' => $showcase,
+            'tiles' => $tiles,
         ];
     }
 

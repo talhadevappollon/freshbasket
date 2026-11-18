@@ -11,7 +11,7 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
             <h2 class="text-2xl font-black text-gray-900 tracking-tight">Homepage Banners</h2>
-            <p class="text-xs text-gray-500">The slider, the green promo banner and the pictures beside the Fresh Fruits, Fresh Vegetables and Premium Nuts sections. Saved changes show on the website straight away.</p>
+            <p class="text-xs text-gray-500">The slider, the green promo banner, the pictures beside the Fresh Fruits, Fresh Vegetables and Premium Nuts sections, and the first tile of the membership, bundle and gift rows. Saved changes show on the website straight away.</p>
         </div>
         <a href="/" target="_blank" rel="noopener" class="shrink-0 bg-white border border-gray-200 hover:border-fresh-400 text-gray-700 px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition">
             <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> View homepage
@@ -86,6 +86,40 @@
                         <div>
                             <label class="{{ $label }}">Link when clicked</label>
                             <input type="text" name="showcase[{{ $key }}][link]" value="{{ $b['link'] }}" maxlength="500" class="{{ $field }}">
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+
+        {{-- 4. Row tiles --}}
+        <section class="{{ $card }}" aria-labelledby="tiles-title">
+            <h3 id="tiles-title" class="font-black text-gray-900 text-base">Row tiles</h3>
+            <p class="text-xs text-gray-500 mt-0.5 mb-4">The first tile of the Family Membership Plans, Bundle boxes and Gift Baskets rows. Without a picture it shows its icon on a soft background. Best picture size: a tall picture about <b>380 × 560 px</b>.</p>
+            <div class="grid md:grid-cols-3 gap-4">
+                @foreach($tileNames as $key => $name)
+                    @php $tile = $banners['tiles'][$key]; @endphp
+                    <div class="rounded-2xl border border-gray-200 p-4 bg-gray-50/50 space-y-2.5">
+                        <p class="text-xs font-black text-gray-800">{{ $name }}</p>
+                        <div class="h-40 rounded-xl overflow-hidden bg-gradient-to-br from-[#dff3d4] via-[#f4efe0] to-[#e9dcc0] border border-gray-100 flex items-center justify-center">
+                            @if($tile['image'])
+                                <img src="{{ $tile['image'] }}" alt="" class="w-full h-full object-cover">
+                            @else
+                                <span class="text-[11px] font-bold text-fresh-800/70">Icon (no picture set)</span>
+                            @endif
+                        </div>
+                        <div>
+                            <label class="{{ $label }}">Label on the tile</label>
+                            <input type="text" name="tiles[{{ $key }}][label]" value="{{ $tile['label'] }}" maxlength="60" class="{{ $field }}">
+                        </div>
+                        <div>
+                            <label class="{{ $label }}">Picture (web address, empty = icon)</label>
+                            <input type="text" name="tiles[{{ $key }}][image]" value="{{ $tile['image'] }}" maxlength="2048" class="{{ $field }}">
+                            <input type="file" name="tiles[{{ $key }}][image_file]" accept="image/jpeg,image/png,image/webp,image/gif" class="mt-1.5 {{ $file }}">
+                        </div>
+                        <div>
+                            <label class="{{ $label }}">Link when clicked</label>
+                            <input type="text" name="tiles[{{ $key }}][link]" value="{{ $tile['link'] }}" maxlength="500" class="{{ $field }}">
                         </div>
                     </div>
                 @endforeach
