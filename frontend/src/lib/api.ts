@@ -350,6 +350,8 @@ export interface HomeBannersData {
   hero: HeroSlideData[];
   promo: { title: string; text: string; button_label: string; button_link: string };
   showcase: Record<'fruits' | 'vegetables' | 'nuts', { image: string; alt: string; link?: string | null }>;
+  /** first tile of the membership / bundle / gift rows; empty image = icon */
+  tiles?: Record<'membership' | 'bundles' | 'gifts', { label: string; image?: string | null; link?: string | null }>;
 }
 
 /** Home page banners as edited in Admin → Homepage Banners (null when the store cannot be reached). */

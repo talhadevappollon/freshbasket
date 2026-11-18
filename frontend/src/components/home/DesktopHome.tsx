@@ -136,8 +136,12 @@ export function OfferCard({ offer }: { offer: Offer }) {
 
 const TILE_ICONS = { crown: Crown, gift: Gift, package: Package } as const;
 
-function OfferRail({ id, title, offers, tileLabel, tileIcon, viewAll }: { id?: string; title: string; offers: Offer[]; tileLabel: string; tileIcon: keyof typeof TILE_ICONS; viewAll?: string }) {
+function OfferRail({ id, title, offers, tileKey, tileLabel, tileIcon, viewAll }: { id?: string; title: string; offers: Offer[]; tileKey: 'membership' | 'bundles' | 'gifts'; tileLabel: string; tileIcon: keyof typeof TILE_ICONS; viewAll?: string }) {
   const TileIcon = TILE_ICONS[tileIcon];
+  // Label, picture and link of the first tile come from Admin → Homepage Banners (icon until a picture is set)
+  const tile = useHomeBanners()?.tiles?.[tileKey];
+  const label = tile?.label || tileLabel;
+  const tileHref = tile?.link || viewAll;
   const scroller = useRef<HTMLUListElement>(null);
   const by = (dir: number) => scroller.current?.scrollBy({ left: dir * 640, behavior: 'smooth' });
   return (
@@ -154,9 +158,18 @@ function OfferRail({ id, title, offers, tileLabel, tileIcon, viewAll }: { id?: s
         <div className="relative">
           <ul ref={scroller} className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-proximity pb-3 scroll-smooth">
             <li className="snap-start shrink-0 w-[190px] relative rounded-3xl overflow-hidden bg-white shadow-card hidden md:block">
-              <span className="absolute inset-0 bg-gradient-to-br from-[#dff3d4] via-[#f4efe0] to-[#e9dcc0]" aria-hidden="true" />
-              <TileIcon className="absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 w-24 h-24 text-fresh-700/70" strokeWidth={1.1} aria-hidden="true" />
-              <span className="absolute left-3 right-3 bottom-3 rounded-xl bg-white/90 backdrop-blur text-center py-2.5 font-bold text-sm text-fresh-950 shadow-xs">{tileLabel}</span>
+              {tile?.image ? (
+                <img src={tile.image} alt="" loading="lazy" className="absolute inset-0 w-full h-full object-cover" />
+              ) : (
+                <>
+                  <span className="absolute inset-0 bg-gradient-to-br from-[#dff3d4] via-[#f4efe0] to-[#e9dcc0]" aria-hidden="true" />
+                  <TileIcon className="absolute left-1/2 top-[38%] -translate-x-1/2 -translate-y-1/2 w-24 h-24 text-fresh-700/70" strokeWidth={1.1} aria-hidden="true" />
+                </>
+              )}
+              <span className="absolute left-3 right-3 bottom-3 rounded-xl bg-white/90 backdrop-blur text-center py-2.5 font-bold text-sm text-fresh-950 shadow-xs">{label}</span>
+              {tileHref && (
+                <Link href={tileHref} className="absolute inset-0 rounded-3xl focus-visible:ring-4 focus-visible:ring-fresh-500/40" aria-label={label} />
+              )}
             </li>
             {offers.map(o => (
               <li key={o.key} className="snap-start shrink-0 w-[215px]">
@@ -178,15 +191,15 @@ function OfferRail({ id, title, offers, tileLabel, tileIcon, viewAll }: { id?: s
 
 /** 5th: Fresh House Family Membership */
 export function MembershipSection() {
-  return <OfferRail id="membership" title="Family Membership Plans" offers={PLANS} tileLabel="Membership" tileIcon="crown" viewAll="/membership-plans" />;
+  return <OfferRail id="membership" title="Family Membership Plans" offers={PLANS} tileKey="membership" tileLabel="Membership" tileIcon="crown" viewAll="/membership-plans" />;
 }
 
 /** 6th and 7th: Bundles, then Gift Baskets */
 export function BundlesAndGifts() {
   return (
     <>
-      <OfferRail id="bundles" title="Bundle boxes – save more" offers={BUNDLES} tileLabel="Offers & Bundles" tileIcon="package" viewAll="/bundle-boxes" />
-      <OfferRail id="gift-baskets" title="Gift Baskets" offers={GIFTS} tileLabel="Gift Baskets" tileIcon="gift" viewAll="/gift-baskets" />
+      <OfferRail id="bundles" title="Bundle boxes – save more" offers={BUNDLES} tileKey="bundles" tileLabel="Offers & Bundles" tileIcon="package" viewAll="/bundle-boxes" />
+      <OfferRail id="gift-baskets" title="Gift Baskets" offers={GIFTS} tileKey="gifts" tileLabel="Gift Baskets" tileIcon="gift" viewAll="/gift-baskets" />
     </>
   );
 }
