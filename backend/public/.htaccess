@@ -93,6 +93,10 @@ DirectoryIndex index.html index.php
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^category/([^/\.]+)/?$ category/_.html [L]
 
+    # Same for products added or renamed in the admin panel after the last build (products/_.html)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^products/([^/\.]+)/?$ products/_.html [L]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$

@@ -33,7 +33,13 @@ import {
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const slug = params?.slug as string;
+  const routeSlug = params?.slug as string;
+  // The shell page (products/_) serves products added after the last build: their slug is in the URL
+  const [slug, setSlug] = useState(routeSlug === '_' ? '' : routeSlug);
+  useEffect(() => {
+    if (routeSlug === '_') setSlug(decodeURIComponent(window.location.pathname.split('/').filter(Boolean)[1] || ''));
+    else setSlug(routeSlug);
+  }, [routeSlug]);
 
   const { addToCart, setIsCheckoutOpen } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
