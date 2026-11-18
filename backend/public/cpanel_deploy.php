@@ -99,7 +99,24 @@ $lockFile = $projectRoot . '/.git/index.lock'; // left behind by an interrupted 
 if (file_exists($lockFile)) {
     @unlink($lockFile);
 }
-echo shell_exec('git fetch origin main 2>&1 && git reset --hard FETCH_HEAD 2>&1 && git clean -fd backend/public/_next 2>&1') . "\n";
+// A fetch can clash with one cPanel or a second webhook runs at the same moment ("incorrect old value"): try again
+for ($try = 1; $try <= 3; $try++) {
+    exec('git fetch origin main 2>&1', $fetchOut, $fetchCode);
+    echo implode("\n", $fetchOut) . "\n";
+    $fetchOut = [];
+    if ($fetchCode === 0) {
+        break;
+    }
+    echo "git fetch failed (try $try of 3)" . ($try < 3 ? ', trying again in 5 seconds...' : '') . "\n";
+    if ($try < 3) {
+        sleep(5);
+    }
+}
+if ($fetchCode === 0) {
+    echo shell_exec('git reset --hard FETCH_HEAD 2>&1 && git clean -fd backend/public/_next 2>&1') . "\n";
+} else {
+    echo "Could not fetch from GitHub: the code was NOT updated. Open this page again in a minute.\n";
+}
 
 // 3. deploy.sh: composer, migrations, caches, first staff account
 echo "[2/2] Running deploy.sh (composer, migrations, caches)...\n";
