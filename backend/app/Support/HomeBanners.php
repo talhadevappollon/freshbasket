@@ -57,6 +57,8 @@ class HomeBanners
                 'text' => 'Fresh fruit, vegetables, dry fruits and pantry staples across Karachi.',
                 'button_label' => 'Order today',
                 'button_link' => '#bestsellers',
+                // The round pictures on the right of the banner (computers and tablets), left to right
+                'images' => ['/home/tile-nuts.webp', '/home/tile-dates.webp', '/home/tile-mixed-nuts.webp', '/home/tile-seeds.webp'],
             ],
             'showcase' => [
                 'fruits' => ['image' => '/home/banner-fruits.webp', 'alt' => "Fresh fruits, nature's best delivered fresh", 'link' => '/category/fruits'],
@@ -89,9 +91,18 @@ class HomeBanners
             $tiles[$key] = array_merge($original, array_filter((array) ($saved['tiles'][$key] ?? []), fn ($v) => $v !== null && $v !== ''));
         }
 
+        $promo = array_merge($defaults['promo'], array_filter((array) ($saved['promo'] ?? []), fn ($v) => is_string($v) && $v !== ''));
+        // Each round picture falls back to the original one when its slot is empty
+        $savedImages = array_values((array) ($saved['promo']['images'] ?? []));
+        $promo['images'] = array_map(
+            fn ($original, $i) => is_string($savedImages[$i] ?? null) && $savedImages[$i] !== '' ? $savedImages[$i] : $original,
+            $defaults['promo']['images'],
+            array_keys($defaults['promo']['images'])
+        );
+
         return [
             'hero' => is_array($saved['hero'] ?? null) ? array_values($saved['hero']) : $defaults['hero'],
-            'promo' => array_merge($defaults['promo'], array_filter((array) ($saved['promo'] ?? []), fn ($v) => $v !== null && $v !== '')),
+            'promo' => $promo,
             'showcase' => $showcase,
             'tiles' => $tiles,
         ];

@@ -83,7 +83,7 @@ export function PromoBanner() {
           {['nuts', 'dates', 'mixed-nuts', 'seeds'].map((n, i) => (
             <img
               key={n}
-              src={`/home/tile-${n}.webp`}
+              src={promo?.images?.[i] || `/home/tile-${n}.webp`}
               alt=""
               width={150}
               height={150}

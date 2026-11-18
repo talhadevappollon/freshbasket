@@ -348,7 +348,8 @@ export interface HeroSlideData {
 
 export interface HomeBannersData {
   hero: HeroSlideData[];
-  promo: { title: string; text: string; button_label: string; button_link: string };
+  /** images: the round pictures on the right, left to right */
+  promo: { title: string; text: string; button_label: string; button_link: string; images?: string[] };
   showcase: Record<'fruits' | 'vegetables' | 'nuts', { image: string; alt: string; link?: string | null }>;
   /** first tile of the membership / bundle / gift rows; empty image = icon */
   tiles?: Record<'membership' | 'bundles' | 'gifts', { label: string; image?: string | null; link?: string | null }>;

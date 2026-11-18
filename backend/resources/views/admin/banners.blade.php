@@ -36,6 +36,28 @@
             <button type="button" onclick="addSlide()" class="mt-3 px-4 h-10 rounded-xl border border-dashed border-fresh-400 text-fresh-800 hover:bg-fresh-50 text-xs font-bold flex items-center gap-1.5 transition">
                 <i class="fa-solid fa-plus"></i> Add a slide
             </button>
+
+            {{-- The website's original slides that are not in the list above: one click puts them back as a row (saved with "Save banners") --}}
+            @php
+                $inList = collect($banners['hero'])->pluck('image')->all();
+                $originals = collect(\App\Support\HomeBanners::defaults()['hero'])->reject(fn ($o) => in_array($o['image'], $inList, true))->values();
+            @endphp
+            @if($originals->isNotEmpty())
+                <div id="originalSlides" class="mt-4 p-4 rounded-2xl bg-fresh-50/60 border border-fresh-100">
+                    <p class="text-xs font-black text-gray-800">Original slides not in the list</p>
+                    <p class="text-[11px] text-gray-500 mb-3">Click one to add it back as a slide, then press <b>Save banners</b>.</p>
+                    <div class="flex flex-wrap gap-3">
+                        @foreach($originals as $o)
+                            <button type="button" data-slide="{{ json_encode($o, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}"
+                                    onclick="addSlide(JSON.parse(this.dataset.slide)); this.remove(); if (!document.querySelector('#originalSlides button')) document.getElementById('originalSlides').remove();"
+                                    class="group w-48 text-left rounded-xl overflow-hidden border border-gray-200 bg-white hover:border-fresh-500 hover:shadow-md transition">
+                                <img src="{{ $o['image_mobile'] ?: $o['image'] }}" alt="" class="w-full aspect-[2496/917] object-cover">
+                                <span class="flex items-center gap-1.5 px-2.5 py-2 text-[11px] font-bold text-fresh-800"><i class="fa-solid fa-rotate-left"></i> Add back</span>
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
         </section>
 
         {{-- 2. Promo banner --}}
@@ -59,6 +81,21 @@
                     <label class="{{ $label }}" for="promo_button_link">Button link</label>
                     <input id="promo_button_link" type="text" name="promo[button_link]" value="{{ $banners['promo']['button_link'] }}" maxlength="500" placeholder="#bestsellers, /category/fruits or https://..." class="{{ $field }}">
                 </div>
+            </div>
+
+            <p class="text-xs font-black text-gray-800 mt-6">Round pictures on the right</p>
+            <p class="text-[11px] text-gray-500 mb-3">Four round pictures, left to right (shown on computers and tablets). Best: square pictures about <b>400 × 400 px</b>. An empty box keeps the original picture.</p>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                @foreach($banners['promo']['images'] as $n => $img)
+                    <div class="rounded-2xl border border-gray-200 p-3 bg-gray-50/50 space-y-2">
+                        <div class="flex justify-center">
+                            <img src="{{ $img }}" alt="" class="w-24 h-24 rounded-full object-cover ring-4 ring-white shadow">
+                        </div>
+                        <label class="{{ $label }}">Picture {{ $n + 1 }} (web address)</label>
+                        <input type="text" name="promo[images][{{ $n }}]" value="{{ $img }}" maxlength="2048" class="{{ $field }}">
+                        <input type="file" name="promo[image_files][{{ $n }}]" accept="image/jpeg,image/png,image/webp,image/gif" class="{{ $file }}" aria-label="Upload picture {{ $n + 1 }}">
+                    </div>
+                @endforeach
             </div>
         </section>
 
@@ -140,14 +177,24 @@
 
 <script>
     let nextSlide = {{ count($banners['hero']) + 1000 }};
-    function addSlide() {
+    // A new slider row, empty or filled with a slide (picture, phone picture, description, link)
+    function addSlide(slide) {
         const html = document.getElementById('slideTemplate').innerHTML.replaceAll('__INDEX__', String(nextSlide++));
         const holder = document.createElement('div');
         holder.innerHTML = html.trim();
         const row = holder.firstElementChild;
         row.querySelector('input[name$="[order]"]').value = document.querySelectorAll('#slides .slide-row').length + 1;
+        if (slide) {
+            ['image', 'image_mobile', 'alt', 'link'].forEach(k => {
+                const input = row.querySelector(`input[name$="[${k}]"]`);
+                if (input && slide[k]) input.value = slide[k];
+            });
+            const preview = row.querySelector('.aspect-\\[2496\\/917\\]');
+            if (preview && slide.image) preview.innerHTML = `<img src="${slide.image_mobile || slide.image}" alt="" class="w-full h-full object-cover">`;
+        }
         document.getElementById('slides').appendChild(row);
-        row.querySelector('input[type="text"]').focus();
+        if (!slide) row.querySelector('input[type="text"]').focus();
+        else row.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 </script>
 @endsection

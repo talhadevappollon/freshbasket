@@ -444,6 +444,10 @@ class AdminController extends Controller
             'promo.text' => 'nullable|string|max:400',
             'promo.button_label' => 'nullable|string|max:60',
             'promo.button_link' => $linkRef,
+            'promo.images' => 'nullable|array|max:4',
+            'promo.images.*' => $imageRef,
+            'promo.image_files' => 'nullable|array|max:4',
+            'promo.image_files.*' => $upload,
             'showcase' => 'nullable|array',
             'showcase.*.image' => $imageRef,
             'showcase.*.image_file' => $upload,
@@ -501,9 +505,22 @@ class AdminController extends Controller
             ];
         }
 
+        // Green promo banner: the texts, and its four round pictures (an upload replaces the address typed for it)
+        $promoInput = (array) $request->input('promo', []);
+        $promo = [];
+        foreach (['title', 'text', 'button_label', 'button_link'] as $key) {
+            $promo[$key] = trim((string) ($promoInput[$key] ?? ''));
+        }
+        $promo['images'] = [];
+        foreach (range(0, 3) as $n) {
+            $promo['images'][$n] = $request->hasFile("promo.image_files.$n")
+                ? $this->storeUpload($request->file("promo.image_files.$n"), 'banners')
+                : trim((string) ($promoInput['images'][$n] ?? ''));
+        }
+
         HomeBanners::save([
             'hero' => $slides,
-            'promo' => array_map(fn ($v) => trim((string) $v), (array) $request->input('promo', [])),
+            'promo' => $promo,
             'showcase' => $showcase,
             'tiles' => $tiles,
         ]);
