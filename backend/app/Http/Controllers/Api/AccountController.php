@@ -3,9 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PasswordChanged;
+use App\Mail\PasswordResetLink;
 use App\Mail\WelcomeCustomer;
 use App\Models\CustomerAccount;
+use App\Support\MailSettings;
 use App\Support\ShopMailer;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -14,6 +20,9 @@ use Illuminate\Validation\ValidationException;
 class AccountController extends Controller
 {
     private const TOKEN_DAYS = 60;
+
+    /** How long a "forgot password" link works. */
+    private const RESET_MINUTES = 60;
 
     public function register(Request $request)
     {
@@ -69,6 +78,84 @@ class AccountController extends Controller
         }
 
         return response()->json($this->session($account));
+    }
+
+    /**
+     * "Forgot password": emails a reset link when an account uses this address. The answer is the same either way,
+     * so the form cannot be used to find out who has an account.
+     */
+    public function forgotPassword(Request $request)
+    {
+        $data = $request->validate(['email' => 'required|email|max:191']);
+
+        if (! MailSettings::isReady() || ! MailSettings::noticeOn('password_customer') || ! Schema::hasTable('customer_password_resets')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Resetting a password by email is not available right now. Please call or WhatsApp us and we will help you sign in.',
+            ], 503);
+        }
+
+        $account = CustomerAccount::where('email', strtolower(trim($data['email'])))->first();
+        // At most one link a minute per account
+        $recent = $account && DB::table('customer_password_resets')
+            ->where('customer_account_id', $account->id)
+            ->where('created_at', '>', now()->subMinute())
+            ->exists();
+
+        if ($account && ! $recent) {
+            $token = Str::random(64);
+            DB::table('customer_password_resets')->where('customer_account_id', $account->id)->delete();
+            DB::table('customer_password_resets')->insert([
+                'customer_account_id' => $account->id,
+                'token_hash' => hash('sha256', $token),
+                'expires_at' => now()->addMinutes(self::RESET_MINUTES),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            $url = url('/reset-password') . '?' . http_build_query(['token' => $token, 'email' => $account->email]);
+            ShopMailer::later($account->email, new PasswordResetLink($account, $url, self::RESET_MINUTES), 'password_customer', 'Account #' . $account->id);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'If an account uses this email, we have sent it a link to choose a new password. Check your inbox (and the spam folder). The link works for ' . self::RESET_MINUTES . ' minutes.',
+        ]);
+    }
+
+    /** Sets a new password from a reset link, signs every other device out and signs this one in. */
+    public function resetPassword(Request $request)
+    {
+        $data = $request->validate([
+            'email' => 'required|email|max:191',
+            'token' => 'required|string|size:64',
+            'password' => 'required|string|min:6|max:100|confirmed',
+        ], [
+            'password.min' => 'Your password needs at least 6 characters.',
+            'password.confirmed' => 'The two passwords do not match.',
+        ]);
+
+        $invalid = ValidationException::withMessages(['token' => 'This reset link is not valid any more. Ask for a new one below.']);
+        $account = CustomerAccount::where('email', strtolower(trim($data['email'])))->first();
+        if (! $account || ! Schema::hasTable('customer_password_resets')) {
+            throw $invalid;
+        }
+        $row = DB::table('customer_password_resets')
+            ->where('customer_account_id', $account->id)
+            ->where('expires_at', '>', now())
+            ->latest('id')
+            ->first();
+        if (! $row || ! hash_equals($row->token_hash, hash('sha256', $data['token']))) {
+            throw $invalid;
+        }
+
+        $account->password = $data['password']; // hashed by the model cast
+        $account->save();
+        DB::table('customer_password_resets')->where('customer_account_id', $account->id)->delete();
+        $account->tokens()->delete(); // sign out every other device
+
+        ShopMailer::later($account->email, new PasswordChanged($account), 'password_customer', 'Account #' . $account->id);
+
+        return response()->json($this->session($account) + ['message' => 'Your password is changed and you are signed in.']);
     }
 
     public function me(Request $request)

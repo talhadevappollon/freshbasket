@@ -23,6 +23,7 @@ class MailSettings
         'contact_staff' => ['Contact form message', 'Staff', 'Every message sent from the Contact Us page. Reply goes straight to the customer.'],
         'contact_customer' => ['"We got your message" reply', 'Customer', 'Automatic reply to a Contact Us message (when they gave an email address).'],
         'welcome_customer' => ['Welcome email', 'Customer', 'When a shopper creates an account with an email address.'],
+        'password_customer' => ['Password reset', 'Customer', 'The "forgot password" link, then a note once the password is changed. Without it, shoppers cannot reset a password themselves.'],
         'review_staff' => ['New review alert', 'Staff', 'When a customer posts a product review.'],
         'low_stock_staff' => ['Low stock alert', 'Staff', 'When an order takes a tracked product down to its low-stock level.'],
     ];

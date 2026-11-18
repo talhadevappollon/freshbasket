@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { AccountError } from '@/lib/account';
@@ -54,7 +55,7 @@ interface Props {
 
 /** The sign-in / create-account form, shared by the popup (desktop) and the /login and /register pages (phones). */
 export default function AuthForm({ view, onViewChange, onDone, autoFocus = true, headingTag = 'h2', titleId = 'auth-title', className = '' }: Props) {
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, closeAuth } = useAuth();
 
   const [login, setLogin] = useState('');
   const [name, setName] = useState('');
@@ -205,6 +206,17 @@ export default function AuthForm({ view, onViewChange, onDone, autoFocus = true,
             </button>
           </div>
         </Field>
+        {view === 'login' && (
+          <div className="-mt-1.5 text-right">
+            <Link
+              href={`/forgot-password${login.includes('@') ? `?email=${encodeURIComponent(login.trim())}` : ''}`}
+              onClick={closeAuth}
+              className="inline-flex h-9 items-center text-[13px] font-semibold text-fresh-700 hover:text-fresh-900 hover:underline underline-offset-4"
+            >
+              Forgot password?
+            </Link>
+          </div>
+        )}
       </div>
 
       <button

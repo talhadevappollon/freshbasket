@@ -82,6 +82,14 @@ export const registerAccount = (body: { name: string; phone: string; email?: str
 export const loginAccount = (body: { login: string; password: string }) =>
   request<{ token: string; account: Account }>('/login', { method: 'POST', body: JSON.stringify(body) });
 
+/** Emails a "choose a new password" link when an account uses this address (the answer is the same either way). */
+export const requestPasswordReset = (email: string) =>
+  request<{ success: boolean; message: string }>('/forgot-password', { method: 'POST', body: JSON.stringify({ email }) });
+
+/** Sets a new password from the emailed link; signs this device in. */
+export const resetPassword = (body: { email: string; token: string; password: string; password_confirmation: string }) =>
+  request<{ token: string; account: Account; message: string }>('/reset-password', { method: 'POST', body: JSON.stringify(body) });
+
 export const fetchAccount = () => request<{ account: Account }>('/me', { auth: true });
 
 export const logoutAccount = () => request<{ success: boolean }>('/logout', { method: 'POST', auth: true });

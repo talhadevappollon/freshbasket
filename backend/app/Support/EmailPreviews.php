@@ -11,6 +11,8 @@ use App\Mail\ContactReceivedStaff;
 use App\Mail\LowStockStaff;
 use App\Mail\ReviewSubmittedStaff;
 use App\Mail\WelcomeCustomer;
+use App\Mail\PasswordChanged;
+use App\Mail\PasswordResetLink;
 use App\Models\CrmLead;
 use App\Models\CustomerAccount;
 use App\Models\Product;
@@ -34,6 +36,7 @@ class EmailPreviews
         'contact_staff' => 'Contact form message',
         'contact_customer' => '"We got your message" reply',
         'welcome_customer' => 'Welcome email',
+        'password_customer' => 'Password reset link',
         'review_staff' => 'New review alert',
         'low_stock_staff' => 'Low stock alert',
     ];
@@ -46,11 +49,17 @@ class EmailPreviews
             'status_customer' => new OrderStatusChanged(tap(self::order(), fn ($o) => $o->order_status = request('status', 'dispatched'))),
             'contact_staff' => new ContactReceivedStaff(self::lead()),
             'contact_customer' => new ContactReceivedCustomer(self::lead()),
-            'welcome_customer' => new WelcomeCustomer(CustomerAccount::latest('id')->first() ?? new CustomerAccount(['name' => 'Ayesha Khan', 'phone' => '0321 9876543', 'email' => 'ayesha@example.com'])),
+            'welcome_customer' => new WelcomeCustomer(self::account()),
             'review_staff' => new ReviewSubmittedStaff(ProductReview::latest('id')->first() ?? new ProductReview(['product_name' => 'Fresh Mango Sindhri', 'product_slug' => 'fresh-mango-sindhri', 'customer_name' => 'Bilal Ahmed', 'customer_email' => 'bilal@example.com', 'rating' => 4, 'review_title' => 'Sweet and fresh', 'review_body' => 'Arrived the same day and every mango was ripe. Will order again.'])),
             'low_stock_staff' => new LowStockStaff(self::lowStock(), 'FB-SAMPLE'),
+            'password_customer' => request('changed') ? new PasswordChanged(self::account()) : new PasswordResetLink(self::account(), url('/reset-password') . '?token=SAMPLE&email=ayesha%40example.com'),
             default => new TestEmail('Store Manager'),
         };
+    }
+
+    private static function account(): CustomerAccount
+    {
+        return CustomerAccount::latest('id')->first() ?? new CustomerAccount(['name' => 'Ayesha Khan', 'phone' => '0321 9876543', 'email' => 'ayesha@example.com']);
     }
 
     private static function lead(): CrmLead

@@ -83,6 +83,8 @@ Route::prefix('v1')->group(function () {
     Route::prefix('account')->group(function () {
         Route::post('/register', [AccountController::class, 'register'])->middleware('throttle:10,1');
         Route::post('/login', [AccountController::class, 'login'])->middleware('throttle:10,1');
+        Route::post('/forgot-password', [AccountController::class, 'forgotPassword'])->middleware('throttle:5,1');
+        Route::post('/reset-password', [AccountController::class, 'resetPassword'])->middleware('throttle:10,1');
         Route::middleware('auth:sanctum')->group(function () {
             Route::get('/me', [AccountController::class, 'me']);
             Route::post('/logout', [AccountController::class, 'logout']);
