@@ -56,15 +56,18 @@ Boost replaces these bootstrap instructions with guidelines tailored to the appl
 | Public website | https://freshhouse.pk | https://freshbasket.aneetakomal.com |
 | Admin panel | https://freshhouse.pk/admin (sign in at `/admin/login`) | https://freshbasket.aneetakomal.com/admin |
 | Shop data (API) | `/api/v1/...` | `/api/v1/...` |
+| Second live domain (same folder) | https://freshhouse.com.pk | |
 | "Coming soon" page | `/coming-soon.html` | not used |
 | Private preview link | `/admin/preview/<key>` (copy it from the Dashboard) | not used |
 | Deploy webhook | `/cpanel_deploy.php?secret=...` | `/cpanel_deploy.php?secret=...` |
 
 The site must sit at the top of its domain. The website build loads `/_next/...` and calls `/api/v1`, and the admin lives at `/admin`, so a sub-folder such as `/staging` does not work. A staging copy needs its own subdomain, e.g. `staging.freshhouse.pk`.
 
-## Hidden launch ("Coming soon"), on freshhouse.pk only
+## Hidden launch ("Coming soon"), on every live domain
 
-Until the shop is opened, visitors to freshhouse.pk get `backend/public/coming-soon.html` for every page and API call: no products, no checkout. The test site is never hidden.
+freshhouse.pk and freshhouse.com.pk share one `public_html`. Only the test site and local testing are always open; every other address that reaches this folder is hidden.
+
+Until the shop is opened, visitors get `backend/public/coming-soon.html` for every page and API call: no products, no checkout. The test site is never hidden.
 
 **Who still sees the whole website:**
 - **Signed-in staff.** Every admin page gives the browser the `fh_preview` cookie.

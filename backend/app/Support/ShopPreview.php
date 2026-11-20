@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
 /**
- * Hidden launch for freshhouse.pk. Until the shop is opened in the admin, the root .htaccess shows visitors
+ * Hidden launch on every live domain (freshhouse.pk and freshhouse.com.pk share one folder; any other address that
+ * reaches it is covered too). Only the test site and local testing are always open. Until the shop is opened in the
+ * admin, the root .htaccess shows visitors
  * backend/public/coming-soon.html instead of the shop. Signed-in staff get the "fh_preview" cookie; the server lets
  * a request through when the cookie's value names a file in storage/app/preview (so no secret is kept in the code).
  *
@@ -20,12 +22,12 @@ class ShopPreview
 {
     public const COOKIE = 'fh_preview';
 
-    /** Domains that launch hidden. Other domains (the test site) are always open. */
-    public const HIDDEN_HOSTS = ['freshhouse.pk', 'www.freshhouse.pk'];
+    /** Addresses that are never hidden (keep in step with the HTTP_HOST line in both .htaccess files). */
+    public const OPEN_HOSTS = ['freshbasket.aneetakomal.com', 'localhost', '127.0.0.1'];
 
     public static function appliesTo(Request $request): bool
     {
-        return in_array(strtolower($request->getHost()), self::HIDDEN_HOSTS, true);
+        return ! in_array(strtolower($request->getHost()), self::OPEN_HOSTS, true);
     }
 
     public static function isOpen(): bool

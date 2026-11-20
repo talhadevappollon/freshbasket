@@ -60,7 +60,8 @@ DirectoryIndex index.html index.php
     RewriteRule ^\.cpanel\.yml$ - [F,L,NC]
     RewriteRule ^backend/\.env$ - [F,L,NC]
 
-    # Hidden launch (freshhouse.pk only, see backend/app/Support/ShopPreview.php). Until the shop is opened in the
+    # Hidden launch on every live domain (freshhouse.pk, freshhouse.com.pk, ... share this folder); only the test site
+    # and local testing are always open. See backend/app/Support/ShopPreview.php. Until the shop is opened in the
     # admin (Dashboard -> "Open the shop to everyone", which creates backend/storage/app/site-public), visitors get the
     # "Coming soon" page. Signed-in staff carry the fh_preview cookie; it counts only when its value names a key file
     # in backend/storage/app/preview on this server. The admin, the deploy webhook, certificate checks and static
@@ -69,7 +70,7 @@ DirectoryIndex index.html index.php
     RewriteCond %{DOCUMENT_ROOT}/backend/storage/app/preview/%2 -f
     RewriteRule ^ - [E=FH_PREVIEW:1]
 
-    RewriteCond %{HTTP_HOST} ^(www\.)?freshhouse\.pk$ [NC]
+    RewriteCond %{HTTP_HOST} !^(freshbasket\.aneetakomal\.com|localhost|127\.0\.0\.1)(:[0-9]+)?$ [NC]
     RewriteCond %{DOCUMENT_ROOT}/backend/storage/app/site-public !-f
     RewriteCond %{ENV:FH_PREVIEW} !=1
     RewriteCond %{REQUEST_URI} !^/(\.well-known/|_next/|admin(/|$)|cpanel_deploy\.php|robots\.txt)
