@@ -58,6 +58,12 @@ DirectoryIndex index.html index.php
     <FilesMatch "\.(html|txt)$">
         Header set Cache-Control "no-cache"
     </FilesMatch>
+    # Hidden launch: "Coming soon" is never stored and carries no date, so a browser's saved copy can never be taken
+    # as "not changed" for the real page once staff sign in (or the shop opens)
+    <Files "coming-soon.html">
+        Header set Cache-Control "no-store, max-age=0"
+        Header unset Last-Modified
+    </Files>
     <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
         Header set Cache-Control "public, max-age=2592000"
     </FilesMatch>

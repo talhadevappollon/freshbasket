@@ -66,21 +66,6 @@ DirectoryIndex index.html index.php
     # "Coming soon" page. Signed-in staff carry the fh_preview cookie; it counts only when its value names a key file
     # in backend/storage/app/preview on this server. The admin, the deploy webhook, certificate checks and static
     # files (scripts, styles, pictures, fonts) are never blocked.
-    # TEMPORARY server checks for the hidden launch (each answers with the favicon when the feature works); removed next
-    RewriteCond %{DOCUMENT_ROOT}/backend/storage/app/.gitignore -f
-    RewriteRule ^gate-test-1$ backend/public/favicon.ico [L]
-    RewriteCond %{HTTP_COOKIE} (^|;\s*)fh_dbg=([a-z.]+)(;|$)
-    RewriteRule ^gate-test-2$ backend/public/favicon.ico [L]
-    RewriteCond %{HTTP_COOKIE} (^|;\s*)fh_dbg=([a-z.]+)(;|$)
-    RewriteCond %{DOCUMENT_ROOT}/backend/storage/app/%2 -f
-    RewriteRule ^gate-test-3$ backend/public/favicon.ico [L]
-    RewriteRule ^gate-test-4$ - [E=FH_DBG:1]
-    RewriteCond %{ENV:FH_DBG} =1
-    RewriteRule ^gate-test-4$ backend/public/favicon.ico [L]
-    RewriteCond %{HTTP_COOKIE} fh_dbg=([a-z.]+)
-    RewriteCond %{DOCUMENT_ROOT}/backend/storage/app/%1 -f
-    RewriteRule ^gate-test-5$ backend/public/favicon.ico [L]
-
     RewriteCond %{HTTP_COOKIE} (^|;\s*)fh_preview=([A-Za-z0-9]{40})(;|$)
     RewriteCond %{DOCUMENT_ROOT}/backend/storage/app/preview/%2 -f
     RewriteRule ^ - [E=FH_PREVIEW:1]

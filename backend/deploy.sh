@@ -105,6 +105,11 @@ fi
 echo "Running database migrations..."
 $PHP_BIN artisan migrate --force || echo "Notice: Database migration pending DB credentials verification"
 
+# 6b. Website pages get today's date on every deploy. Pages are compared by date only, so without this a page that
+#     did not change could be answered "not modified" to a browser holding a newer saved copy of a different page
+#     (e.g. the "Coming soon" page shown while the shop was hidden).
+find public -name '*.html' -type f -exec touch {} + 2>/dev/null || true
+
 # 7. Clear old caches and optimize for production
 echo "Optimizing Laravel caches..."
 $PHP_BIN artisan optimize:clear || true
