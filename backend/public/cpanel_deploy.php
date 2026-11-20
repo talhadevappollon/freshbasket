@@ -75,7 +75,7 @@ echo "Missing PHP extensions: " . ($missing ? implode(', ', $missing) . '  <-- t
 // Hidden launch (.htaccess): the server must find backend/storage/app under its document root
 $docRoot = rtrim((string) ($_SERVER['DOCUMENT_ROOT'] ?? ''), '/');
 echo 'Hidden launch: paths ' . (is_dir($docRoot . '/backend/storage/app') ? 'OK' : "NOT FOUND under $docRoot")
-    . ', shop ' . (file_exists($backendDir . '/storage/app/site-public') ? 'OPEN to everyone' : 'hidden on freshhouse.pk (Coming soon)')
+    . ', shop ' . (file_exists($backendDir . '/storage/app/site-public') ? 'OPEN to everyone' : 'hidden on the live domains (Coming soon)')
     . ', staff preview key ' . (glob($backendDir . '/storage/app/preview/*') ? 'ready' : 'made at the next staff sign-in') . "\n";
 foreach (['storage/logs', 'storage/framework/views', 'storage/framework/cache', 'bootstrap/cache'] as $dir) {
     if (is_dir("$backendDir/$dir") && !is_writable("$backendDir/$dir")) {
