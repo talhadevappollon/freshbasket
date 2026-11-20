@@ -73,6 +73,19 @@ DirectoryIndex index.html index.php
 
     RewriteEngine On
 
+    # Hidden launch (see the top-level .htaccess): the top-level rules do not apply inside this folder, so someone
+    # typing /backend/public/... directly gets the same "Coming soon". Normal traffic never has /backend/public in its address.
+    RewriteCond %{HTTP_COOKIE} (^|;\s*)fh_preview=([A-Za-z0-9]{40})(;|$)
+    RewriteCond %{DOCUMENT_ROOT}/backend/storage/app/preview/%2 -f
+    RewriteRule ^ - [E=FH_PREVIEW:1]
+    RewriteCond %{THE_REQUEST} \s/+backend/public [NC]
+    RewriteCond %{HTTP_HOST} ^(www\.)?freshhouse\.pk$ [NC]
+    RewriteCond %{DOCUMENT_ROOT}/backend/storage/app/site-public !-f
+    RewriteCond %{ENV:FH_PREVIEW} !=1
+    RewriteCond %{REQUEST_URI} !(coming-soon\.html|cpanel_deploy\.php)$
+    RewriteCond %{REQUEST_URI} !\.(js|css|png|jpe?g|webp|avif|gif|svg|ico|woff2?|ttf|otf|map)$ [NC]
+    RewriteRule ^ coming-soon.html [L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
