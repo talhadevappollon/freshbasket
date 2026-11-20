@@ -16,7 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'pos.enabled' => \App\Http\Middleware\EnsurePosEnabled::class,
             'admin.password' => \App\Http\Middleware\RequireNewAdminPassword::class,
+            'shop.preview' => \App\Http\Middleware\GrantShopPreview::class,
         ]);
+        // The web server reads the staff preview cookie itself (hidden launch), so it is not encrypted
+        $middleware->encryptCookies(except: [\App\Support\ShopPreview::COOKIE]);
         // Signed-out visitors to /admin go to the staff sign-in page; signed-in staff skip it.
         $middleware->redirectGuestsTo(fn () => route('admin.login'));
         $middleware->redirectUsersTo(fn () => route('admin.dashboard'));

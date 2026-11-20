@@ -19,9 +19,19 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/login', [AuthController::class, 'login'])->name('login.attempt')->middleware('throttle:20,1');
     });
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+    // Private preview link (Dashboard): opens the hidden shop in this browser without an admin login
+    Route::get('/preview/{key}', function (\Illuminate\Http\Request $request, string $key) {
+        abort_unless(strlen($key) === 40 && hash_equals(\App\Support\ShopPreview::key(), $key), 404);
+
+        return redirect('/')->withCookie(cookie(\App\Support\ShopPreview::COOKIE, $key, 60 * 24 * 30, '/', null, $request->isSecure(), true, false, 'lax'));
+    })->name('preview')->middleware('throttle:20,1');
 });
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin.password'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin.password', 'shop.preview'])->group(function () {
+    // Hidden launch: open the shop to everyone, or hide it again behind "Coming soon"
+    Route::post('/website-visibility', [AdminController::class, 'websiteVisibility'])->name('website_visibility');
+
     Route::get('/password', [AuthController::class, 'showPassword'])->name('password');
     Route::post('/password', [AuthController::class, 'updatePassword'])->name('password.update')->middleware('throttle:10,1');
 

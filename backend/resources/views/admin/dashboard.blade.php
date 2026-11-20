@@ -38,6 +38,49 @@
         </div>
     </section>
 
+    {{-- Hidden launch (freshhouse.pk): who can see the shop --}}
+    @if(\App\Support\ShopPreview::appliesTo(request()))
+        @php $shopOpen = \App\Support\ShopPreview::isOpen(); @endphp
+        <section class="rounded-[22px] border p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 {{ $shopOpen ? 'bg-white border-slate-200/70' : 'bg-[#fbf6e6] border-[#e8d49a]' }}" aria-label="Who can see the shop">
+            <div class="flex items-start gap-3">
+                <span class="w-10 h-10 shrink-0 rounded-2xl flex items-center justify-center {{ $shopOpen ? 'bg-fresh-50 text-fresh-700' : 'bg-[#f3e3b0] text-[#7a5612]' }}">
+                    <i class="fa-solid {{ $shopOpen ? 'fa-store' : 'fa-eye-slash' }}"></i>
+                </span>
+                <div>
+                    @if($shopOpen)
+                        <h3 class="font-black text-slate-900">The shop is open to everyone</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Visitors to {{ request()->getHost() }} see and can order from the shop.</p>
+                    @else
+                        <h3 class="font-black text-[#5c4210]">The shop is hidden: visitors see "Coming soon"</h3>
+                        <p class="text-xs text-[#7a5612] mt-0.5">You see the whole website because you are signed in here. Customers cannot see products or order yet.
+                            <a href="/coming-soon.html" target="_blank" rel="noopener" class="font-bold underline underline-offset-2">See what visitors see</a></p>
+                        @php $previewUrl = route('admin.preview', \App\Support\ShopPreview::key()); @endphp
+                        <div class="mt-3 flex flex-col sm:flex-row sm:items-center gap-2">
+                            <span class="text-[11px] font-bold text-[#7a5612] shrink-0">Preview link for others (no login needed):</span>
+                            <input type="text" readonly value="{{ $previewUrl }}" onclick="this.select()" aria-label="Private preview link" class="flex-1 min-w-0 h-9 px-3 rounded-xl border border-[#e8d49a] bg-white text-[11px] font-mono text-slate-700">
+                            <button type="button" onclick="navigator.clipboard.writeText(@js($previewUrl)).then(() => { this.textContent = 'Copied'; setTimeout(() => this.textContent = 'Copy link', 1600); })" class="h-9 px-4 rounded-full text-[11px] font-bold bg-white border border-[#e8d49a] text-[#5c4210] hover:bg-[#f7efd6] shrink-0">Copy link</button>
+                        </div>
+                        <p class="text-[11px] text-[#7a5612]/80 mt-1">Anyone with this link sees the whole website on their device for 30 days. Share it only with people you trust.</p>
+                    @endif
+                </div>
+            </div>
+            <form method="POST" action="{{ route('admin.website_visibility') }}" class="shrink-0"
+                  onsubmit="return confirm(@js($shopOpen ? 'Hide the shop? Visitors will see the Coming soon page.' : 'Open the shop to everyone? Customers will be able to see products and place orders.'))">
+                @csrf
+                <input type="hidden" name="action" value="{{ $shopOpen ? 'hide' : 'open' }}">
+                @if($shopOpen)
+                    <button type="submit" class="h-10 px-5 rounded-full text-xs font-bold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50">
+                        <i class="fa-solid fa-eye-slash mr-1"></i> Hide behind "Coming soon"
+                    </button>
+                @else
+                    <button type="submit" class="h-10 px-5 rounded-full text-xs font-black bg-fresh-600 hover:bg-fresh-700 text-white shadow-md shadow-fresh-600/30">
+                        <i class="fa-solid fa-store mr-1"></i> Open the shop to everyone
+                    </button>
+                @endif
+            </form>
+        </section>
+    @endif
+
     <!-- 6 KPI Metrics Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
         <!-- Gross Sales -->

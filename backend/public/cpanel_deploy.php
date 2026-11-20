@@ -72,6 +72,11 @@ $needed = ['ctype', 'curl', 'dom', 'fileinfo', 'filter', 'hash', 'mbstring', 'op
 $missing = array_values(array_filter($needed, fn ($ext) => !extension_loaded($ext)));
 echo "Website PHP: " . PHP_VERSION . (PHP_VERSION_ID < 80300 ? '  <-- TOO OLD: set the domain to PHP 8.3 or 8.4 in cPanel → MultiPHP Manager' : '') . "\n";
 echo "Missing PHP extensions: " . ($missing ? implode(', ', $missing) . '  <-- turn these on in cPanel (Select PHP Version / PHP extensions)' : 'none') . "\n";
+// Hidden launch (.htaccess): the server must find backend/storage/app under its document root
+$docRoot = rtrim((string) ($_SERVER['DOCUMENT_ROOT'] ?? ''), '/');
+echo 'Hidden launch: paths ' . (is_dir($docRoot . '/backend/storage/app') ? 'OK' : "NOT FOUND under $docRoot")
+    . ', shop ' . (file_exists($backendDir . '/storage/app/site-public') ? 'OPEN to everyone' : 'hidden on freshhouse.pk (Coming soon)')
+    . ', staff preview key ' . (glob($backendDir . '/storage/app/preview/*') ? 'ready' : 'made at the next staff sign-in') . "\n";
 foreach (['storage/logs', 'storage/framework/views', 'storage/framework/cache', 'bootstrap/cache'] as $dir) {
     if (is_dir("$backendDir/$dir") && !is_writable("$backendDir/$dir")) {
         echo "Not writable by the website: backend/$dir\n";

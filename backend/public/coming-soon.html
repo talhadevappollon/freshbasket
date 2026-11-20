@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Fresh House · Coming soon</title>
+    <meta name="description" content="Fresh House, Karachi's house of freshness, opens soon.">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="theme-color" content="#101e10">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400..900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { height: 100%; }
+        body {
+            margin: 0;
+            font-family: 'Geist', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            color: #ffffff;
+            background: radial-gradient(1200px 600px at 85% -10%, rgba(220, 179, 85, 0.18), transparent 60%),
+                        radial-gradient(900px 500px at 10% 110%, rgba(187, 233, 111, 0.12), transparent 60%),
+                        linear-gradient(135deg, #101e10 0%, #0f3a26 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            -webkit-font-smoothing: antialiased;
+        }
+        main { width: 100%; max-width: 560px; text-align: center; }
+        .logo { position: relative; display: inline-block; width: 220px; max-width: 70vw; }
+        .logo img { display: block; width: 100%; height: auto; }
+        /* The gold logo, as in the website header */
+        .logo span {
+            position: absolute; inset: 0;
+            background: linear-gradient(180deg, #f8e9ae 0%, #dcb355 38%, #a8741f 64%, #efcf7c 100%);
+            -webkit-mask-image: url(/logo.png); mask-image: url(/logo.png);
+            -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+            -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+        }
+        .pill {
+            display: inline-flex; align-items: center; gap: 8px;
+            margin-top: 36px; padding: 7px 16px; border-radius: 999px;
+            border: 1px solid rgba(217, 178, 90, 0.4); background: rgba(255, 255, 255, 0.05);
+            color: #f3dc95; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+        }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: #bbe96f; box-shadow: 0 0 0 4px rgba(187, 233, 111, 0.18); }
+        h1 { margin: 18px 0 0; font-size: clamp(34px, 8vw, 56px); line-height: 1.05; font-weight: 900; letter-spacing: -0.02em; }
+        p { margin: 16px auto 0; max-width: 440px; font-size: 16px; line-height: 1.6; color: rgba(231, 239, 230, 0.82); }
+        .line { width: 64px; height: 3px; margin: 32px auto 0; border-radius: 3px; background: linear-gradient(90deg, #dcb355, #bbe96f); }
+        footer { margin-top: 28px; font-size: 13px; color: rgba(231, 239, 230, 0.55); }
+    </style>
+</head>
+<body>
+    <main>
+        <span class="logo">
+            <img src="/logo.png" alt="Fresh House" width="440" height="100">
+            <span aria-hidden="true"></span>
+        </span>
+        <div><span class="pill"><span class="dot" aria-hidden="true"></span> Coming soon</span></div>
+        <h1>The house of freshness opens soon</h1>
+        <p>We are stocking the shelves with fresh fruit, vegetables, dry fruits and pantry staples for same-day delivery across Karachi. See you very soon.</p>
+        <div class="line" aria-hidden="true"></div>
+        <footer>&copy; Fresh House &middot; Karachi</footer>
+    </main>
+</body>
+</html>

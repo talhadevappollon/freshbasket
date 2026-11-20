@@ -971,6 +971,21 @@ class AdminController extends Controller
     /**
      * Store & POS Settings
      */
+    /** Hidden launch: open the shop to everyone, or hide it again (freshhouse.pk only, see App\Support\ShopPreview). */
+    public function websiteVisibility(Request $request)
+    {
+        $request->validate(['action' => 'required|in:open,hide']);
+        if ($request->input('action') === 'open') {
+            \App\Support\ShopPreview::open();
+            $message = 'The shop is now open to everyone.';
+        } else {
+            \App\Support\ShopPreview::hide();
+            $message = 'The shop is hidden again: visitors see the "Coming soon" page. Signed-in staff still see the shop.';
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
+
     public function settings()
     {
         $settings = StoreSetting::all()->pluck('value', 'key')->toArray();

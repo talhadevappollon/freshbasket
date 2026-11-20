@@ -60,6 +60,23 @@ DirectoryIndex index.html index.php
     RewriteRule ^\.cpanel\.yml$ - [F,L,NC]
     RewriteRule ^backend/\.env$ - [F,L,NC]
 
+    # Hidden launch (freshhouse.pk only, see backend/app/Support/ShopPreview.php). Until the shop is opened in the
+    # admin (Dashboard -> "Open the shop to everyone", which creates backend/storage/app/site-public), visitors get the
+    # "Coming soon" page. Signed-in staff carry the fh_preview cookie; it counts only when its value names a key file
+    # in backend/storage/app/preview on this server. The admin, the deploy webhook, certificate checks and static
+    # files (scripts, styles, pictures, fonts) are never blocked.
+    RewriteCond %{HTTP_COOKIE} (^|;\s*)fh_preview=([A-Za-z0-9]{40})(;|$)
+    RewriteCond %{DOCUMENT_ROOT}/backend/storage/app/preview/%2 -f
+    RewriteRule ^ - [E=FH_PREVIEW:1]
+
+    RewriteCond %{HTTP_HOST} ^(www\.)?freshhouse\.pk$ [NC]
+    RewriteCond %{DOCUMENT_ROOT}/backend/storage/app/site-public !-f
+    RewriteCond %{ENV:FH_PREVIEW} !=1
+    RewriteCond %{REQUEST_URI} !^/(\.well-known/|_next/|admin(/|$)|cpanel_deploy\.php|robots\.txt)
+    RewriteCond %{REQUEST_URI} !coming-soon\.html$
+    RewriteCond %{REQUEST_URI} !\.(js|css|png|jpe?g|webp|avif|gif|svg|ico|woff2?|ttf|otf|map)$ [NC]
+    RewriteRule ^ backend/public/coming-soon.html [L]
+
     # Rewrite all traffic into backend/public/
     RewriteCond %{REQUEST_URI} !^/backend/public/
     RewriteRule ^(.*)$ backend/public/$1 [L]

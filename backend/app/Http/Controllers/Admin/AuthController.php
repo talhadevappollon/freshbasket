@@ -65,7 +65,8 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('admin.login')->with('status', 'You are signed out.');
+        return redirect()->route('admin.login')->with('status', 'You are signed out.')
+            ->withoutCookie(\App\Support\ShopPreview::COOKIE); // the hidden shop is no longer shown in this browser
     }
 
     public function showPassword()
